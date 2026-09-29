@@ -155,10 +155,11 @@ async function createLiveOrder(){
   if(!currentSession){document.getElementById('orderStatus').textContent='Please sign in before creating a live delivery request.';return;}
   const address=document.getElementById('address').value.trim();
   if(!address && !currentLocation){document.getElementById('orderStatus').textContent='Enter a delivery address or share your current location first.';return;}
-  const basket=JSON.parse(localStorage.getItem('express-convenience-basket-v1')||'[]');
-  if(!basket.length){document.getElementById('orderStatus').textContent='Your basket is empty. Add products before creating a live delivery request.';return;}
-  const items=basket.map(x=>({product_id:x.id,product_name:x.name,quantity:Number(x.qty)||1}));
-  const {data,error}=await supabaseClient.rpc('create_checkout_order',{p_items:items,p_delivery_address:address||'GPS location provided',p_delivery_notes:'Created from Delivery Centre',p_delivery_lat:currentLocation?.lat||null,p_delivery_lng:currentLocation?.lng||null,p_delivery_accuracy:currentLocation?.accuracy||null,p_payment_method:'manual_wallet_transfer'});
+  const basket=JSON.parse(localStorage.getItem('express-convenience-basket-v1')||'{}');
+  if(!basket || typeof basket!=='object' || !Object.keys(basket).length){document.getElementById('orderStatus').textContent='Your basket is empty. Add products before creating a live delivery request.';return;}
+  const names={bread:'White bread',eggs:'Eggs',sausages:'Russian sausages',drinks:'Soft drinks',snacks:'Chocolate biscuits',tissue:'Household tissue'};
+  const items=Object.entries(basket).map(([product_id,quantity])=>({product_id,product_name:names[product_id]||product_id,quantity:Number(quantity)||1}));
+  const {data,error}=await supabaseClient.rpc('create_checkout_order',{p_items:items,p_address:address||'GPS location provided',p_notes:'Created from Delivery Centre',p_lat:currentLocation?.lat||null,p_lng:currentLocation?.lng||null,p_accuracy:currentLocation?.accuracy||null,p_payment_method:'manual_wallet_transfer'});
   if(error){document.getElementById('orderStatus').textContent=error.message;return;}
   const row=Array.isArray(data)?data[0]:data;
   document.getElementById('orderStatus').textContent='Live request created: EC-'+row.order_number+' · searching for a rider now.'; await loadCustomerOrder();
