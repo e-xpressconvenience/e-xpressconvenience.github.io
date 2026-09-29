@@ -7,6 +7,7 @@
 <meta name="description" content="Review your Express Convenience basket, choose a preferred payment method and send an order enquiry for confirmation.">
 <title>Checkout | Express Convenience</title>
 <link rel="stylesheet" href="assets/store.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/shop.js" defer></script>
 </head>
 <body data-page="checkout">
@@ -27,7 +28,7 @@
 <label class="pay-option"><input type="radio" name="payment" value="EcoCash"><span><strong>Pay with EcoCash</strong><small>Payment link and merchant details will be added after integration.</small></span></label>
 <label class="pay-option"><input type="radio" name="payment" value="Bank transfer"><span><strong>Pay with bank transfer</strong><small>Bank payment details will be shared after order confirmation.</small></span></label>
 </div>
-<button class="button checkout-action" type="button" id="send-enquiry">Send order enquiry on WhatsApp</button>
+<button class="button checkout-action" type="button" id="create-live-order">Create live delivery order</button><button class="button checkout-action" type="button" id="send-enquiry">Send order enquiry on WhatsApp</button><div id="live-order-status" class="summary-note" aria-live="polite">Sign in through Delivery Centre to create a live order and dispatch a rider.</div>
 <p class="fineprint">No payment is taken here. Do not transfer money until Express Convenience confirms the amount and the correct receiving details with you. Delivery information can be shared directly in the WhatsApp conversation.</p>
 </div>
 </div>
@@ -35,5 +36,26 @@
 <section class="section next-steps" aria-labelledby="next-title"><div class="wrap"><span class="kicker">What happens after you enquire</span><h2 id="next-title">Clear steps, no surprises.</h2><div class="next-grid"><div class="next-step"><b>01</b><h3>We check your list</h3><p>We confirm the products, quantities and availability.</p></div><div class="next-step"><b>02</b><h3>We confirm the total</h3><p>Pricing, delivery and payment instructions are agreed with you.</p></div><div class="next-step"><b>03</b><h3>We arrange delivery</h3><p>After the order and payment are verified, delivery can be arranged.</p></div></div></div></section>
 </main>
 <footer><div class="footer-inner wrap"><span>© 2026 Express Convenience · For Smart Shoppers.</span><span><a href="about.html">About</a> · <a href="tel:+26663540048">+266 6354 0048</a> · <a href="mailto:expressconvenience2.4.7@gmail.com">expressconvenience2.4.7@gmail.com</a></span></div></footer>
-</body>
+<script>
+const EC_SUPABASE_URL="https://zheqnbaiqsyeubakrolm.supabase.co";
+const EC_SUPABASE_KEY="sb_publishable_ZPNXLqvhmav9OZ-Up4d-TQ_KCdzerBu";
+const ecSupabase=window.supabase.createClient(EC_SUPABASE_URL,EC_SUPABASE_KEY);
+document.getElementById("create-live-order")?.addEventListener("click",async()=>{
+ const out=document.getElementById("live-order-status");
+ const {data:{session}}=await ecSupabase.auth.getSession();
+ if(!session){out.textContent="Please sign in at Delivery Centre first, then return here.";return;}
+ let cart={}; try{cart=JSON.parse(localStorage.getItem("express-convenience-basket-v1")||"{}")}catch{}
+ const names={bread:"White bread",eggs:"Eggs",sausages:"Russian sausages",drinks:"Soft drinks",snacks:"Chocolate biscuits",tissue:"Household tissue"};
+ const items=Object.entries(cart).filter(([id,q])=>names[id]&&Number(q)>0).map(([id,q])=>({name:names[id],quantity:Number(q)}));
+ if(!items.length){out.textContent="Your basket is empty.";return;}
+ let loc={}; try{loc=JSON.parse(localStorage.getItem("express-convenience-delivery-location-v1")||"{}")}catch{}
+ const coords=loc.coords||{};
+ const payment=document.querySelector('input[name="payment"]:checked')?.value||"Not selected";
+ out.textContent="Creating your live delivery order…";
+ const {data,error}=await ecSupabase.rpc("create_checkout_order",{p_items:items,p_address:loc.address||"",p_notes:loc.notes||"",p_lat:coords.lat??null,p_lng:coords.lng??null,p_accuracy:coords.accuracy??null,p_payment_method:payment});
+ if(error){out.textContent=error.message;return;}
+ const row=Array.isArray(data)?data[0]:data;
+ out.textContent="Live order EC-"+row.order_number+" created. Searching for an available rider now.";
+});
+</script></body>
 </html>
