@@ -84,6 +84,7 @@ async function loadSession(){
   await loadProfile();
   updateAuth(session);
   await startLiveDeliveryFeed();
+  await loadAdminDashboard();
 }
 async function loadProfile(){
   currentProfile=null;
@@ -130,7 +131,7 @@ document.getElementById('signOut').addEventListener('click',async()=>{
 supabaseClient.auth.onAuthStateChange(async(_event,session)=>{
   currentSession=session;
   if(!session){currentProfile=null;updateAuth(null);renderLiveRequests([]);return;}
-  await loadProfile(); updateAuth(session); await startLiveDeliveryFeed();
+  await loadProfile(); updateAuth(session); await startLiveDeliveryFeed(); await loadAdminDashboard();
 });
 
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',async()=>{
@@ -284,7 +285,7 @@ async function loadAdminDashboard(){
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 loadSession();
-setTimeout(loadAdminDashboard,500);
+
 </script>
 </body>
 </html>
