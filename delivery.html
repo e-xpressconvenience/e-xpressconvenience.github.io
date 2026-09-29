@@ -245,7 +245,7 @@ function renderLiveRequests(requests){
     box.innerHTML='<p class="muted">Rider login required. Requests appear here in real time when you are an approved rider.</p>';return;
   }
   if(!requests.length){box.innerHTML='<p class="muted">No open delivery requests right now. This screen will update automatically.</p>';return;}
-  box.innerHTML=requests.map(r=>'<div class="status request-item" style="margin:10px 0"><strong>New delivery request</strong><br><span class="small">Request '+r.order_id.slice(0,8)+' · waiting for first valid rider</span><br><button class="button accept-live" data-order="'+r.order_id+'" style="margin-top:9px">Accept delivery</button></div>').join('');
+  box.innerHTML=requests.map(r=>'<div class="status request-item" style="margin:10px 0"><strong>New delivery request</strong><br><span class="small">Request '+r.order_id.slice(0,8)+' · '+(r.distance_km!=null?Number(r.distance_km).toFixed(2)+' km away · ':'')+'waiting for first valid rider</span><br><button class="button accept-live" data-order="'+r.order_id+'" style="margin-top:9px">Accept delivery</button></div>').join('');
   box.querySelectorAll('.accept-live').forEach(btn=>btn.addEventListener('click',()=>acceptLiveDelivery(btn.dataset.order,btn)));
 }
 async function acceptLiveDelivery(orderId,button){
@@ -254,6 +254,7 @@ async function acceptLiveDelivery(orderId,button){
   const {data,error}=await supabaseClient.rpc('accept_delivery',{p_order_id:orderId});
   if(error){button.disabled=false;button.textContent='Accept delivery';document.getElementById('acceptStatus').style.display='block';document.getElementById('acceptStatus').textContent=error.message;return;}
   if(data===true){
+    document.getElementById('riderAvailability').value='on_delivery';
     document.getElementById('acceptStatus').style.display='block';
     document.getElementById('acceptStatus').textContent='Delivery accepted. You are the assigned rider.';
     await loadOpenRequests();
