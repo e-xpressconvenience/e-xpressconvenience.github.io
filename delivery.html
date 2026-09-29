@@ -118,8 +118,11 @@ document.getElementById('signOut').addEventListener('click',async()=>{await supa
 async function loadRiderProfile(){
  const {data:{session}}=await supabaseClient.auth.getSession();
  if(!session)return;
+ const {data:profile}=await supabaseClient.from('profiles').select('role,full_name').eq('id',session.user.id).maybeSingle();
+ if(profile?.role!=='rider')return;
  const {data}=await supabaseClient.from('rider_profiles').select('availability,vehicle_type').eq('user_id',session.user.id).maybeSingle();
  if(data){document.getElementById('riderAvailability').value=data.availability; updateRiderAvailability(data.availability);}
+ if(profile.full_name) document.getElementById('riderWelcome').textContent='Welcome, '+profile.full_name;
 }
 function updateRiderAvailability(v){
  const labels={available:'AVAILABLE',on_delivery:'ON DELIVERY',offline:'OFFLINE'};
@@ -128,8 +131,10 @@ function updateRiderAvailability(v){
 document.getElementById('riderAvailability').addEventListener('change',async(e)=>{
  const {data:{session}}=await supabaseClient.auth.getSession();
  if(!session){e.target.value='offline';document.getElementById('authStatus').textContent='Sign in as a rider to change availability.';return;}
- const {error}=await supabaseClient.from('rider_profiles').update({availability:e.target.value,last_seen:new Date().toISOString()}).eq('user_id',session.user.id);
- if(error){document.getElementById('authStatus').textContent=error.message;return;}
+ const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
+ if(profile?.role!=='rider'){e.target.value='offline';document.getElementById('authStatus').textContent='This account is not registered as a rider.';return;}
+ const {error}=await supabaseClient.rpc('set_rider_availability',{p_availability:e.target.value});
+ if(error){document.getElementById('authStatus').textContent=error.message;await loadRiderProfile();return;}
  updateRiderAvailability(e.target.value);
 });
 supabaseClient.auth.onAuthStateChange((_event,session)=>{updateAuth(session); if(session) loadRiderProfile();});
