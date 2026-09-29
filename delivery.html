@@ -26,8 +26,8 @@
 <div class="field"><label>Address / landmark</label><input id="address" placeholder="e.g. Naleli, near ..."></div>
 <button class="button secondary" id="locate">Use my current location</button>
 <div id="locationStatus" class="status">Location not selected yet.</div></div>
-<div class="card"><h2>Delivery estimate</h2><div class="eta" id="eta">—</div><p class="muted">Estimated delivery time will be calculated from the pickup point and customer location once a maps/routing service is connected.</p>
-<div class="notice">The browser can provide GPS coordinates after customer permission. Road distance and ETA require a routing service; GPS straight-line distance alone is not a delivery ETA.</div></div>
+<div class="card"><h2>Delivery estimate</h2><div class="eta" id="eta">—</div><p class="muted">Once routing is connected, this area will show road distance, delivery fee and estimated arrival time.</p>
+<div class="notice">The browser can provide GPS coordinates after customer permission. Road distance and ETA require a routing service; GPS straight-line distance alone is not a delivery ETA.</div><button class="button" id="createOrder" style="margin-top:14px">Create delivery request</button><div id="orderStatus" class="status">No delivery request created yet.</div></div>
 </div>
 <div class="card" style="margin-top:20px"><h2>Checkout delivery flow</h2><div class="timeline">
 <div><b>1. Basket confirmed</b><span class="small">Customer reviews items and quantity.</span></div>
@@ -42,8 +42,8 @@
 <div class="grid">
 <div class="card"><h2>Rider dashboard</h2><p class="muted">A rider account can show availability, active deliveries and incoming delivery requests.</p>
 <div class="field"><label>Rider status</label><select><option>Available</option><option>On delivery</option><option>Offline</option></select></div>
-<div class="status"><span class="pill">AVAILABLE</span> Rider is eligible for nearby delivery requests.</div></div>
-<div class="card request"><span class="eyebrow">Incoming delivery</span><h2>Order EC-1007</h2><strong>Naleli → Customer location</strong><p class="muted">Pickup: Express Convenience<br>Approx. distance: pending live routing<br>Customer: hidden until accepted</p><button class="button" id="accept">Accept delivery</button><div id="acceptStatus" class="status" style="display:none">Delivery accepted. Customer details would now be released to the assigned rider.</div></div>
+<div class="status"><span class="pill">AVAILABLE</span> Rider is eligible for nearby delivery requests.</div><div id="riderOrder" class="status" style="display:none;margin-top:12px">A new order is waiting for acceptance.</div></div>
+<div class="card request"><span class="eyebrow">Incoming delivery</span><h2 id="incomingId">Order EC-1007</h2><strong>Naleli → Customer location</strong><p class="muted">Pickup: Express Convenience<br>Approx. distance: pending live routing<br>Customer: hidden until accepted</p><button class="button" id="accept">Accept delivery</button><div id="acceptStatus" class="status" style="display:none">Delivery accepted. Customer details would now be released to the assigned rider.</div></div>
 </div>
 <div class="card" style="margin-top:20px"><h2>Delivery status</h2><div class="grid">
 <div><div class="status">Accepted → <b>Picked up</b> → On the way → Delivered</div></div>
@@ -65,7 +65,28 @@
 <script>
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')}));
 document.getElementById('locate').addEventListener('click',()=>{const s=document.getElementById('locationStatus');if(!navigator.geolocation){s.textContent='This browser does not provide location services.';return}s.textContent='Requesting location permission…';navigator.geolocation.getCurrentPosition(p=>{s.textContent='Location received: '+p.coords.latitude.toFixed(5)+', '+p.coords.longitude.toFixed(5)+' (permission granted).';document.getElementById('eta').textContent='Routing needed';},e=>{s.textContent='Location was not shared. The customer can enter an address instead.'},{enableHighAccuracy:true,timeout:10000,maximumAge:30000})});
-document.getElementById('accept').addEventListener('click',()=>{document.getElementById('acceptStatus').style.display='block';document.getElementById('accept').disabled=true;document.getElementById('accept').textContent='Accepted';});
+const ORDER_KEY='express-convenience-demo-order-v1';
+function readOrder(){try{return JSON.parse(localStorage.getItem(ORDER_KEY)||'null')}catch{return null}}
+function saveOrder(order){try{localStorage.setItem(ORDER_KEY,JSON.stringify(order))}catch{}}
+function refreshDemo(){
+  const order=readOrder(); if(!order)return;
+  const id=document.getElementById('incomingId'); if(id) id.textContent='Order '+order.id;
+  const status=document.getElementById('orderStatus'); if(status) status.textContent='Request '+order.id+' · '+order.status;
+  const rider=document.getElementById('riderOrder'); if(rider){rider.style.display='block';rider.textContent='New request: '+order.id+' · First valid rider to accept gets the job in production.'}
+}
+document.getElementById('createOrder')?.addEventListener('click',()=>{
+  const order={id:'EC-'+String(Date.now()).slice(-6),status:'SEARCHING FOR RIDER',createdAt:new Date().toISOString()};
+  saveOrder(order); refreshDemo();
+  document.querySelector('[data-tab="rider"]')?.click();
+});
+document.getElementById('accept').addEventListener('click',()=>{
+  const order=readOrder()||{id:'EC-1007'};
+  order.status='ACCEPTED BY RIDER'; order.rider='Demo rider'; saveOrder(order);
+  document.getElementById('acceptStatus').style.display='block';
+  document.getElementById('accept').disabled=true; document.getElementById('accept').textContent='Accepted';
+  refreshDemo();
+});
+refreshDemo();
 </script>
 </body>
 </html>
