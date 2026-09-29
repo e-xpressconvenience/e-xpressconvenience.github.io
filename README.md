@@ -10,8 +10,8 @@ This repository belongs to the `e-xpressconvenience` GitHub account and is named
 
 ## Publish
 
-The page consists of `index.html` and the `assets` folder in the repository root on the `main` branch. GitHub Pages publishes it at the address above.
+The site consists of `index.html`, `about.html`, `products.html`, `checkout.html` and the `assets` folder in the repository root on the `main` branch. GitHub Pages publishes it at the address above.
 
 ## Content
 
-The supplied company profile describes an e-commerce and doorstep delivery business. The site provides a product category preview, WhatsApp and email enquiry links, and a copy of the company profile. It labels the full catalogue, checkout, digital payments and order management as planned features. Product examples and prices in supplied artwork require confirmation with Express Convenience.
+The supplied company profile describes an e-commerce and doorstep delivery business. The About page presents its contents and links to the five-page PDF. The Products page offers a small enquiry catalogue with a basket saved in the visitor's browser. Checkout sends the basket and preferred M-Pesa, EcoCash or bank payment method to Express Convenience on WhatsApp. Product prices, availability, delivery and payment instructions must be confirmed with the business. This static site does not process payments or collect delivery details; direct payment integrations await provider URLs, merchant credentials and bank information. The complete priced catalogue and order management remain planned.
