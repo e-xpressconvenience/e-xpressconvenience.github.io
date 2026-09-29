@@ -51,10 +51,9 @@
 <div id="riderAvailabilityStatus" class="status"><span class="pill">OFFLINE</span> Rider is currently offline.</div><div id="riderOrder" class="status" style="display:none;margin-top:12px">A new order is waiting for acceptance.</div></div>
 <div class="card request"><span class="eyebrow">Live delivery requests</span><h2>Incoming jobs</h2><div id="liveRequests"><p class="muted">Sign in as a rider and set your availability to receive live requests.</p></div><div id="acceptStatus" class="status" style="display:none">Delivery accepted. Customer delivery details are now available to the assigned rider.</div></div>
 </div>
-<div class="card" style="margin-top:20px"><h2>Delivery status</h2><div class="grid">
-<div><div class="status">Accepted → <b>Picked up</b> → On the way → Delivered</div></div>
-<div><p class="muted">Production dispatch logic can notify eligible riders based on distance, availability and vehicle type. The first valid rider to accept can claim the job; the server must lock the order so two riders cannot claim it simultaneously.</p></div>
-</div></div>
+<div class="card" style="margin-top:20px"><h2>Live order status</h2><div id="riderStatusControls" style="display:none" class="role-buttons" >
+<button class="button" data-status="picked_up">Picked up</button><button class="button" data-status="on_the_way">On the way</button><button class="button" data-status="delivered">Delivered</button>
+</div><div id="orderTimeline" class="timeline"><div><b>Waiting for delivery request</b><span class="small">Sign in and create an order to begin tracking.</span></div></div><div id="trackingStatus" class="status">Live tracking will appear here.</div></div>
 </section>
 
 <section id="admin" class="panel">
@@ -166,10 +165,36 @@ async function createLiveOrder(){
   };
   const {data,error}=await supabaseClient.from('orders').insert(payload).select('id,order_number,status').single();
   if(error){document.getElementById('orderStatus').textContent=error.message;return;}
-  document.getElementById('orderStatus').textContent='Live request created: EC-'+data.order_number+' · searching for a rider now.';
+  document.getElementById('orderStatus').textContent='Live request created: EC-'+data.order_number+' · searching for a rider now.'; await loadCustomerOrder();
 }
 
 document.getElementById('createOrder').addEventListener('click',createLiveOrder);
+
+function renderOrderTimeline(order, events=[]){
+ const box=document.getElementById('orderTimeline'); if(!box)return;
+ const labels={searching_rider:'Searching for rider',accepted:'Rider accepted',picked_up:'Picked up',on_the_way:'On the way',delivered:'Delivered',cancelled:'Cancelled'};
+ const sequence=['searching_rider','accepted','picked_up','on_the_way','delivered'];
+ const current=order?.status;
+ box.innerHTML=sequence.map(s=>'<div><b>'+((labels[s]||s))+'</b><span class="small">'+(s===current?'CURRENT':'')+'</span></div>').join('');
+ document.getElementById('trackingStatus').textContent=order?'Order EC-'+order.order_number+' · '+(labels[current]||current):'No active order.';
+}
+async function loadCustomerOrder(){
+ if(!currentSession || currentProfile?.role!=='customer') return;
+ const {data}=await supabaseClient.from('orders').select('*').eq('customer_id',currentSession.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
+ if(!data){renderOrderTimeline(null);return;}
+ const {data:events}=await supabaseClient.from('order_events').select('status,note,created_at').eq('order_id',data.id).order('created_at',{ascending:true});
+ renderOrderTimeline(data,events||[]);
+}
+async function updateLiveOrderStatus(status){
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session)return;
+ const order=await supabaseClient.from('orders').select('id').eq('assigned_rider_id',session.user.id).in('status',['accepted','picked_up','on_the_way']).order('created_at',{ascending:false}).limit(1).maybeSingle();
+ if(order.error||!order.data){document.getElementById('trackingStatus').textContent='No active assigned delivery.';return;}
+ const {data,error}=await supabaseClient.rpc('update_order_status',{p_order_id:order.data.id,p_status:status,p_note:'Updated by rider'});
+ document.getElementById('trackingStatus').textContent=error?error.message:(data?'Status updated to '+status:'Status update was not accepted.');
+ loadCustomerOrder();
+}
+document.querySelectorAll('#riderStatusControls [data-status]').forEach(b=>b.addEventListener('click',()=>updateLiveOrderStatus(b.dataset.status)));
 
 async function loadOpenRequests(){
   const box=document.getElementById('liveRequests');
@@ -186,8 +211,11 @@ async function startLiveDeliveryFeed(){
   liveChannel=null;
   if(!currentSession || currentProfile?.role!=='rider'){renderLiveRequests([]);return;}
   await loadOpenRequests();
+  await loadCustomerOrder();
   liveChannel=supabaseClient.channel('live-delivery-requests-'+currentSession.user.id)
     .on('postgres_changes',{event:'*',schema:'public',table:'delivery_requests'},async()=>{await loadOpenRequests()})
+    .on('postgres_changes',{event:'*',schema:'public',table:'orders'},async()=>{await loadOpenRequests(); await loadCustomerOrder()})
+    .on('postgres_changes',{event:'*',schema:'public',table:'order_events'},async()=>{await loadCustomerOrder()})
     .subscribe();
 }
 function renderLiveRequests(requests){
