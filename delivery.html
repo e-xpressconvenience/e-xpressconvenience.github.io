@@ -21,7 +21,7 @@
 <div class="role-buttons">
 <button class="tab active" data-tab="customer">🛒 Customer Dashboard</button>
 <button class="tab" data-tab="rider">🚲 Rider Dashboard</button>
-<button class="tab" data-tab="admin">⚙️ Admin Dashboard</button>
+<button class="tab" id="adminTab" data-tab="admin" style="display:none">⚙️ Admin Dashboard</button>
 </div>
 </div>
 
@@ -77,13 +77,29 @@ async function loadSession(){
  const {data:{session}}=await supabaseClient.auth.getSession();
  updateAuth(session);
 }
-function updateAuth(session){
+async function getProfile(session){
+ if(!session) return null;
+ const {data,error}=await supabaseClient.from('profiles').select('id,full_name,phone,role').eq('id',session.user.id).maybeSingle();
+ return error ? null : data;
+}
+async function updateAuth(session){
  const status=document.getElementById('authStatus');
+ const adminTab=document.getElementById('adminTab');
  document.getElementById('signOut').style.display=session?'inline-block':'none';
  document.getElementById('signIn').style.display=session?'none':'inline-block';
  document.getElementById('signUp').style.display=session?'none':'inline-block';
- if(session){status.textContent='Signed in as '+session.user.email; document.getElementById('authTitle').textContent='Delivery Centre account connected';}
- else {status.textContent='Not signed in.'; document.getElementById('authTitle').textContent='Sign in to Delivery Centre';}
+ if(session){
+ const profile=await getProfile(session);
+ const role=profile?.role || 'customer';
+ status.textContent='Signed in as '+session.user.email+' · '+role;
+ document.getElementById('authTitle').textContent=role==='admin'?'Administrator account connected':'Delivery Centre account connected';
+ adminTab.style.display=role==='admin'?'inline-block':'none';
+ if(role==='admin') document.querySelector('[data-tab="admin"]').click();
+} else {
+ status.textContent='Not signed in.';
+ document.getElementById('authTitle').textContent='Sign in to Delivery Centre';
+ adminTab.style.display='none';
+}
 }
 document.getElementById('signIn').addEventListener('click',async()=>{
  const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
