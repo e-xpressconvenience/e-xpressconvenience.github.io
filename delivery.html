@@ -15,7 +15,7 @@
 <header><div class="head wrap"><div class="brand">EXPRESS <span>CONVENIENCE</span></div><nav><a href="index.html">Shop</a><a href="products.html">Products</a><a href="checkout.html">Checkout</a><a href="about.html">About</a></nav></div></header>
 <section class="hero"><div class="wrap"><span class="eyebrow">Delivery platform prototype</span><h1>One shop. One delivery network.</h1><p>This is the integrated delivery-centre interface for Express Convenience. It is designed for customer location, rider dispatch and administrator control, while the production version can later connect real-time maps, notifications and a backend database.</p></div></section>
 <main class="wrap">
-<div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Live accounts</span><h2 id="authTitle">Sign in to Delivery Centre</h2><p class="muted">Customer, rider and admin access is connected to the Express Convenience backend.</p><div class="grid"><div><div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" placeholder="••••••••"></div></div><div><div class="field"><label>Full name (new account)</label><input id="authName" placeholder="Your name"></div><div class="field"><label>Phone (new account)</label><input id="authPhone" placeholder="+266 ..."></div></div></div><div class="role-buttons" style="justify-content:flex-start"><button class="button" id="signIn" type="button">Sign in</button><button class="button secondary" id="signUp" type="button">Create account</button><button class="button" id="signOut" type="button" style="display:none">Sign out</button></div><div id="authStatus" class="status">Not signed in.</div></div>
+<div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Live accounts</span><h2 id="authTitle">Sign in to Delivery Centre</h2><p class="muted">Customer, rider and admin access is connected to the Express Convenience backend.</p><div class="grid"><div><div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" placeholder="••••••••"></div></div><div><div class="field"><label>Full name (new account)</label><input id="authName" placeholder="Your name"></div><div class="field"><label>Phone (new account)</label><input id="authPhone" placeholder="+266 ..."></div><div class="field"><label>Account type</label><select id="authRole"><option value="customer">Customer</option><option value="rider">Bicycle delivery rider</option></select></div></div></div><div class="role-buttons" style="justify-content:flex-start"><button class="button" id="signIn" type="button">Sign in</button><button class="button secondary" id="signUp" type="button">Create account</button><button class="button" id="signOut" type="button" style="display:none">Sign out</button></div><div id="authStatus" class="status">Not signed in.</div></div>
 <div class="account-box">
 <div><span class="eyebrow" style="color:var(--teal)">Delivery Centre accounts</span><h2 style="margin:4px 0">Choose your dashboard</h2><p class="muted" style="margin:0">Customers, bicycle delivery riders and administrators each have their own dashboard.</p></div>
 <div class="role-buttons">
@@ -44,11 +44,11 @@
 </section>
 
 <section id="rider" class="panel">
-<div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Rider account</span><h2>Welcome, Delivery Rider</h2><p class="muted">This dashboard is for registered independent bicycle delivery riders. Your production account will show your profile, availability, earnings and live delivery requests.</p><div class="metrics"><div class="metricbox"><div class="metric">—</div><div class="metric-label">Today's deliveries</div></div><div class="metricbox"><div class="metric">—</div><div class="metric-label">Today's earnings</div></div><div class="metricbox"><div class="metric">🚲</div><div class="metric-label">Vehicle: Bicycle</div></div></div></div>
+<div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Rider account</span><h2 id="riderWelcome">Welcome, Delivery Rider</h2><p class="muted">This dashboard is for registered independent bicycle delivery riders. Your production account will show your profile, availability, earnings and live delivery requests.</p><div class="metrics"><div class="metricbox"><div class="metric">—</div><div class="metric-label">Today's deliveries</div></div><div class="metricbox"><div class="metric">—</div><div class="metric-label">Today's earnings</div></div><div class="metricbox"><div class="metric">🚲</div><div class="metric-label">Vehicle: Bicycle</div></div></div></div>
 <div class="grid">
 <div class="card"><h2>Rider dashboard</h2><p class="muted">A rider account can show availability, active deliveries and incoming delivery requests.</p>
-<div class="field"><label>Rider status</label><select><option>Available</option><option>On delivery</option><option>Offline</option></select></div>
-<div class="status"><span class="pill">AVAILABLE</span> Rider is eligible for nearby delivery requests.</div><div id="riderOrder" class="status" style="display:none;margin-top:12px">A new order is waiting for acceptance.</div></div>
+<div class="field"><label>Rider status</label><select id="riderAvailability"><option value="available">Available</option><option value="on_delivery">On delivery</option><option value="offline">Offline</option></select></div>
+<div id="riderAvailabilityStatus" class="status"><span class="pill">OFFLINE</span> Rider is currently offline.</div><div id="riderOrder" class="status" style="display:none;margin-top:12px">A new order is waiting for acceptance.</div></div>
 <div class="card request"><span class="eyebrow">Incoming delivery</span><h2 id="incomingId">Order EC-1007</h2><strong>Naleli → Customer location</strong><p class="muted">Pickup: Express Convenience<br>Approx. distance: pending live routing<br>Customer: hidden until accepted</p><button class="button" id="accept">Accept delivery</button><div id="acceptStatus" class="status" style="display:none">Delivery accepted. Customer details would now be released to the assigned rider.</div></div>
 </div>
 <div class="card" style="margin-top:20px"><h2>Delivery status</h2><div class="grid">
@@ -93,14 +93,32 @@ document.getElementById('signIn').addEventListener('click',async()=>{
 });
 document.getElementById('signUp').addEventListener('click',async()=>{
  const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
- const full_name=document.getElementById('authName').value.trim(), phone=document.getElementById('authPhone').value.trim();
- const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,phone}}});
+ const full_name=document.getElementById('authName').value.trim(), phone=document.getElementById('authPhone').value.trim(), role=document.getElementById('authRole').value;
+ const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,phone,role}}});
  document.getElementById('authStatus').textContent=error?error.message:(data.session?'Account created and signed in.':'Account created. Check your email to confirm, if confirmation is enabled.');
- if(data.session) updateAuth(data.session);
+ if(data.session) { updateAuth(data.session); if(role==='rider') document.querySelector('[data-tab="rider"]')?.click(); }
 });
 document.getElementById('signOut').addEventListener('click',async()=>{await supabaseClient.auth.signOut();loadSession()});
-supabaseClient.auth.onAuthStateChange((_event,session)=>updateAuth(session));
+async function loadRiderProfile(){
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session)return;
+ const {data}=await supabaseClient.from('rider_profiles').select('availability,vehicle_type').eq('user_id',session.user.id).maybeSingle();
+ if(data){document.getElementById('riderAvailability').value=data.availability; updateRiderAvailability(data.availability);}
+}
+function updateRiderAvailability(v){
+ const labels={available:'AVAILABLE',on_delivery:'ON DELIVERY',offline:'OFFLINE'};
+ document.getElementById('riderAvailabilityStatus').innerHTML='<span class="pill">'+labels[v]+'</span> Rider status updated.';
+}
+document.getElementById('riderAvailability').addEventListener('change',async(e)=>{
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session){e.target.value='offline';document.getElementById('authStatus').textContent='Sign in as a rider to change availability.';return;}
+ const {error}=await supabaseClient.from('rider_profiles').update({availability:e.target.value,last_seen:new Date().toISOString()}).eq('user_id',session.user.id);
+ if(error){document.getElementById('authStatus').textContent=error.message;return;}
+ updateRiderAvailability(e.target.value);
+});
+supabaseClient.auth.onAuthStateChange((_event,session)=>{updateAuth(session); if(session) loadRiderProfile();});
 loadSession();
+loadRiderProfile();
 
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')}));
 document.getElementById('locate').addEventListener('click',()=>{const s=document.getElementById('locationStatus');if(!navigator.geolocation){s.textContent='This browser does not provide location services.';return}s.textContent='Requesting location permission…';navigator.geolocation.getCurrentPosition(p=>{s.textContent='Location received: '+p.coords.latitude.toFixed(5)+', '+p.coords.longitude.toFixed(5)+' (permission granted).';document.getElementById('eta').textContent='Routing needed';},e=>{s.textContent='Location was not shared. The customer can enter an address instead.'},{enableHighAccuracy:true,timeout:10000,maximumAge:30000})});
