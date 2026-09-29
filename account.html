@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#087f89">
+<title>Customer Account | Express Convenience</title>
+<style>
+:root{--teal:#087f89;--deep:#075b65;--peach:#f4bd91;--cream:#fffaf6;--ink:#242d2d;--muted:#5b6968;--line:#dce8e5}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.wrap{width:min(980px,calc(100% - 32px));margin:auto}header{background:var(--deep);color:#fff}.head{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{font-weight:900;letter-spacing:-.03em}.brand span{color:var(--peach)}nav{display:flex;gap:18px;font-size:13px;font-weight:750}nav a{color:#fff;text-decoration:none}.hero{background:linear-gradient(135deg,var(--teal),var(--deep));color:#fff;padding:55px 0}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--peach)}h1{font-size:clamp(40px,6vw,66px);line-height:1;letter-spacing:-.06em;margin:12px 0}.hero p{max-width:650px;color:#dff3f1;line-height:1.6}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:25px;box-shadow:0 10px 30px #164d5210}main{padding:35px 0 70px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{margin:14px 0}.field label{display:block;font-size:12px;font-weight:850;margin-bottom:6px}.field input{width:100%;padding:13px;border:1px solid #cdddda;border-radius:9px;background:#fff;font:inherit}.button{border:0;border-radius:9px;background:var(--teal);color:#fff;padding:12px 17px;font-weight:850;cursor:pointer}.button.secondary{background:var(--peach);color:var(--ink)}.actions{display:flex;gap:9px;flex-wrap:wrap}.status{padding:13px;border-radius:10px;background:#edf7f5;font-size:13px;line-height:1.5;margin-top:14px}.error{background:#fff0ed;color:#8a3025}.success{background:#edf8ee;color:#28633a}.muted{color:var(--muted);line-height:1.6;font-size:14px}footer{background:var(--ink);color:#fff;padding:25px 0;font-size:12px}footer a{color:#fff}@media(max-width:700px){.grid{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}nav{display:none}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header><div class="head wrap"><div class="brand">EXPRESS <span>CONVENIENCE</span></div><nav><a href="index.html">Shop</a><a href="products.html">Products</a><a href="checkout.html">Checkout</a><a href="delivery.html">Delivery Centre</a></nav></div></header>
+<section class="hero"><div class="wrap"><span class="eyebrow">For Smart Shoppers</span><h1>Your Express Convenience account.</h1><p>Create an account to keep your customer profile connected to your orders and delivery requests. Your account will use secure Supabase authentication.</p></div></section>
+<main class="wrap">
+<div class="card">
+<div class="grid">
+<div>
+<span class="eyebrow" style="color:var(--teal)">New customer</span>
+<h2>Create your account</h2>
+<p class="muted">Use your email and a password. Your name and phone number are saved to your customer profile.</p>
+<div class="field"><label for="name">Full name</label><input id="name" autocomplete="name" placeholder="Your full name"></div>
+<div class="field"><label for="phone">Phone</label><input id="phone" autocomplete="tel" placeholder="+266 ..."></div>
+<div class="field"><label for="signupEmail">Email</label><input id="signupEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+<div class="field"><label for="signupPassword">Password</label><input id="signupPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
+<button class="button secondary" id="signup" type="button">Create customer account</button>
+</div>
+<div>
+<span class="eyebrow" style="color:var(--teal)">Returning customer</span>
+<h2>Sign in</h2>
+<p class="muted">Sign in to access your account and delivery centre.</p>
+<div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+<div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Your password"></div>
+<div class="actions"><button class="button" id="login" type="button">Sign in</button><button class="button secondary" id="logout" type="button" style="display:none">Sign out</button></div>
+</div>
+</div>
+<div id="status" class="status">You are not signed in.</div>
+<div id="account" class="status" style="display:none"></div>
+</div>
+</main>
+<footer><div class="wrap">Express Convenience · For Smart Shoppers · <a href="delivery.html">Delivery Centre</a></div></footer>
+<script>
+const SUPABASE_URL='https://zheqnbaiqsyeubakrolm.supabase.co';
+const SUPABASE_KEY='sb_publishable_ZPNXLqvhmav9OZ-Up4d-TQ_KCdzerBu';
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const statusEl=document.getElementById('status');
+const accountEl=document.getElementById('account');
+function show(message,type=''){statusEl.textContent=message;statusEl.className='status '+type}
+async function refresh(){
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ document.getElementById('logout').style.display=session?'inline-block':'none';
+ if(session){
+   show('You are signed in.','success');
+   accountEl.style.display='block';
+   accountEl.textContent='Signed in as '+session.user.email+'. Your customer profile is connected.';
+ }else{
+   accountEl.style.display='none';
+   show('You are not signed in.');
+ }
+}
+document.getElementById('signup').addEventListener('click',async()=>{
+ const full_name=document.getElementById('name').value.trim();
+ const phone=document.getElementById('phone').value.trim();
+ const email=document.getElementById('signupEmail').value.trim();
+ const password=document.getElementById('signupPassword').value;
+ if(!full_name||!email||!password){show('Please enter your name, email and password.','error');return}
+ if(password.length<6){show('Password must be at least 6 characters.','error');return}
+ show('Creating your customer account…');
+ const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,phone}}});
+ if(error){show(error.message,'error');return}
+ if(data.session){show('Account created and signed in.','success');}
+ else{show('Account created. Check your email to confirm your address, then sign in.','success');}
+ await refresh();
+});
+document.getElementById('login').addEventListener('click',async()=>{
+ const email=document.getElementById('loginEmail').value.trim();
+ const password=document.getElementById('loginPassword').value;
+ if(!email||!password){show('Enter your email and password.','error');return}
+ show('Signing in…');
+ const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+ if(error){show(error.message,'error');return}
+ show('Signed in successfully.','success');
+ await refresh();
+});
+document.getElementById('logout').addEventListener('click',async()=>{
+ await supabaseClient.auth.signOut();
+ await refresh();
+});
+supabaseClient.auth.onAuthStateChange(()=>refresh());
+refresh();
+</script>
+</body>
+</html>
