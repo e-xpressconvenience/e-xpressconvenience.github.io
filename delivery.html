@@ -76,6 +76,7 @@ let currentSession=null;
 let currentProfile=null;
 let currentLocation=null;
 let liveChannel=null;
+let riderWatchId=null;
 
 async function loadSession(){
   const {data:{session}}=await supabaseClient.auth.getSession();
@@ -162,7 +163,13 @@ async function createLiveOrder(){
   const {data,error}=await supabaseClient.rpc('create_checkout_order',{p_items:items,p_address:address||'GPS location provided',p_notes:'Created from Delivery Centre',p_lat:currentLocation?.lat||null,p_lng:currentLocation?.lng||null,p_accuracy:currentLocation?.accuracy||null,p_payment_method:'manual_wallet_transfer'});
   if(error){document.getElementById('orderStatus').textContent=error.message;return;}
   const row=Array.isArray(data)?data[0]:data;
-  document.getElementById('orderStatus').textContent='Live request created: EC-'+row.order_number+' · searching for a rider now.'; await loadCustomerOrder();
+  document.getElementById('orderStatus').textContent='Live request created: EC-'+row.order_number+' · calculating route and searching for a rider…';
+  try{
+    const {data:route,error:routeError}=await supabaseClient.functions.invoke('route-order',{body:{order_id:row.order_id}});
+    if(!routeError && route && !route.error){document.getElementById('eta').textContent=route.eta_minutes+' min · '+route.distance_km+' km · M'+Number(route.delivery_fee).toFixed(2);document.getElementById('orderStatus').textContent='EC-'+row.order_number+' · searching for an available nearby rider.';}
+    else document.getElementById('orderStatus').textContent='EC-'+row.order_number+' created. Route estimate will be calculated when routing is available.';
+  }catch(e){document.getElementById('orderStatus').textContent='EC-'+row.order_number+' created. Rider search is active.';}
+  await loadCustomerOrder();
 }
 
 document.getElementById('createOrder').addEventListener('click',createLiveOrder);
@@ -191,6 +198,7 @@ async function updateLiveOrderStatus(status){
  document.getElementById('trackingStatus').textContent=error?error.message:(data?'Status updated to '+status:'Status update was not accepted.');
  loadCustomerOrder();
 }
+document.getElementById('riderAvailability').addEventListener('change',async()=>{if(!currentSession||currentProfile?.role!=='rider')return;const v=document.getElementById('riderAvailability').value;const {error}=await supabaseClient.from('rider_profiles').update({availability:v,last_seen:new Date().toISOString()}).eq('user_id',currentSession.user.id);document.getElementById('riderAvailabilityStatus').textContent=error?error.message:(v==='available'?'AVAILABLE · Looking for nearby deliveries.':v==='on_delivery'?'ON DELIVERY':'OFFLINE');if(v==='available')startRiderLocationWatch();else stopRiderLocationWatch();await loadOpenRequests();});
 document.querySelectorAll('#riderStatusControls [data-status]').forEach(b=>b.addEventListener('click',()=>updateLiveOrderStatus(b.dataset.status)));
 
 async function loadOpenRequests(){
@@ -199,7 +207,7 @@ async function loadOpenRequests(){
     box.innerHTML='<p class="muted">Sign in with a rider account to receive live delivery requests. Rider accounts are approved by Express Convenience.</p>';
     return;
   }
-  const {data,error}=await supabaseClient.from('delivery_requests').select('order_id,status,created_at').eq('status','searching_rider').order('created_at',{ascending:true});
+  const {data,error}=await supabaseClient.rpc('get_nearby_delivery_requests',{p_radius_km:5});
   if(error){box.innerHTML='<p class="muted">'+escapeHtml(error.message)+'</p>';return;}
   renderLiveRequests(data||[]);
 }
@@ -207,7 +215,7 @@ async function startLiveDeliveryFeed(){
   if(liveChannel) await supabaseClient.removeChannel(liveChannel);
   liveChannel=null;
   if(!currentSession){renderLiveRequests([]);return;}
-  if(currentProfile?.role==='rider') await loadOpenRequests();
+  if(currentProfile?.role==='rider'){ startRiderLocationWatch(); await loadOpenRequests(); } else stopRiderLocationWatch();
   await loadCustomerOrder();
   liveChannel=supabaseClient.channel('live-delivery-'+currentSession.user.id)
     .on('postgres_changes',{event:'*',schema:'public',table:'delivery_requests'},async()=>{if(currentProfile?.role==='rider') await loadOpenRequests();})
@@ -223,6 +231,13 @@ async function startLiveDeliveryFeed(){
       }
     });
 }
+function startRiderLocationWatch(){
+  if(riderWatchId!==null || !navigator.geolocation || !currentSession || currentProfile?.role!=='rider') return;
+  riderWatchId=navigator.geolocation.watchPosition(async p=>{
+    await supabaseClient.from('rider_profiles').update({current_lat:p.coords.latitude,current_lng:p.coords.longitude,last_seen:new Date().toISOString()}).eq('user_id',currentSession.user.id);
+  },()=>{}, {enableHighAccuracy:true,maximumAge:15000,timeout:15000});
+}
+function stopRiderLocationWatch(){if(riderWatchId!==null){navigator.geolocation.clearWatch(riderWatchId);riderWatchId=null;}}
 function renderLiveRequests(requests){
   const box=document.getElementById('liveRequests'); if(!box)return;
   if(!currentSession || currentProfile?.role!=='rider'){
