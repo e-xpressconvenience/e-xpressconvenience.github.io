@@ -57,13 +57,13 @@
 </section>
 
 <section id="admin" class="panel">
-<div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Administrator account</span><h2>Express Convenience Admin Dashboard</h2><p class="muted">Manage orders, riders, dispatch, customer deliveries and delivery activity from one control centre.</p><div class="role-buttons" style="justify-content:flex-start"><button class="button" type="button">Manage Riders</button><button class="button" type="button">Manage Orders</button><button class="button" type="button">Dispatch Centre</button></div></div>
-<div class="metrics"><div class="metricbox"><div class="metric">12</div><div class="metric-label">Active riders</div></div><div class="metricbox"><div class="metric">4</div><div class="metric-label">Orders awaiting rider</div></div><div class="metricbox"><div class="metric">8</div><div class="metric-label">Deliveries in progress</div></div></div>
-<div class="card" style="margin-top:20px"><h2>Dispatch centre</h2>
-<div class="order"><div><b>EC-1007</b><br><span class="small">Pickup: Express Convenience · Customer location pending</span></div><span class="pill">SEARCHING RIDER</span></div>
-<div class="order"><div><b>EC-1006</b><br><span class="small">Rider: Assigned · Bicycle</span></div><span class="pill">ON THE WAY</span></div>
-<div class="order"><div><b>EC-1005</b><br><span class="small">Rider: Assigned · Bicycle</span></div><span class="pill">DELIVERED</span></div>
+<div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Administrator account</span><h2>Express Convenience Admin Dashboard</h2><p class="muted">Manage riders and live delivery orders from the same backend used by customers and riders.</p><div id="adminStatus" class="status">Checking administrator access…</div></div>
+<div class="metrics"><div class="metricbox"><div class="metric" id="adminActiveRiders">—</div><div class="metric-label">Available riders</div></div><div class="metricbox"><div class="metric" id="adminSearching">—</div><div class="metric-label">Orders awaiting rider</div></div><div class="metricbox"><div class="metric" id="adminInProgress">—</div><div class="metric-label">Deliveries in progress</div></div></div>
+<div class="grid" style="margin-top:20px">
+<div class="card"><h2>Rider management</h2><div id="adminRiders"><p class="muted">Loading riders…</p></div></div>
+<div class="card"><h2>Order management</h2><div id="adminOrders"><p class="muted">Loading orders…</p></div></div>
 </div>
+<div class="card" style="margin-top:20px"><h2>Dispatch centre</h2><p class="muted">Admin changes are applied directly to the live Supabase database. Rider availability and order status can be managed here.</p></div>
 <div class="card" style="margin-top:20px"><h2>Important production layer</h2><p class="muted">Live delivery requests are now connected to the Express Convenience Supabase backend. The server atomically assigns an order to the first valid rider who accepts it. Browser realtime keeps the rider request list updated while the rider is online. Background push notifications and road-routing ETA can be added as the next layer.</p></div>
 </section>
 </main>
@@ -242,6 +242,26 @@ async function acceptLiveDelivery(orderId,button){
   }
 }
 
+async function loadAdminDashboard(){
+ const ok=currentProfile?.role==='admin';
+ document.getElementById('adminTab').style.display=ok?'inline-block':'none';
+ const status=document.getElementById('adminStatus');
+ if(!ok){status.textContent='Admin access required. Sign in with an administrator account.';return;}
+ status.textContent='Administrator access verified.';
+ const [{data:riders,error:re},{data:orders,error:oe}]=await Promise.all([
+  supabaseClient.from('rider_profiles').select('user_id,vehicle_type,availability,last_seen,profiles(full_name,phone)').order('availability'),
+  supabaseClient.from('orders').select('id,order_number,status,delivery_address,assigned_rider_id,created_at,profiles!orders_assigned_rider_id_fkey(full_name)').order('created_at',{ascending:false}).limit(50)
+ ]);
+ if(re){document.getElementById('adminRiders').innerHTML='<p class="muted">'+escapeHtml(re.message)+'</p>';return;}
+ if(oe){document.getElementById('adminOrders').innerHTML='<p class="muted">'+escapeHtml(oe.message)+'</p>';return;}
+ document.getElementById('adminActiveRiders').textContent=(riders||[]).filter(x=>x.availability==='available').length;
+ document.getElementById('adminSearching').textContent=(orders||[]).filter(x=>x.status==='searching_rider').length;
+ document.getElementById('adminInProgress').textContent=(orders||[]).filter(x=>['accepted','picked_up','on_the_way'].includes(x.status)).length;
+ document.getElementById('adminRiders').innerHTML=(riders||[]).map(r=>'<div class="order"><div><b>'+escapeHtml(r.profiles?.full_name||'Rider')+'</b><br><span class="small">'+escapeHtml(r.profiles?.phone||'')+' · '+escapeHtml(r.vehicle_type)+'</span></div><div><select class="admin-rider-status" data-rider="'+r.user_id+'"><option value="available" '+(r.availability==='available'?'selected':'')+'>Available</option><option value="on_delivery" '+(r.availability==='on_delivery'?'selected':'')+'>On delivery</option><option value="offline" '+(r.availability==='offline'?'selected':'')+'>Offline</option></select></div></div>').join('')||'<p class="muted">No riders registered yet.</p>';
+ document.getElementById('adminOrders').innerHTML=(orders||[]).map(o=>'<div class="order"><div><b>EC-'+o.order_number+'</b><br><span class="small">'+escapeHtml(o.delivery_address||'Location provided')+' · '+escapeHtml(o.profiles?.full_name||'Unassigned')+'</span></div><div><select class="admin-order-status" data-order="'+o.id+'"><option value="searching_rider" '+(o.status==='searching_rider'?'selected':'')+'>Searching rider</option><option value="accepted" '+(o.status==='accepted'?'selected':'')+'>Accepted</option><option value="picked_up" '+(o.status==='picked_up'?'selected':'')+'>Picked up</option><option value="on_the_way" '+(o.status==='on_the_way'?'selected':'')+'>On the way</option><option value="delivered" '+(o.status==='delivered'?'selected':'')+'>Delivered</option><option value="cancelled" '+(o.status==='cancelled'?'selected':'')+'>Cancelled</option></select></div></div>').join('')||'<p class="muted">No orders yet.</p>';
+ document.querySelectorAll('.admin-rider-status').forEach(el=>el.addEventListener('change',async()=>{await supabaseClient.from('rider_profiles').update({availability:el.value,last_seen:new Date().toISOString()}).eq('user_id',el.dataset.rider);await loadAdminDashboard();}));
+ document.querySelectorAll('.admin-order-status').forEach(el=>el.addEventListener('change',async()=>{await supabaseClient.from('orders').update({status:el.value,updated_at:new Date().toISOString()}).eq('id',el.dataset.order);await loadAdminDashboard();}));
+}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 loadSession();
 </script>
