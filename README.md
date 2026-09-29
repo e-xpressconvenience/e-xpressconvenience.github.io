@@ -1,6 +1,6 @@
 # Express Convenience website
 
-A responsive static website for Express Convenience, using the supplied logo, colours, and store flyers. It works on GitHub Pages without a build step.
+A responsive static website for Express Convenience, using the supplied logo, colours, product examples and company profile. It works on GitHub Pages without a build step.
 
 ## Intended address
 
@@ -10,8 +10,8 @@ This repository belongs to the `e-xpressconvenience` GitHub account and is named
 
 ## Publish
 
-The page consists of `index.html` and the `assets` folder in the repository root on the `main` branch. In **Settings → Pages**, select **Deploy from a branch**, `main`, and `/ (root)`, then save. GitHub's Pages settings will display the published URL.
+The page consists of `index.html` and the `assets` folder in the repository root on the `main` branch. GitHub Pages publishes it at the address above.
 
 ## Content
 
-The supplied materials identify the store as open 24/7 at Naleli Centre, adjacent to Bee Online. They advertise delivery, free within a 1 km radius. The page uses the provided email for enquiries and shows the provided flyers. Flyer prices should be confirmed with the store before customers rely on them.
+The supplied company profile describes an e-commerce and doorstep delivery business. The site provides a product category preview, WhatsApp and email enquiry links, and a copy of the company profile. It labels the full catalogue, checkout, digital payments and order management as planned features. Product examples and prices in supplied artwork require confirmation with Express Convenience.
