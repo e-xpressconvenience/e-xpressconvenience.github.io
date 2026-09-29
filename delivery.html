@@ -53,7 +53,7 @@
 </div>
 <div class="card" style="margin-top:20px"><h2>Live order status</h2><div id="riderStatusControls" style="display:none" class="role-buttons" >
 <button class="button" data-status="picked_up">Picked up</button><button class="button" data-status="on_the_way">On the way</button><button class="button" data-status="delivered">Delivered</button>
-</div><div id="orderTimeline" class="timeline"><div><b>Waiting for delivery request</b><span class="small">Sign in and create an order to begin tracking.</span></div></div><div id="trackingStatus" class="status">Live tracking will appear here.</div></div>
+</div><div id="orderTimeline" class="timeline"><div><b>Waiting for delivery request</b><span class="small">Sign in and create an order to begin tracking.</span></div></div><div id="customerLiveDetails" class="status" style="margin-top:12px;display:none"><b>Delivery details</b><br><span id="customerRider">Rider: searching…</span><br><span id="customerEta">ETA: calculating…</span><br><span id="customerFee">Delivery fee: calculating…</span><br><span id="customerLocationStatus">Location: waiting for GPS/routing update.</span></div><div id="trackingStatus" class="status">Live tracking will appear here.</div></div>
 </section>
 
 <section id="admin" class="panel">
@@ -185,10 +185,30 @@ function renderOrderTimeline(order, events=[]){
 }
 async function loadCustomerOrder(){
  if(!currentSession || currentProfile?.role!=='customer') return;
- const {data}=await supabaseClient.from('orders').select('*').eq('customer_id',currentSession.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
- if(!data){renderOrderTimeline(null);return;}
+ const details=document.getElementById('customerLiveDetails');
+ const riderEl=document.getElementById('customerRider');
+ const etaEl=document.getElementById('customerEta');
+ const feeEl=document.getElementById('customerFee');
+ const locEl=document.getElementById('customerLocationStatus');
+ const {data}=await supabaseClient.from('orders').select('*,profiles!orders_assigned_rider_id_fkey(full_name,phone)').eq('customer_id',currentSession.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
+ if(!data){
+   renderOrderTimeline(null);
+   if(details) details.style.display='none';
+   return;
+ }
  const {data:events}=await supabaseClient.from('order_events').select('status,note,created_at').eq('order_id',data.id).order('created_at',{ascending:true});
  renderOrderTimeline(data,events||[]);
+ if(details) details.style.display='block';
+ const active=['searching_rider','accepted','picked_up','on_the_way'].includes(data.status);
+ riderEl.textContent=data.assigned_rider_id
+   ? 'Rider: '+(data.profiles?.full_name||'Assigned rider')+(data.profiles?.phone?' · '+data.profiles.phone:'')
+   : 'Rider: searching for an available rider…';
+ etaEl.textContent=data.eta_minutes!=null ? 'ETA: '+data.eta_minutes+' min' : 'ETA: calculating…';
+ feeEl.textContent=data.delivery_fee!=null ? 'Delivery fee: M'+Number(data.delivery_fee).toFixed(2) : 'Delivery fee: calculating…';
+ locEl.textContent=data.delivery_lat!=null && data.delivery_lng!=null
+   ? (data.assigned_rider_id?'Location: rider assigned · live delivery updates active.':'Location: delivery coordinates received · waiting for rider.')
+   : 'Location: address received · GPS coordinates unavailable.';
+ if(!active && data.status==='delivered') locEl.textContent='Location: delivery completed.';
 }
 async function updateLiveOrderStatus(status){
  const {data:{session}}=await supabaseClient.auth.getSession();
