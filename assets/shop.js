@@ -1,6 +1,7 @@
 (() => {
   "use strict";
   const KEY = "express-convenience-basket-v1";
+  const LOCATION_KEY = "express-convenience-delivery-location-v1";
   const PRODUCTS = [
     {id:"bread",name:"White bread",image:"assets/bread.jpeg"},
     {id:"eggs",name:"Eggs",image:"assets/eggs.jpeg"},
@@ -132,15 +133,40 @@
       const entries = PRODUCTS.filter(p => cart[p.id]);
       if (!entries.length) return;
       const payment = document.querySelector('input[name="payment"]:checked')?.value || "Not selected";
+      let delivery = {}; try { delivery = JSON.parse(localStorage.getItem(LOCATION_KEY) || "{}"); } catch {}
       const message = [
         "Hi Express Convenience, I would like to enquire about these products:",
         ...entries.map(p => "- "+p.name+" x "+cart[p.id]),
         "",
         "Preferred payment method: "+payment,
+        "Delivery address: "+(delivery.address||"not provided"),
+        "GPS location: "+(delivery.coords ? delivery.coords.lat+", "+delivery.coords.lng+" (accuracy "+delivery.coords.accuracy+"m)" : "not provided"),
+        "Delivery notes: "+(delivery.notes||"none"),
+        "Please calculate delivery distance and estimated delivery time before confirming the order.",
         "Please confirm availability, prices, total, delivery and payment instructions before I pay."
       ].join("\n");
       window.location.href = "https://wa.me/26663540048?text=" + encodeURIComponent(message);
     });
+    const useLocation = document.getElementById("use-location");
+    const locationResult = document.getElementById("location-result");
+    const addressInput = document.getElementById("delivery-address");
+    const notesInput = document.getElementById("delivery-notes");
+    function saveLocation(coords) {
+      const value = {address: addressInput?.value.trim() || "", notes: notesInput?.value.trim() || "", coords};
+      try { localStorage.setItem(LOCATION_KEY, JSON.stringify(value)); } catch {}
+      if (locationResult) locationResult.textContent = coords ? "Precise location saved for delivery planning." : "Address saved.";
+    }
+    if (useLocation) useLocation.addEventListener("click", () => {
+      if (!navigator.geolocation) { locationResult.textContent = "Location services unavailable. Enter your address instead."; return; }
+      locationResult.textContent = "Requesting precise location permission…";
+      navigator.geolocation.getCurrentPosition(p => {
+        saveLocation({lat:Number(p.coords.latitude.toFixed(6)),lng:Number(p.coords.longitude.toFixed(6)),accuracy:Math.round(p.coords.accuracy)});
+      }, () => { locationResult.textContent = "Location was not shared. Enter your delivery address instead."; }, {enableHighAccuracy:true,timeout:15000,maximumAge:0});
+    });
+    [addressInput,notesInput].forEach(input => input?.addEventListener("input", () => {
+      let old={}; try {old=JSON.parse(localStorage.getItem(LOCATION_KEY)||"{}");}catch{}
+      saveLocation(old.coords || null);
+    }));
     render();
   }
   if (document.body.dataset.page === "products") initProducts();
