@@ -113,7 +113,7 @@ document.getElementById('signIn').addEventListener('click',async()=>{
 document.getElementById('signUp').addEventListener('click',async()=>{
   const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
   const full_name=document.getElementById('authName').value.trim(), phone=document.getElementById('authPhone').value.trim();
-  const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,phone}}});
+  const role=document.getElementById('authRole').value; const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,phone,role}}});
   if(error){document.getElementById('authStatus').textContent=error.message;return;}
   if(data.user){
     await supabaseClient.from('profiles').upsert({id:data.user.id,full_name:full_name||null,phone:phone||null,role:'customer'});
@@ -272,6 +272,7 @@ async function loadAdminDashboard(){
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 loadSession();
+setTimeout(loadAdminDashboard,500);
 </script>
 </body>
 </html>
