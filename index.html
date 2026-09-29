@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#087f89">
+<meta name="theme-color" content="#087f89"><link rel="manifest" href="manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes">
 <meta name="description" content="Express Convenience is building an easier way to shop for everyday essentials online and arrange doorstep delivery in Lesotho. Enquire on WhatsApp.">
 <title>Express Convenience | Shop Smart. Live Better.</title>
 <style>
@@ -20,15 +20,12 @@ header{background:white}.header-inner{display:flex;justify-content:space-between
 @media(max-width:950px){.hero-inner{grid-template-columns:1fr;padding-block:80px 48px}.hero-art{min-height:450px;max-width:560px;width:100%;margin-inline:auto}.perks{grid-template-columns:1fr}.perk{min-height:70px}.products{grid-template-columns:repeat(2,1fr)}.head{display:block}.head p{margin-top:17px;max-width:600px}.about-inner{grid-template-columns:1fr}}
 @media(max-width:650px){.wrap{width:min(100% - 32px,1160px)}.topbar{font-size:10px;letter-spacing:.03em}.header-inner{min-height:74px}.brand{width:164px;height:61px}nav a:not(.nav-cta){display:none}nav .nav-cta{font-size:12px;padding:10px 12px}.hero-inner{padding-block:61px 36px;gap:12px}h1{font-size:clamp(49px,12vw,65px)}.hero-copy{margin-block:24px 27px}.hero-art{min-height:340px}.photo.eggs{height:255px;top:21px}.photo.bread{height:180px;bottom:7px}.sticker{right:-4px;bottom:3px;max-width:150px;padding:12px 14px;font-size:12px}.perks{margin-top:-15px}.section{padding-block:78px}.products{gap:12px}.product-image{height:155px;padding:12px}.product-copy{padding:16px}.product h3{font-size:17px}.product p{font-size:12px}.how-inner{padding-block:78px}.steps{grid-template-columns:1fr}.step{min-height:0}.roadmap{padding:29px}.contact{padding-block:78px}.footer-inner{padding-block:27px}}
 @media(max-width:390px){.products{grid-template-columns:1fr}.product-image{height:220px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button{transition:none}}
-</style>
+@media(max-width:760px){.header-inner{min-height:70px;position:relative}.brand{width:190px;height:62px}header nav{display:none}.mobile-toggle{display:inline-flex!important;border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px;font-weight:800}.mobile-menu{display:flex!important;position:absolute;top:70px;left:12px;right:12px;background:#fff;padding:10px;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px #0002;z-index:50}.mobile-menu a{padding:12px}.platform-menu{display:none;position:absolute;right:0;top:43px;background:#fff;border-radius:10px;box-shadow:0 10px 25px #0003;min-width:170px;z-index:60;overflow:hidden}.platform.open .platform-menu{display:block}.platform-menu a{display:block;padding:12px 14px;text-decoration:none;font-size:13px}.platform{position:relative}.platform-btn{border:1px solid var(--line);background:white;border-radius:9px;padding:10px;font-weight:800}}@media(min-width:761px){.mobile-toggle{display:none!important}}</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="topbar">Express Convenience <span>•</span> Online shopping and doorstep delivery</div>
-<header><div class="header-inner wrap">
-<a class="brand" href="#top" aria-label="Express Convenience home"><img src="assets/express-convenience-logo.jpeg" alt="Express Convenience — For Smart Shoppers" width="1280" height="1280"></a>
-<nav aria-label="Main navigation"><a href="products.html">Products</a><a href="#how">How it works</a><a href="about.html">About</a><a href="account.html">Account</a><a href="delivery.html">Delivery Centre</a><a class="nav-cta" href="https://wa.me/26663540048?text=Hi%20Express%20Convenience%2C%20I%27d%20like%20to%20ask%20about%20products%20and%20delivery.">WhatsApp us</a></nav>
-</div></header>
+<header><div class="header-inner wrap"><a class="brand" href="index.html" aria-label="Express Convenience"><img src="assets/express-convenience-logo.jpeg" alt="Express Convenience"></a><nav class="mobile-menu"><a href="index.html">Shop</a><a href="products.html">Products</a><a href="checkout.html">Checkout</a><a href="about.html">About</a><a href="account.html">Account</a><a class="nav-cta" href="delivery.html">Delivery Centre</a></nav><button class="mobile-toggle" id="mobileToggle" type="button">☰ Menu</button><div class="platform"><button class="platform-btn" id="platformBtn" type="button">App / Site ▾</button><div class="platform-menu"><a href="index.html">🌐 Website</a><a href="delivery.html">🚲 Delivery Centre</a><a href="#" id="installApp">📱 Install App</a></div></div></div></header>
 <main id="main">
 <section class="hero" id="top" aria-labelledby="hero-heading"><div class="hero-inner wrap">
 <div><span class="eyebrow">For smart shoppers</span><h1 id="hero-heading">Shop smart. <em>Live better.</em></h1><p class="hero-copy">Everyday essentials should be easier to find and easier to receive. Express Convenience is building an online shopping experience with doorstep delivery at its heart.</p>
@@ -52,5 +49,11 @@ header{background:white}.header-inner{display:flex;justify-content:space-between
 <section class="contact" id="contact" aria-labelledby="contact-heading"><div class="wrap"><span class="kicker">Let’s talk</span><h2 id="contact-heading">What do you need today?</h2><p>Get in touch about product availability or delivery. We’ll help you work out the next step.</p><div class="actions"><a class="button" href="https://wa.me/26663540048?text=Hi%20Express%20Convenience%2C%20I%27d%20like%20to%20ask%20about%20products%20and%20delivery.">Chat on WhatsApp <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a><a class="text-link" href="mailto:expressconvenience2.4.7@gmail.com?subject=Express%20Convenience%20enquiry">Email us instead</a></div></div></section>
 </main>
 <footer><div class="footer-inner wrap"><span>© 2026 Express Convenience · For Smart Shoppers.</span><span><a href="tel:+26663540048">+266 6354 0048</a> · <a href="mailto:expressconvenience2.4.7@gmail.com">expressconvenience2.4.7@gmail.com</a></span></div></footer>
-</body>
+<script>
+document.getElementById('mobileToggle')?.addEventListener('click',()=>document.querySelector('header nav')?.classList.toggle('mobile-menu'));
+document.getElementById('platformBtn')?.addEventListener('click',()=>document.querySelector('.platform')?.classList.toggle('open'));
+let deferredInstallPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;});
+document.getElementById('installApp')?.addEventListener('click',async e=>{e.preventDefault();if(deferredInstallPrompt){deferredInstallPrompt.prompt();deferredInstallPrompt=null;}else alert('On Android Chrome, open the browser menu and choose Install app or Add to Home screen.');});
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body>
 </html>
