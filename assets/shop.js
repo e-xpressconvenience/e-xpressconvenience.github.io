@@ -5,7 +5,7 @@
     {id:"bread",name:"White bread",image:"assets/bread.jpeg"},
     {id:"eggs",name:"Eggs",image:"assets/eggs.jpeg"},
     {id:"sausages",name:"Russian sausages",image:"assets/sausages.jpeg"},
-    {id:"drinks",name:"Soft drinks",image:"assets/drinks-offer.jpeg"},
+    {id:"drinks",name:"Soft drinks",image:"assets/drinks.svg"},
     {id:"snacks",name:"Chocolate biscuits",image:"assets/snacks.jpeg"},
     {id:"tissue",name:"Household tissue",image:"assets/household.jpeg"}
   ];
