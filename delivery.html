@@ -209,14 +209,22 @@ async function loadOpenRequests(){
 async function startLiveDeliveryFeed(){
   if(liveChannel) await supabaseClient.removeChannel(liveChannel);
   liveChannel=null;
-  if(!currentSession || currentProfile?.role!=='rider'){renderLiveRequests([]);return;}
-  await loadOpenRequests();
+  if(!currentSession){renderLiveRequests([]);return;}
+  if(currentProfile?.role==='rider') await loadOpenRequests();
   await loadCustomerOrder();
-  liveChannel=supabaseClient.channel('live-delivery-requests-'+currentSession.user.id)
-    .on('postgres_changes',{event:'*',schema:'public',table:'delivery_requests'},async()=>{await loadOpenRequests()})
-    .on('postgres_changes',{event:'*',schema:'public',table:'orders'},async()=>{await loadOpenRequests(); await loadCustomerOrder()})
+  liveChannel=supabaseClient.channel('live-delivery-'+currentSession.user.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'delivery_requests'},async()=>{if(currentProfile?.role==='rider') await loadOpenRequests();})
+    .on('postgres_changes',{event:'*',schema:'public',table:'orders'},async(payload)=>{
+      await loadCustomerOrder();
+      if(currentProfile?.role==='rider' && payload.new?.assigned_rider_id===currentSession.user.id) await loadCustomerOrder();
+    })
     .on('postgres_changes',{event:'*',schema:'public',table:'order_events'},async()=>{await loadCustomerOrder()})
-    .subscribe();
+    .subscribe((status)=>{
+      if(status==='SUBSCRIBED'){
+        const s=document.getElementById('authStatus');
+        if(s) s.textContent='Signed in as '+currentSession.user.email+' · Live realtime updates connected.';
+      }
+    });
 }
 function renderLiveRequests(requests){
   const box=document.getElementById('liveRequests'); if(!box)return;
