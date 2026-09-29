@@ -1,0 +1,10 @@
+{
+  "name":"Express Convenience",
+  "short_name":"Express",
+  "description":"Express Convenience delivery network",
+  "start_url":"delivery.html",
+  "display":"standalone",
+  "background_color":"#fffaf6",
+  "theme_color":"#087f89",
+  "icons":[{"src":"assets/express-convenience-logo.jpeg","sizes":"512x512","type":"image/jpeg","purpose":"any maskable"}]
+}
