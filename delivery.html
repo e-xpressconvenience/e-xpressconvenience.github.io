@@ -13,7 +13,7 @@
 </head>
 <body>
 <header><div class="head wrap"><div class="brand">EXPRESS <span>CONVENIENCE</span></div><nav><a href="index.html">Shop</a><a href="products.html">Products</a><a href="checkout.html">Checkout</a><a href="about.html">About</a><a href="account.html">Account</a></nav></div></header>
-<section class="hero"><div class="wrap"><span class="eyebrow">Delivery platform prototype</span><h1>One shop. One delivery network.</h1><p>This is the integrated delivery-centre interface for Express Convenience. It is designed for customer location, rider dispatch and administrator control, while the production version can later connect real-time maps, notifications and a backend database.</p></div></section>
+<section class="hero"><div class="wrap"><span class="eyebrow">Live delivery network</span><h1>One shop. One delivery network.</h1><p>Customers can create delivery requests, approved bicycle riders can receive them in real time, and the first valid rider to accept claims the job. Express Convenience administrators can manage the delivery network.</p></div></section>
 <main class="wrap">
 <div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Live accounts</span><h2 id="authTitle">Sign in to Delivery Centre</h2><p class="muted">Customer, rider and admin access is connected to the Express Convenience backend.</p><div class="grid"><div><div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" placeholder="••••••••"></div></div><div><div class="field"><label>Full name (new account)</label><input id="authName" placeholder="Your name"></div><div class="field"><label>Phone (new account)</label><input id="authPhone" placeholder="+266 ..."></div><div class="field"><label>Account type</label><select id="authRole"><option value="customer">Customer</option><option value="rider">Bicycle delivery rider</option></select></div></div></div><div class="role-buttons" style="justify-content:flex-start"><button class="button" id="signIn" type="button">Sign in</button><button class="button secondary" id="signUp" type="button">Create account</button><button class="button" id="signOut" type="button" style="display:none">Sign out</button></div><div id="authStatus" class="status">Not signed in.</div></div>
 <div class="account-box">
@@ -31,7 +31,7 @@
 <div class="field"><label>Address / landmark</label><input id="address" placeholder="e.g. Naleli, near ..."></div>
 <button class="button secondary" id="locate">Use my current location</button>
 <div id="locationStatus" class="status">Location not selected yet.</div></div>
-<div class="card"><h2>Delivery estimate</h2><div class="eta" id="eta">—</div><p class="muted">Once routing is connected, this area will show road distance, delivery fee and estimated arrival time.</p>
+<div class="card"><h2>Delivery estimate</h2><div class="eta" id="eta">—</div><p class="muted">The request is dispatched live. Road distance, delivery fee and ETA can be added when routing is connected.</p>
 <div class="notice">The browser can provide GPS coordinates after customer permission. Road distance and ETA require a routing service; GPS straight-line distance alone is not a delivery ETA.</div><button class="button" id="createOrder" style="margin-top:14px">Create delivery request</button><div id="orderStatus" class="status">No delivery request created yet.</div></div>
 </div>
 <div class="card" style="margin-top:20px"><h2>Checkout delivery flow</h2><div class="timeline">
@@ -49,7 +49,7 @@
 <div class="card"><h2>Rider dashboard</h2><p class="muted">A rider account can show availability, active deliveries and incoming delivery requests.</p>
 <div class="field"><label>Rider status</label><select id="riderAvailability"><option value="available">Available</option><option value="on_delivery">On delivery</option><option value="offline">Offline</option></select></div>
 <div id="riderAvailabilityStatus" class="status"><span class="pill">OFFLINE</span> Rider is currently offline.</div><div id="riderOrder" class="status" style="display:none;margin-top:12px">A new order is waiting for acceptance.</div></div>
-<div class="card request"><span class="eyebrow">Incoming delivery</span><h2 id="incomingId">Order EC-1007</h2><strong>Naleli → Customer location</strong><p class="muted">Pickup: Express Convenience<br>Approx. distance: pending live routing<br>Customer: hidden until accepted</p><button class="button" id="accept">Accept delivery</button><div id="acceptStatus" class="status" style="display:none">Delivery accepted. Customer details would now be released to the assigned rider.</div></div>
+<div class="card request"><span class="eyebrow">Live delivery requests</span><h2>Incoming jobs</h2><div id="liveRequests"><p class="muted">Sign in as a rider and set your availability to receive live requests.</p></div><div id="acceptStatus" class="status" style="display:none">Delivery accepted. Customer delivery details are now available to the assigned rider.</div></div>
 </div>
 <div class="card" style="margin-top:20px"><h2>Delivery status</h2><div class="grid">
 <div><div class="status">Accepted → <b>Picked up</b> → On the way → Delivered</div></div>
@@ -65,7 +65,7 @@
 <div class="order"><div><b>EC-1006</b><br><span class="small">Rider: Assigned · Bicycle</span></div><span class="pill">ON THE WAY</span></div>
 <div class="order"><div><b>EC-1005</b><br><span class="small">Rider: Assigned · Bicycle</span></div><span class="pill">DELIVERED</span></div>
 </div>
-<div class="card" style="margin-top:20px"><h2>Important production layer</h2><p class="muted">This page is the front-end template. To make rider pop-ups genuinely live across different phones, Express Convenience will need a secure backend with rider accounts, a database, real-time events/push notifications, order locking, maps/routing and location/privacy controls. Those services cannot be safely implemented with GitHub Pages alone.</p></div>
+<div class="card" style="margin-top:20px"><h2>Important production layer</h2><p class="muted">Live delivery requests are now connected to the Express Convenience Supabase backend. The server atomically assigns an order to the first valid rider who accepts it. Browser realtime keeps the rider request list updated while the rider is online. Background push notifications and road-routing ETA can be added as the next layer.</p></div>
 </section>
 </main>
 <footer><div class="wrap">Express Convenience · For Smart Shoppers · <a href="index.html">Return to shop</a></div></footer>
@@ -73,98 +73,149 @@
 const SUPABASE_URL='https://zheqnbaiqsyeubakrolm.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZPNXLqvhmav9OZ-Up4d-TQ_KCdzerBu';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let currentSession=null;
+let currentProfile=null;
+let currentLocation=null;
+let liveChannel=null;
+
 async function loadSession(){
- const {data:{session}}=await supabaseClient.auth.getSession();
- updateAuth(session);
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  currentSession=session;
+  await loadProfile();
+  updateAuth(session);
+  await startLiveDeliveryFeed();
 }
-async function getProfile(session){
- if(!session) return null;
- const {data,error}=await supabaseClient.from('profiles').select('id,full_name,phone,role').eq('id',session.user.id).maybeSingle();
- return error ? null : data;
+async function loadProfile(){
+  currentProfile=null;
+  if(!currentSession) return;
+  const {data,error}=await supabaseClient.from('profiles').select('*').eq('id',currentSession.user.id).maybeSingle();
+  if(!error) currentProfile=data;
 }
-async function updateAuth(session){
- const status=document.getElementById('authStatus');
- const adminTab=document.getElementById('adminTab');
- document.getElementById('signOut').style.display=session?'inline-block':'none';
- document.getElementById('signIn').style.display=session?'none':'inline-block';
- document.getElementById('signUp').style.display=session?'none':'inline-block';
- if(session){
- const profile=await getProfile(session);
- const role=profile?.role || 'customer';
- status.textContent='Signed in as '+session.user.email+' · '+role;
- document.getElementById('authTitle').textContent=role==='admin'?'Administrator account connected':'Delivery Centre account connected';
- adminTab.style.display=role==='admin'?'inline-block':'none';
- if(role==='admin') document.querySelector('[data-tab="admin"]').click();
-} else {
- status.textContent='Not signed in.';
- document.getElementById('authTitle').textContent='Sign in to Delivery Centre';
- adminTab.style.display='none';
-}
+function updateAuth(session){
+  const status=document.getElementById('authStatus');
+  document.getElementById('signOut').style.display=session?'inline-block':'none';
+  document.getElementById('signIn').style.display=session?'none':'inline-block';
+  document.getElementById('signUp').style.display=session?'none':'inline-block';
+  if(session){
+    const role=currentProfile?.role||'customer';
+    status.textContent='Signed in as '+session.user.email+' · Role: '+role;
+    document.getElementById('authTitle').textContent='Delivery Centre account connected';
+  } else {
+    status.textContent='Not signed in.';
+    document.getElementById('authTitle').textContent='Sign in to Delivery Centre';
+  }
 }
 document.getElementById('signIn').addEventListener('click',async()=>{
- const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
- const {error}=await supabaseClient.auth.signInWithPassword({email,password});
- document.getElementById('authStatus').textContent=error?error.message:'Signed in.';
- if(!error) loadSession();
+  const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
+  const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+  document.getElementById('authStatus').textContent=error?error.message:'Signed in.';
+  if(!error) await loadSession();
 });
 document.getElementById('signUp').addEventListener('click',async()=>{
- const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
- const full_name=document.getElementById('authName').value.trim(), phone=document.getElementById('authPhone').value.trim(), role=document.getElementById('authRole').value;
- const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,phone,role}}});
- document.getElementById('authStatus').textContent=error?error.message:(data.session?'Account created and signed in.':'Account created. Check your email to confirm, if confirmation is enabled.');
- if(data.session) { updateAuth(data.session); if(role==='rider') document.querySelector('[data-tab="rider"]')?.click(); }
+  const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
+  const full_name=document.getElementById('authName').value.trim(), phone=document.getElementById('authPhone').value.trim();
+  const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,phone}}});
+  if(error){document.getElementById('authStatus').textContent=error.message;return;}
+  if(data.user){
+    await supabaseClient.from('profiles').upsert({id:data.user.id,full_name:full_name||null,phone:phone||null,role:'customer'});
+  }
+  document.getElementById('authStatus').textContent=data.session?'Account created and signed in.':'Account created. Check your email to confirm, if confirmation is enabled.';
+  if(data.session) await loadSession();
 });
-document.getElementById('signOut').addEventListener('click',async()=>{await supabaseClient.auth.signOut();loadSession()});
-async function loadRiderProfile(){
- const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session)return;
- const {data:profile}=await supabaseClient.from('profiles').select('role,full_name').eq('id',session.user.id).maybeSingle();
- if(profile?.role!=='rider')return;
- const {data}=await supabaseClient.from('rider_profiles').select('availability,vehicle_type').eq('user_id',session.user.id).maybeSingle();
- if(data){document.getElementById('riderAvailability').value=data.availability; updateRiderAvailability(data.availability);}
- if(profile.full_name) document.getElementById('riderWelcome').textContent='Welcome, '+profile.full_name;
-}
-function updateRiderAvailability(v){
- const labels={available:'AVAILABLE',on_delivery:'ON DELIVERY',offline:'OFFLINE'};
- document.getElementById('riderAvailabilityStatus').innerHTML='<span class="pill">'+labels[v]+'</span> Rider status updated.';
-}
-document.getElementById('riderAvailability').addEventListener('change',async(e)=>{
- const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session){e.target.value='offline';document.getElementById('authStatus').textContent='Sign in as a rider to change availability.';return;}
- const {data:profile}=await supabaseClient.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
- if(profile?.role!=='rider'){e.target.value='offline';document.getElementById('authStatus').textContent='This account is not registered as a rider.';return;}
- const {error}=await supabaseClient.rpc('set_rider_availability',{p_availability:e.target.value});
- if(error){document.getElementById('authStatus').textContent=error.message;await loadRiderProfile();return;}
- updateRiderAvailability(e.target.value);
+document.getElementById('signOut').addEventListener('click',async()=>{
+  if(liveChannel) await supabaseClient.removeChannel(liveChannel);
+  liveChannel=null; currentSession=null; currentProfile=null;
+  await supabaseClient.auth.signOut(); updateAuth(null); renderLiveRequests([]);
 });
-supabaseClient.auth.onAuthStateChange((_event,session)=>{updateAuth(session); if(session) loadRiderProfile();});
-loadSession();
-loadRiderProfile();
+supabaseClient.auth.onAuthStateChange(async(_event,session)=>{
+  currentSession=session;
+  if(!session){currentProfile=null;updateAuth(null);renderLiveRequests([]);return;}
+  await loadProfile(); updateAuth(session); await startLiveDeliveryFeed();
+});
 
-document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')}));
-document.getElementById('locate').addEventListener('click',()=>{const s=document.getElementById('locationStatus');if(!navigator.geolocation){s.textContent='This browser does not provide location services.';return}s.textContent='Requesting location permission…';navigator.geolocation.getCurrentPosition(p=>{s.textContent='Location received: '+p.coords.latitude.toFixed(5)+', '+p.coords.longitude.toFixed(5)+' (permission granted).';document.getElementById('eta').textContent='Routing needed';},e=>{s.textContent='Location was not shared. The customer can enter an address instead.'},{enableHighAccuracy:true,timeout:10000,maximumAge:30000})});
-const ORDER_KEY='express-convenience-demo-order-v1';
-function readOrder(){try{return JSON.parse(localStorage.getItem(ORDER_KEY)||'null')}catch{return null}}
-function saveOrder(order){try{localStorage.setItem(ORDER_KEY,JSON.stringify(order))}catch{}}
-function refreshDemo(){
-  const order=readOrder(); if(!order)return;
-  const id=document.getElementById('incomingId'); if(id) id.textContent='Order '+order.id;
-  const status=document.getElementById('orderStatus'); if(status) status.textContent='Request '+order.id+' · '+order.status;
-  const rider=document.getElementById('riderOrder'); if(rider){rider.style.display='block';rider.textContent='New request: '+order.id+' · First valid rider to accept gets the job in production.'}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',async()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); document.getElementById(b.dataset.tab).classList.add('active');
+  if(b.dataset.tab==='rider') await loadOpenRequests();
+}));
+
+document.getElementById('locate').addEventListener('click',()=>{
+  const s=document.getElementById('locationStatus');
+  if(!navigator.geolocation){s.textContent='This browser does not provide location services.';return}
+  s.textContent='Requesting location permission…';
+  navigator.geolocation.getCurrentPosition(p=>{
+    currentLocation={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy};
+    s.textContent='Location received: '+p.coords.latitude.toFixed(5)+', '+p.coords.longitude.toFixed(5)+' (permission granted).';
+    document.getElementById('eta').textContent='Routing needed';
+  },e=>{s.textContent='Location was not shared. The customer can enter an address instead.'},
+  {enableHighAccuracy:true,timeout:10000,maximumAge:30000});
+});
+
+async function createLiveOrder(){
+  if(!currentSession){document.getElementById('orderStatus').textContent='Please sign in before creating a live delivery request.';return;}
+  const address=document.getElementById('address').value.trim();
+  if(!address && !currentLocation){document.getElementById('orderStatus').textContent='Enter a delivery address or share your current location first.';return;}
+  const payload={
+    customer_id:currentSession.user.id,
+    status:'searching_rider',
+    delivery_address:address||'GPS location provided',
+    delivery_lat:currentLocation?.lat||null,
+    delivery_lng:currentLocation?.lng||null,
+    delivery_accuracy:currentLocation?.accuracy||null
+  };
+  const {data,error}=await supabaseClient.from('orders').insert(payload).select('id,order_number,status').single();
+  if(error){document.getElementById('orderStatus').textContent=error.message;return;}
+  document.getElementById('orderStatus').textContent='Live request created: EC-'+data.order_number+' · searching for a rider now.';
 }
-document.getElementById('createOrder')?.addEventListener('click',()=>{
-  const order={id:'EC-'+String(Date.now()).slice(-6),status:'SEARCHING FOR RIDER',createdAt:new Date().toISOString()};
-  saveOrder(order); refreshDemo();
-  document.querySelector('[data-tab="rider"]')?.click();
-});
-document.getElementById('accept').addEventListener('click',()=>{
-  const order=readOrder()||{id:'EC-1007'};
-  order.status='ACCEPTED BY RIDER'; order.rider='Demo rider'; saveOrder(order);
-  document.getElementById('acceptStatus').style.display='block';
-  document.getElementById('accept').disabled=true; document.getElementById('accept').textContent='Accepted';
-  refreshDemo();
-});
-refreshDemo();
+
+document.getElementById('createOrder').addEventListener('click',createLiveOrder);
+
+async function loadOpenRequests(){
+  const box=document.getElementById('liveRequests');
+  if(!currentSession || currentProfile?.role!=='rider'){
+    box.innerHTML='<p class="muted">Sign in with a rider account to receive live delivery requests. Rider accounts are approved by Express Convenience.</p>';
+    return;
+  }
+  const {data,error}=await supabaseClient.from('delivery_requests').select('order_id,status,created_at').eq('status','open').order('created_at',{ascending:true});
+  if(error){box.innerHTML='<p class="muted">'+escapeHtml(error.message)+'</p>';return;}
+  renderLiveRequests(data||[]);
+}
+async function startLiveDeliveryFeed(){
+  if(liveChannel) await supabaseClient.removeChannel(liveChannel);
+  liveChannel=null;
+  if(!currentSession || currentProfile?.role!=='rider'){renderLiveRequests([]);return;}
+  await loadOpenRequests();
+  liveChannel=supabaseClient.channel('live-delivery-requests-'+currentSession.user.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'delivery_requests'},async()=>{await loadOpenRequests()})
+    .subscribe();
+}
+function renderLiveRequests(requests){
+  const box=document.getElementById('liveRequests'); if(!box)return;
+  if(!currentSession || currentProfile?.role!=='rider'){
+    box.innerHTML='<p class="muted">Rider login required. Requests appear here in real time when you are an approved rider.</p>';return;
+  }
+  if(!requests.length){box.innerHTML='<p class="muted">No open delivery requests right now. This screen will update automatically.</p>';return;}
+  box.innerHTML=requests.map(r=>'<div class="status request-item" style="margin:10px 0"><strong>New delivery request</strong><br><span class="small">Request '+r.order_id.slice(0,8)+' · waiting for first valid rider</span><br><button class="button accept-live" data-order="'+r.order_id+'" style="margin-top:9px">Accept delivery</button></div>').join('');
+  box.querySelectorAll('.accept-live').forEach(btn=>btn.addEventListener('click',()=>acceptLiveDelivery(btn.dataset.order,btn)));
+}
+async function acceptLiveDelivery(orderId,button){
+  if(!currentSession || currentProfile?.role!=='rider')return;
+  button.disabled=true; button.textContent='Claiming…';
+  const {data,error}=await supabaseClient.rpc('accept_delivery',{p_order_id:orderId});
+  if(error){button.disabled=false;button.textContent='Accept delivery';document.getElementById('acceptStatus').style.display='block';document.getElementById('acceptStatus').textContent=error.message;return;}
+  if(data===true){
+    document.getElementById('acceptStatus').style.display='block';
+    document.getElementById('acceptStatus').textContent='Delivery accepted. You are the assigned rider.';
+    await loadOpenRequests();
+  }else{
+    button.disabled=false;button.textContent='Already claimed';
+    await loadOpenRequests();
+  }
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+loadSession();
 </script>
 </body>
 </html>
