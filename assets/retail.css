@@ -15,3 +15,8 @@
 .category-tiles img{border-radius:6px;background:#fff}
 .shelf-products{gap:14px}.shelf-products img,.shelf-products .hero-snack{width:46%;height:230px;mix-blend-mode:normal;border-radius:12px;background:#fff;object-fit:contain}.hero-shelf{background:#e8eee4}
 .cart-line img{background:#fff;clip-path:none}
+
+/* Reserve distinct departments without implying available stock. */
+.category-monogram{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;border-radius:12px;background:#e8eee4;color:var(--deep);font:600 24px system-ui}.category-tiles .future-category{background:#f2f5ef;border-style:dashed}.category-tiles .future-category small{color:var(--teal)}
+@media(min-width:761px){.category-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.shop-tools{flex-wrap:wrap}.shop-tools .filters{flex:1;min-width:0}}
+@media(max-width:760px){.category-monogram{flex-basis:46px;width:46px;height:46px;font-size:20px}}

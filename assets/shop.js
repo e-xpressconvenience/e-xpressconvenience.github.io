@@ -101,7 +101,14 @@
     function filterCards(){
       const query=search.value.trim().toLowerCase();let visible=0;
       cards.forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&query.split(/\s+/).every(word=>card.dataset.search.includes(word));card.hidden=!match;if(match)visible++;});
-      if(empty)empty.hidden=visible!==0;
+      if(empty){
+        empty.hidden=visible!==0;
+        const future=['sneakers','gadgets'].includes(category);
+        const title=category==='sneakers'?'Sneakers':'Gadgets';
+        empty.querySelector('h2').textContent=future?title+' — coming soon':'No matching essentials';
+        empty.querySelector('p').textContent=future?'We’re making room for this department. Products will appear here when the range is ready.':'Try a different search or browse all categories.';
+        document.getElementById('clear-filters').textContent=future?'Shop available products':'Clear search & filters';
+      }
       const result=document.getElementById('result-count');if(result)result.textContent=visible+' product'+(visible===1?'':'s');
       filters.forEach(button=>{const active=button.dataset.filter===category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       if(document.body.dataset.page==='products'){const url=new URL(location.href);category==='all'?url.searchParams.delete('category'):url.searchParams.set('category',category);query?url.searchParams.set('q',search.value.trim()):url.searchParams.delete('q');history.replaceState(null,'',url);}
