@@ -8,3 +8,9 @@
 .ec-brand{position:relative;width:160px;height:82px}.ec-brand img{position:absolute;top:50%;width:100%;height:auto;transform:translateY(-51%);object-fit:initial}
 @media(max-width:760px){.ec-brand{width:142px;height:72px}}
 @media(max-width:360px){.ec-brand{width:120px;height:62px}}
+
+/* Keep the complete logo, bag handles and tagline inside the header. */
+.ec-header .ec-brand,.ec-header.retail-header .ec-brand{width:180px;height:108px;flex:0 0 auto;overflow:hidden;background:#fff;border-radius:6px}
+.ec-header .ec-brand img{position:absolute;left:0;top:50%;display:block;width:100%;height:auto;max-width:none;object-fit:contain;transform:translateY(-51%);filter:brightness(.8) contrast(1.7)}
+@media(max-width:760px){.ec-header .ec-brand,.ec-header.retail-header .ec-brand{width:143px;height:86px}}
+@media(max-width:360px){.ec-header .ec-brand,.ec-header.retail-header .ec-brand{width:125px;height:75px}}
