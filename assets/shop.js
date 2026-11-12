@@ -3,13 +3,67 @@
   const KEY = "express-convenience-basket-v1";
   const LOCATION_KEY = "express-convenience-delivery-location-v1";
   const PRODUCTS = [
-    {id:"bread",name:"White bread",image:"assets/bread.jpeg"},
-    {id:"eggs",name:"Eggs",image:"assets/eggs.jpeg"},
-    {id:"sausages",name:"Russian sausages",image:"assets/sausages.jpeg"},
-    {id:"drinks",name:"Soft drinks",image:"assets/drinks.svg"},
-    {id:"snacks",name:"Chocolate biscuits",image:"assets/snacks.jpeg"},
-    {id:"tissue",name:"Household tissue",image:"assets/household.jpeg"}
-  ];
+  {
+    "id": "bread",
+    "name": "Blue Ribbon White Bread",
+    "image": "assets/bread-studio.webp"
+  },
+  {
+    "id": "itau",
+    "name": "Itau Papa 12.5 kg",
+    "image": "assets/itau.webp"
+  },
+  {
+    "id": "ginger",
+    "name": "Ginger Smash",
+    "image": "assets/ginger.webp"
+  },
+  {
+    "id": "rama",
+    "name": "Rama Original",
+    "image": "assets/rama.webp"
+  },
+  {
+    "id": "eggs",
+    "name": "Eggs",
+    "image": "assets/eggs-studio.webp"
+  },
+  {
+    "id": "sausages",
+    "name": "Russian sausages",
+    "image": "assets/sausages-studio.webp"
+  },
+  {
+    "id": "drinks",
+    "name": "Coca-Cola Original",
+    "image": "assets/drinks-studio.webp"
+  },
+  {
+    "id": "snacks",
+    "name": "Bakers Topper Chocolate",
+    "image": "assets/snacks-studio.webp"
+  },
+  {
+    "id": "salt",
+    "name": "Salt",
+    "image": "assets/salt.webp"
+  },
+  {
+    "id": "sugar",
+    "name": "Sugar",
+    "image": "assets/sugar.webp"
+  },
+  {
+    "id": "tea",
+    "name": "Tea bags",
+    "image": "assets/tea.webp"
+  },
+  {
+    "id": "tissue",
+    "name": "Household tissue",
+    "image": "assets/household-studio.webp"
+  }
+];
   const byId = new Map(PRODUCTS.map(p => [p.id,p]));
   let fallbackCart = {};
 

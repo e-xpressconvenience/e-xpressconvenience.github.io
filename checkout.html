@@ -48,7 +48,7 @@ document.getElementById("create-live-order")?.addEventListener("click",async()=>
  const {data:{session}}=await ecSupabase.auth.getSession();
  if(!session){out.textContent="Please sign in at Delivery Centre first, then return here.";return;}
  let cart={}; try{cart=JSON.parse(localStorage.getItem("express-convenience-basket-v1")||"{}")}catch{}
- const names={bread:"White bread",eggs:"Eggs",sausages:"Russian sausages",drinks:"Soft drinks",snacks:"Chocolate biscuits",tissue:"Household tissue"};
+ const names={"bread": "Blue Ribbon White Bread", "itau": "Itau Papa 12.5 kg", "ginger": "Ginger Smash", "rama": "Rama Original", "eggs": "Eggs", "sausages": "Russian sausages", "drinks": "Coca-Cola Original", "snacks": "Bakers Topper Chocolate", "salt": "Salt", "sugar": "Sugar", "tea": "Tea bags", "tissue": "Household tissue"};
  const items=Object.entries(cart||{}).filter(([id,q])=>names[id]&&Number.isInteger(q)&&q>0&&q<=99).map(([id,q])=>({product_id:id,product_name:names[id],name:names[id],quantity:q}));
  if(!items.length){out.textContent="Your basket is empty.";return;}
  let loc={}; try{loc=JSON.parse(localStorage.getItem("express-convenience-delivery-location-v1")||"{}")}catch{}
