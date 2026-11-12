@@ -1,5 +1,5 @@
-const CACHE='express-store-v2';
-const ASSETS=['./index.html','./products.html','./checkout.html','./about.html','./account.html','./delivery.html','./assets/store.css','./assets/enhancements.css','./assets/navigation.js','./assets/shop.js','./assets/express-convenience-logo.jpeg','./assets/bread.jpeg','./assets/eggs.jpeg','./assets/sausages.jpeg','./assets/snacks.jpeg','./assets/household.jpeg','./assets/drinks.svg','./manifest.webmanifest'];
+const CACHE='express-store-v3';
+const ASSETS=['./index.html','./products.html','./checkout.html','./about.html','./account.html','./delivery.html','./assets/retail.css','./assets/store.css','./assets/enhancements.css','./assets/navigation.js','./assets/shop.js','./assets/express-convenience-logo.jpeg','./assets/bread.jpeg','./assets/eggs.jpeg','./assets/sausages.jpeg','./assets/snacks.jpeg','./assets/household.jpeg','./assets/drinks.svg','./manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('express-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{

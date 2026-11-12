@@ -32,52 +32,46 @@
   function updateCounts(cart=readCart()) {
     const count = Object.values(cart).reduce((sum,qty) => sum + qty,0);
     document.querySelectorAll("[data-cart-count]").forEach(el => { el.textContent=String(count); });
+    document.querySelectorAll(".mobile-cart").forEach(el=>el.hidden=count===0);
   }
   function initProducts() {
-    const cards = [...document.querySelectorAll(".item")];
-    const filters = [...document.querySelectorAll("[data-filter]")];
-    const search = document.getElementById("product-search");
-    const empty = document.getElementById("empty-search");
-    let category = new URLSearchParams(location.search).get("category") || "all";
-    if (!filters.some(b=>b.dataset.filter===category)) category="all";
-    function filterCards() {
-      const query = search.value.trim().toLowerCase();
-      let visible = 0;
-      cards.forEach(card => {
-        const match = (category === "all" || card.dataset.category === category) &&
-          (!query || card.dataset.search.includes(query));
-        card.hidden = !match;
-        if (match) visible++;
-      });
-      empty.hidden = visible !== 0;
+    const grid=document.querySelector('.catalogue');
+    const cards=[...grid.querySelectorAll('.item')];
+    const filters=[...document.querySelectorAll('[data-filter]')];
+    const search=document.getElementById('global-query');
+    const empty=document.getElementById('empty-search');
+    const params=new URLSearchParams(location.search);
+    let category=params.get('category')||'all';
+    if(!filters.some(b=>b.dataset.filter===category))category='all';
+    if(document.body.dataset.page==='products')search.value=params.get('q')||'';
+    function filterCards(){
+      const query=search.value.trim().toLowerCase();let visible=0;
+      cards.forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&query.split(/\s+/).every(word=>card.dataset.search.includes(word));card.hidden=!match;if(match)visible++;});
+      if(empty)empty.hidden=visible!==0;
+      const result=document.getElementById('result-count');if(result)result.textContent=visible+' product'+(visible===1?'':'s');
+      filters.forEach(button=>{const active=button.dataset.filter===category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+      if(document.body.dataset.page==='products'){const url=new URL(location.href);category==='all'?url.searchParams.delete('category'):url.searchParams.set('category',category);query?url.searchParams.set('q',search.value.trim()):url.searchParams.delete('q');history.replaceState(null,'',url);}
     }
-    filters.forEach(button => button.addEventListener("click",() => {
-      category = button.dataset.filter;
-      filters.forEach(item => {
-        const selected = item === button;
-        item.classList.toggle("active",selected);
-        item.setAttribute("aria-pressed",String(selected));
-      });
+    filters.forEach(button=>button.addEventListener('click',()=>{category=button.dataset.filter;filterCards();}));
+    if(document.body.dataset.page==='products'){
+      search.addEventListener('input',filterCards);
+      search.form.addEventListener('submit',e=>{e.preventDefault();filterCards();});
+      document.getElementById('clear-filters')?.addEventListener('click',()=>{search.value='';category='all';filterCards();search.focus();});
+      document.getElementById('product-sort')?.addEventListener('change',e=>{const sorted=[...cards];if(e.target.value!=='featured')sorted.sort((a,b)=>a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent)*(e.target.value==='za'?-1:1));sorted.forEach(card=>grid.append(card));});
       filterCards();
-    }));
-    search.addEventListener("input",filterCards);
-    document.querySelectorAll("[data-add]").forEach(button => button.addEventListener("click",() => {
-      const cart = readCart();
-      const id = button.dataset.add;
-      if (!byId.has(id)) return;
-      cart[id] = Math.min((cart[id] || 0) + 1,99);
-      writeCart(cart);
-      button.textContent = "Added ✓";
-      let toast=document.getElementById('basket-feedback');
-      if(!toast){toast=document.createElement('div');toast.id='basket-feedback';toast.className='ec-toast';toast.setAttribute('role','status');document.body.append(toast);}
-      toast.hidden=false;toast.textContent=byId.get(id).name+' added to your basket';
-      clearTimeout(toast._timer);toast._timer=setTimeout(()=>toast.hidden=true,2200);
-      clearTimeout(button._resetTimer);
-      button._resetTimer = setTimeout(() => { button.textContent = "Add to basket"; },1400);
-    }));
-    const initial=filters.find(b=>b.dataset.filter===category);
-    initial?.click();
-    updateCounts();
+    }
+    document.querySelectorAll('[data-add]').forEach(button=>{
+      const id=button.dataset.add;if(!byId.has(id))return;
+      const qty=document.createElement('div');qty.className='qty';qty.hidden=true;
+      const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Remove one '+byId.get(id).name);
+      const amount=document.createElement('span');amount.setAttribute('aria-live','polite');
+      const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Add one '+byId.get(id).name);
+      qty.append(minus,amount,plus);button.after(qty);
+      function sync(){const n=readCart()[id]||0;button.hidden=n>0;qty.hidden=n===0;amount.textContent=n;plus.disabled=n>=99;}
+      function change(delta){const cart=readCart();const n=Math.min(99,Math.max(0,(cart[id]||0)+delta));if(n)cart[id]=n;else delete cart[id];writeCart(cart);sync();if(n===0)button.focus();else if(delta>0&&n===1)plus.focus();}
+      button.addEventListener('click',()=>{change(1);let toast=document.getElementById('basket-feedback');if(!toast){toast=document.createElement('div');toast.id='basket-feedback';toast.className='ec-toast';toast.setAttribute('role','status');document.body.append(toast);}toast.hidden=false;toast.textContent=byId.get(id).name+' added to your basket';clearTimeout(toast._timer);toast._timer=setTimeout(()=>toast.hidden=true,2200);});
+      minus.addEventListener('click',()=>change(-1));plus.addEventListener('click',()=>change(1));window.addEventListener('storage',sync);sync();
+    });updateCounts();
   }
   function initCheckout() {
     const list = document.getElementById("cart-items");
@@ -185,6 +179,6 @@
     }));
     render();
   }
-  if (document.body.dataset.page === "products") initProducts();
+  if (["products","home"].includes(document.body.dataset.page)) initProducts();
   if (document.body.dataset.page === "checkout") initCheckout();
 })();
