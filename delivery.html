@@ -11,12 +11,14 @@
 @media(max-width:480px){.wrap{width:min(100% - 20px,1120px)}header .head{min-height:64px;padding:10px 0;gap:10px}.brand{font-size:15px}.platform{margin-left:auto;position:relative}.platform-btn{padding:9px 11px;border:1px solid #ffffff55;border-radius:9px;background:#ffffff14;color:#fff;font-weight:800;font-size:12px}.platform-menu{right:0;min-width:170px}.hero{padding:34px 0}.hero p{font-size:14px}.tabs{gap:6px}.tab{width:100%;text-align:left}.account-box,.card{padding:16px;border-radius:13px}.button{width:100%;min-height:44px}.role-buttons{width:100%}.role-buttons .button{flex:1}.grid{gap:12px}.metrics{gap:8px}.metricbox{padding:14px}.order{flex-direction:column}.field input,.field select{font-size:16px;min-height:46px}nav.mobile-nav{display:flex;flex-direction:column;gap:0;position:absolute;top:58px;left:10px;right:10px;background:var(--deep);padding:8px;border-radius:10px;z-index:20}.mobile-nav a{padding:10px}.platform-menu a{display:block;padding:11px 13px;color:var(--ink);text-decoration:none;font-size:13px}.platform-menu{display:none;position:absolute;top:45px;background:#fff;border-radius:10px;box-shadow:0 8px 25px #0003;overflow:hidden;z-index:30}.platform.open .platform-menu{display:block}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="assets/enhancements.css">
+<script src="assets/navigation.js" defer></script>
 </head>
 <body>
-<header><div class="head wrap"><div class="brand">EXPRESS <span>CONVENIENCE</span></div><nav><a href="index.html">Shop</a><a href="products.html">Products</a><a href="checkout.html">Checkout</a><a href="about.html">About</a><a href="account.html">Account</a></nav><div class="platform"><button class="platform-btn" id="platformBtn" type="button">App / Site ▾</button><div class="platform-menu"><a href="index.html">🌐 Open Website</a><a href="#" id="installApp">📱 Install App</a></div></div></div></header>
+<header class="ec-header"><div class="ec-header-inner"><a class="ec-brand" href="index.html" aria-label="Express Convenience home"><img src="assets/express-convenience-logo.jpeg" alt="Express Convenience" width="1280" height="1280"></a><nav id="ec-nav" class="ec-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="products.html">Shop</a><a href="about.html">Our story</a><a href="delivery.html" aria-current="page">Delivery</a><a href="account.html">Account</a><button type="button" class="ec-install" hidden>Install app</button></nav><a class="ec-basket" href="checkout.html" aria-label="Review basket">Basket <span data-cart-count>0</span></a><button class="ec-menu" type="button" aria-expanded="false" aria-controls="ec-nav">Menu <span aria-hidden="true">☰</span></button></div></header>
 <section class="hero"><div class="wrap"><span class="eyebrow">Live delivery network</span><h1>One shop. One delivery network.</h1><p>Customers can create delivery requests, approved bicycle riders can receive them in real time, and the first valid rider to accept claims the job. Express Convenience administrators can manage the delivery network.</p></div></section>
 <main class="wrap">
-<div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Live accounts</span><h2 id="authTitle">Sign in to Delivery Centre</h2><p class="muted">Customer, rider and admin access is connected to the Express Convenience backend.</p><div class="grid"><div><div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input id="authPassword" type="password" placeholder="••••••••"></div></div><div><div class="field"><label>Full name (new account)</label><input id="authName" placeholder="Your name"></div><div class="field"><label>Phone (new account)</label><input id="authPhone" placeholder="+266 ..."></div><div class="field"><label>Account type</label><select id="authRole"><option value="customer">Customer</option><option value="rider">Bicycle delivery rider</option></select></div></div></div><div class="role-buttons" style="justify-content:flex-start"><button class="button" id="signIn" type="button">Sign in</button><button class="button secondary" id="signUp" type="button">Create account</button><button class="button" id="signOut" type="button" style="display:none">Sign out</button></div><div id="authStatus" class="status">Not signed in.</div></div>
+<div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Live accounts</span><h2 id="authTitle">Sign in to Delivery Centre</h2><p class="muted">Sign in to view deliveries. Approved riders can manage requests from their rider dashboard.</p><div class="grid"><div><div class="field"><label for="authEmail">Email</label><input id="authEmail" type="email" placeholder="you@example.com"></div><div class="field"><label for="authPassword">Password</label><input id="authPassword" type="password" placeholder="••••••••"></div></div><div><div class="field"><label for="authName">Full name (new account)</label><input id="authName" placeholder="Your name"></div><div class="field"><label for="authPhone">Phone (new account)</label><input id="authPhone" placeholder="+266 ..."></div><div class="field"><label for="authRole">Account type</label><select id="authRole"><option value="customer">Customer</option><option value="rider">Bicycle delivery rider</option></select></div></div></div><div class="role-buttons" style="justify-content:flex-start"><button class="button" id="signIn" type="button">Sign in</button><button class="button secondary" id="signUp" type="button">Create account</button><button class="button" id="signOut" type="button" style="display:none">Sign out</button></div><div id="authStatus" class="status" role="status">Not signed in.</div></div>
 <div class="account-box">
 <div><span class="eyebrow" style="color:var(--teal)">Delivery Centre accounts</span><h2 style="margin:4px 0">Choose your dashboard</h2><p class="muted" style="margin:0">Customers, bicycle delivery riders and administrators each have their own dashboard.</p></div>
 <div class="role-buttons">
@@ -29,11 +31,11 @@
 <section id="customer" class="panel active">
 <div class="grid">
 <div class="card"><h2>Delivery location</h2><p class="muted">A customer can use the phone's location permission to provide precise coordinates for delivery planning.</p>
-<div class="field"><label>Address / landmark</label><input id="address" placeholder="e.g. Naleli, near ..."></div>
+<div class="field"><label for="address">Address / landmark</label><input id="address" placeholder="e.g. Naleli, near ..."></div>
 <button class="button secondary" id="locate">Use my current location</button>
 <div id="locationStatus" class="status">Location not selected yet.</div></div>
 <div class="card"><h2>Delivery estimate</h2><div class="eta" id="eta">—</div><p class="muted">The request is dispatched live. Road distance, delivery fee and ETA can be added when routing is connected.</p>
-<div class="notice">The browser can provide GPS coordinates after customer permission. Road distance and ETA require a routing service; GPS straight-line distance alone is not a delivery ETA.</div><button class="button" id="createOrder" style="margin-top:14px">Create delivery request</button><div id="orderStatus" class="status">No delivery request created yet.</div></div>
+<div class="notice">The browser can provide GPS coordinates after customer permission. Road distance and ETA require a routing service; GPS straight-line distance alone is not a delivery ETA.</div><button class="button" id="createOrder" style="margin-top:14px">Create delivery request</button><div id="orderStatus" class="status" role="status">No delivery request created yet.</div></div>
 </div>
 <div class="card" style="margin-top:20px"><h2>Checkout delivery flow</h2><div class="timeline">
 <div><b>1. Basket confirmed</b><span class="small">Customer reviews items and quantity.</span></div>
@@ -48,7 +50,7 @@
 <div class="card" style="margin-bottom:20px"><span class="eyebrow" style="color:var(--teal)">Rider account</span><h2 id="riderWelcome">Welcome, Delivery Rider</h2><p class="muted">This dashboard is for registered independent bicycle delivery riders. Your production account will show your profile, availability, earnings and live delivery requests.</p><div class="metrics"><div class="metricbox"><div class="metric">—</div><div class="metric-label">Today's deliveries</div></div><div class="metricbox"><div class="metric">—</div><div class="metric-label">Today's earnings</div></div><div class="metricbox"><div class="metric">🚲</div><div class="metric-label">Vehicle: Bicycle</div></div></div></div>
 <div class="grid">
 <div class="card"><h2>Rider dashboard</h2><p class="muted">A rider account can show availability, active deliveries and incoming delivery requests.</p>
-<div class="field"><label>Rider status</label><select id="riderAvailability"><option value="available">Available</option><option value="on_delivery">On delivery</option><option value="offline">Offline</option></select></div>
+<div class="field"><label for="riderAvailability">Rider status</label><select id="riderAvailability"><option value="available">Available</option><option value="on_delivery">On delivery</option><option value="offline">Offline</option></select></div>
 <div id="riderAvailabilityStatus" class="status"><span class="pill">OFFLINE</span> Rider is currently offline.</div><div id="riderOrder" class="status" style="display:none;margin-top:12px">A new order is waiting for acceptance.</div></div>
 <div class="card request"><span class="eyebrow">Live delivery requests</span><h2>Incoming jobs</h2><div id="liveRequests"><p class="muted">Sign in as a rider and set your availability to receive live requests.</p></div><div id="acceptStatus" class="status" style="display:none">Delivery accepted. Customer delivery details are now available to the assigned rider.</div></div>
 </div>
@@ -111,12 +113,7 @@ document.getElementById('signIn').addEventListener('click',async()=>{
   const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
   const {error}=await supabaseClient.auth.signInWithPassword({email,password});
   document.getElementById('authStatus').textContent=error?error.message:'Signed in.';
-  if(!error) await if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-let deferredInstallPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;});
-document.getElementById('platformBtn').addEventListener('click',()=>document.querySelector('.platform').classList.toggle('open'));
-document.getElementById('installApp').addEventListener('click',async e=>{e.preventDefault();if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;}else{alert('On Android Chrome, open the browser menu and choose “Install app” or “Add to Home screen”.');}});
-loadSession();
+  if(!error) await loadSession();
 });
 document.getElementById('signUp').addEventListener('click',async()=>{
   const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value;
@@ -131,13 +128,15 @@ document.getElementById('signUp').addEventListener('click',async()=>{
 });
 document.getElementById('signOut').addEventListener('click',async()=>{
   if(liveChannel) await supabaseClient.removeChannel(liveChannel);
-  liveChannel=null; currentSession=null; currentProfile=null;
+  liveChannel=null; stopRiderLocationWatch(); currentSession=null; currentProfile=null;
   await supabaseClient.auth.signOut(); updateAuth(null); renderLiveRequests([]);
 });
-supabaseClient.auth.onAuthStateChange(async(_event,session)=>{
+supabaseClient.auth.onAuthStateChange((_event,session)=>{
+ setTimeout(async()=>{
   currentSession=session;
-  if(!session){currentProfile=null;updateAuth(null);renderLiveRequests([]);return;}
+  if(!session){stopRiderLocationWatch();currentProfile=null;updateAuth(null);renderLiveRequests([]);return;}
   await loadProfile(); updateAuth(session); await startLiveDeliveryFeed(); await loadAdminDashboard();
+ },0);
 });
 
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',async()=>{

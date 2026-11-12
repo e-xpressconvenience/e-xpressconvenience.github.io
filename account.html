@@ -10,10 +10,12 @@
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.wrap{width:min(980px,calc(100% - 32px));margin:auto}header{background:var(--deep);color:#fff}.head{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{font-weight:900;letter-spacing:-.03em}.brand span{color:var(--peach)}nav{display:flex;gap:18px;font-size:13px;font-weight:750}nav a{color:#fff;text-decoration:none}.hero{background:linear-gradient(135deg,var(--teal),var(--deep));color:#fff;padding:55px 0}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--peach)}h1{font-size:clamp(40px,6vw,66px);line-height:1;letter-spacing:-.06em;margin:12px 0}.hero p{max-width:650px;color:#dff3f1;line-height:1.6}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:25px;box-shadow:0 10px 30px #164d5210}main{padding:35px 0 70px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{margin:14px 0}.field label{display:block;font-size:12px;font-weight:850;margin-bottom:6px}.field input{width:100%;padding:13px;border:1px solid #cdddda;border-radius:9px;background:#fff;font:inherit}.button{border:0;border-radius:9px;background:var(--teal);color:#fff;padding:12px 17px;font-weight:850;cursor:pointer}.button.secondary{background:var(--peach);color:var(--ink)}.actions{display:flex;gap:9px;flex-wrap:wrap}.status{padding:13px;border-radius:10px;background:#edf7f5;font-size:13px;line-height:1.5;margin-top:14px}.error{background:#fff0ed;color:#8a3025}.success{background:#edf8ee;color:#28633a}.muted{color:var(--muted);line-height:1.6;font-size:14px}footer{background:var(--ink);color:#fff;padding:25px 0;font-size:12px}footer a{color:#fff}@media(max-width:700px){.grid{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}nav{display:none}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="assets/enhancements.css">
+<script src="assets/navigation.js" defer></script>
 </head>
 <body>
-<header><div class="head wrap"><div class="brand">EXPRESS <span>CONVENIENCE</span></div><nav><a href="index.html">Shop</a><a href="products.html">Products</a><a href="checkout.html">Checkout</a><a href="delivery.html">Delivery Centre</a></nav></div></header>
-<section class="hero"><div class="wrap"><span class="eyebrow">For Smart Shoppers</span><h1>Your Express Convenience account.</h1><p>Create an account to keep your customer profile connected to your orders and delivery requests. Your account will use secure Supabase authentication.</p></div></section>
+<header class="ec-header"><div class="ec-header-inner"><a class="ec-brand" href="index.html" aria-label="Express Convenience home"><img src="assets/express-convenience-logo.jpeg" alt="Express Convenience" width="1280" height="1280"></a><nav id="ec-nav" class="ec-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="products.html">Shop</a><a href="about.html">Our story</a><a href="delivery.html">Delivery</a><a href="account.html" aria-current="page">Account</a><button type="button" class="ec-install" hidden>Install app</button></nav><a class="ec-basket" href="checkout.html" aria-label="Review basket">Basket <span data-cart-count>0</span></a><button class="ec-menu" type="button" aria-expanded="false" aria-controls="ec-nav">Menu <span aria-hidden="true">☰</span></button></div></header>
+<section class="hero"><div class="wrap"><span class="eyebrow">For Smart Shoppers</span><h1>Your Express Convenience account.</h1><p>Create an account to keep your customer profile connected to your orders and delivery requests. Sign in to continue to your delivery dashboard.</p></div></section>
 <main class="wrap">
 <div class="card">
 <div class="grid">
@@ -36,7 +38,7 @@
 <div class="actions"><button class="button" id="login" type="button">Sign in</button><button class="button secondary" id="logout" type="button" style="display:none">Sign out</button></div>
 </div>
 </div>
-<div id="status" class="status">You are not signed in.</div>
+<div id="status" class="status" role="status">You are not signed in.</div>
 <div id="account" class="status" style="display:none"></div>
 </div>
 </main>
@@ -71,7 +73,7 @@ document.getElementById('signup').addEventListener('click',async()=>{
  const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,phone}}});
  if(error){show(error.message,'error');return}
  if(data.session){show('Account created and signed in.','success');}
- else{show('Account created. Check your email to confirm your address, then sign in.','success');}
+ else{show('Account created. Check your email to confirm your address, then sign in.','success');return;}
  await refresh();
 });
 document.getElementById('login').addEventListener('click',async()=>{
@@ -88,7 +90,7 @@ document.getElementById('logout').addEventListener('click',async()=>{
  await supabaseClient.auth.signOut();
  await refresh();
 });
-supabaseClient.auth.onAuthStateChange(()=>refresh());
+supabaseClient.auth.onAuthStateChange(()=>{setTimeout(()=>refresh(),0)});
 refresh();
 </script>
 </body>

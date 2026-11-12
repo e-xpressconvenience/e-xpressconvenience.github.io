@@ -38,7 +38,8 @@
     const filters = [...document.querySelectorAll("[data-filter]")];
     const search = document.getElementById("product-search");
     const empty = document.getElementById("empty-search");
-    let category = "all";
+    let category = new URLSearchParams(location.search).get("category") || "all";
+    if (!filters.some(b=>b.dataset.filter===category)) category="all";
     function filterCards() {
       const query = search.value.trim().toLowerCase();
       let visible = 0;
@@ -66,10 +67,16 @@
       if (!byId.has(id)) return;
       cart[id] = Math.min((cart[id] || 0) + 1,99);
       writeCart(cart);
-      button.textContent = "Added to basket";
+      button.textContent = "Added ✓";
+      let toast=document.getElementById('basket-feedback');
+      if(!toast){toast=document.createElement('div');toast.id='basket-feedback';toast.className='ec-toast';toast.setAttribute('role','status');document.body.append(toast);}
+      toast.hidden=false;toast.textContent=byId.get(id).name+' added to your basket';
+      clearTimeout(toast._timer);toast._timer=setTimeout(()=>toast.hidden=true,2200);
       clearTimeout(button._resetTimer);
       button._resetTimer = setTimeout(() => { button.textContent = "Add to basket"; },1400);
     }));
+    const initial=filters.find(b=>b.dataset.filter===category);
+    initial?.click();
     updateCounts();
   }
   function initCheckout() {
@@ -86,7 +93,7 @@
         const empty = document.createElement("div");
         empty.className = "empty-cart";
         const message = document.createElement("p");
-        message.textContent = "Your basket is empty. Add some product examples to start an enquiry.";
+        message.textContent = "Your basket is waiting. Add your everyday essentials to get started.";
         const link = document.createElement("a");
         link.className = "button";
         link.href = "products.html";
@@ -133,7 +140,7 @@
       const entries = PRODUCTS.filter(p => cart[p.id]);
       if (!entries.length) return;
       const payment = document.querySelector('input[name="payment"]:checked')?.value || "Not selected";
-      let delivery = {}; try { delivery = JSON.parse(localStorage.getItem(LOCATION_KEY) || "{}"); } catch {}
+      const delivery = {address:addressInput?.value.trim(),notes:notesInput?.value.trim(),coords:deliveryCoords};
       const message = [
         "Hi Express Convenience, I would like to enquire about these products:",
         ...entries.map(p => "- "+p.name+" x "+cart[p.id]),
@@ -151,7 +158,17 @@
     const locationResult = document.getElementById("location-result");
     const addressInput = document.getElementById("delivery-address");
     const notesInput = document.getElementById("delivery-notes");
+    let savedLocation={};
+    try { savedLocation=JSON.parse(localStorage.getItem(LOCATION_KEY)||'{}')||{}; } catch {}
+    if(addressInput)addressInput.value=typeof savedLocation.address==='string'?savedLocation.address:'';
+    if(notesInput)notesInput.value=typeof savedLocation.notes==='string'?savedLocation.notes:'';
+    let deliveryCoords=savedLocation.coords||null;
+    if(locationResult && (addressInput?.value || deliveryCoords))locationResult.textContent=deliveryCoords?'Saved GPS location is included.':'Your saved address is ready.';
+    const clearLocation=document.createElement('button');clearLocation.type='button';clearLocation.className='remove';clearLocation.textContent='Remove saved GPS location';
+    clearLocation.hidden=!deliveryCoords;locationResult?.after(clearLocation);
+    clearLocation.addEventListener('click',()=>saveLocation(null));
     function saveLocation(coords) {
+      deliveryCoords=coords;clearLocation.hidden=!coords;
       const value = {address: addressInput?.value.trim() || "", notes: notesInput?.value.trim() || "", coords};
       try { localStorage.setItem(LOCATION_KEY, JSON.stringify(value)); } catch {}
       if (locationResult) locationResult.textContent = coords ? "Precise location saved for delivery planning." : "Address saved.";
@@ -164,8 +181,7 @@
       }, () => { locationResult.textContent = "Location was not shared. Enter your delivery address instead."; }, {enableHighAccuracy:true,timeout:15000,maximumAge:0});
     });
     [addressInput,notesInput].forEach(input => input?.addEventListener("input", () => {
-      let old={}; try {old=JSON.parse(localStorage.getItem(LOCATION_KEY)||"{}");}catch{}
-      saveLocation(old.coords || null);
+      saveLocation(deliveryCoords);
     }));
     render();
   }
