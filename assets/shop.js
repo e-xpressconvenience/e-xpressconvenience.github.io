@@ -2,7 +2,8 @@
   "use strict";
   const KEY = "express-convenience-basket-v1";
   const LOCATION_KEY = "express-convenience-delivery-location-v1";
-  const PRODUCTS = window.XpressDelivery.products;
+  const D = window.XpressDepartments;
+  const PRODUCTS = window.XpressDelivery.products.map(p=>({...p,category:D.classify(p)}));
   const byId = new Map(PRODUCTS.map(p => [p.id,p]));
   let fallbackCart = {};
 
@@ -29,10 +30,26 @@
   }
   function initProducts() {
     const grid=document.querySelector('.catalogue');
-    if(document.body.dataset.page==='products')for(const p of PRODUCTS.filter(p=>p.sourceId)){
-      const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.search=(p.name+' '+p.search).toLowerCase();
+    const isShop=document.body.dataset.page==='products';
+    const counts=Object.fromEntries(D.departments.map(d=>[d.id,PRODUCTS.filter(p=>D.matches(p,d.id)).length]));
+    const home=document.getElementById('department-grid');
+    for(const department of [{id:'all',name:'All products'},...D.departments]){
+      const count=department.id==='all'?PRODUCTS.length:counts[department.id];
+      const target=document.getElementById('department-sidebar');
+      if(target){const b=document.createElement('button');b.type='button';b.className='department-filter';b.dataset.filter=department.id;b.textContent=department.name+' · '+(count||'Request');target.append(b);}
+      if(home&&department.id!=='all'){const a=document.createElement('a');a.href='products.html?category='+department.id;a.className='department-tile';const name=document.createElement('strong');name.textContent=department.name;const sub=document.createElement('span');sub.textContent=count?count+' listing'+(count===1?'':'s')+' →':'Request sourcing →';a.append(name,sub);home.append(a);}
+    }
+    const compact=document.getElementById('department-filters');
+    if(compact){const label=document.createElement('label');label.textContent='Department ';const select=document.createElement('select');select.id='department-select';for(const d of [{id:'all',name:'All products'},...D.departments]){const o=document.createElement('option');o.value=d.id;o.textContent=d.name;select.append(o);}label.append(select);compact.append(label);}
+    const featured=[];const used=new Set();
+    for(const category of D.tech){const p=PRODUCTS.find(p=>p.category===category&&p.supplierListedStock);if(p){featured.push(p);used.add(p.id);}}
+    const display=isShop?PRODUCTS:featured;
+    const hero=document.getElementById('hero-product');const phone=PRODUCTS.find(p=>/^iPhone 16 Pro Max/.test(p.name));
+    if(hero&&phone){const img=document.createElement('img');img.src=phone.image;img.alt=phone.name;img.width=img.height=320;hero.append(img);}
+    for(const p of display){
+      const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.price=p.priceMinor;card.dataset.search=(p.name+' '+p.search).toLowerCase();
       const pic=document.createElement('div');pic.className='item-image';const image=document.createElement('img');image.src=p.image;image.alt=p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>{image.onerror=null;image.src='assets/favicon.svg';};pic.append(image);
-      const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent='Phones & gadgets';const title=document.createElement('h3');title.textContent=p.name;
+      const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');title.textContent=p.name;
       const note=document.createElement('p');const fresh=Date.parse(p.expiresAt)>Date.now();note.textContent=fresh?'Xpress estimate · delivery extra. Stock, condition and warranty confirmed before payment.':'Price check needed · this source price has expired.';
       const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2}):'Refresh price';const add=document.createElement('button');add.type='button';add.className='button';add.dataset.add=p.id;add.textContent=p.supplierListedStock?'Add to basket':'Check availability';
       const details=document.createElement('details');details.className='offer-source';const summary=document.createElement('summary');summary.textContent='Price & source';const info=document.createElement('p');info.textContent='Mobile Planet website listing, checked '+new Date(p.checkedAt).toLocaleDateString('en-ZA')+'. Source price R '+(p.supplierPriceMinor/100).toFixed(2)+'. Xpress estimate adds 3% + M25 handling. Supplier lists '+(p.supplierListedStock?'in stock':'out of stock')+'; collection stock is not reserved. Seller partnership not established.';const link=document.createElement('a');link.href=p.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';link.textContent='View original listing';details.append(summary,info,link);bottom.append(price,add);copy.append(tag,title,note,bottom,details);card.append(pic,copy);grid.append(card);
@@ -42,25 +59,25 @@
     const search=document.getElementById('global-query');
     const empty=document.getElementById('empty-search');
     const params=new URLSearchParams(location.search);
-    let category=params.get('category')||'all';let visibleLimit=24;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
-    if(!filters.some(b=>b.dataset.filter===category))category='all';
+    let category=params.get('category')||'all';let visibleLimit=isShop?24:6;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
+    if(category!=='gadgets'&&category!=='all'&&!D.departments.some(d=>d.id===category))category='all';
     if(document.body.dataset.page==='products')search.value=params.get('q')||'';
     function filterCards(){
       const query=search.value.trim().toLowerCase();let visible=0;
       if(query&&document.getElementById('product-sort')?.value==='featured'){[...cards].sort((a,b)=>window.XpressSearch.score({id:b.querySelector('[data-add]')?.dataset.add,name:b.querySelector('h3').textContent,search:b.dataset.search},query)-window.XpressSearch.score({id:a.querySelector('[data-add]')?.dataset.add,name:a.querySelector('h3').textContent,search:a.dataset.search},query)).forEach(card=>grid.append(card));}
-      [...grid.querySelectorAll('.item')].forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&window.XpressSearch.score({id:card.querySelector('[data-add]')?.dataset.add,name:card.querySelector('h3').textContent,search:card.dataset.search},query)>0;if(match)visible++;card.hidden=!match||visible>visibleLimit;});
+      [...grid.querySelectorAll('.item')].forEach(card=>{const match=D.matches({category:card.dataset.category},category)&&window.XpressSearch.score({id:card.querySelector('[data-add]')?.dataset.add,name:card.querySelector('h3').textContent,search:card.dataset.search},query)>0;if(match)visible++;card.hidden=!match||visible>visibleLimit;});
       more.hidden=visible<=visibleLimit;
       if(empty){
         empty.hidden=visible!==0;
-        const names={sneakers:'Sneakers & streetwear',gadgets:'Phones & gadgets',household:'Home & household',bulk:'Bulk buys'};
-        const department=names[category];
+        const department=category==='all'?null:D.label(category);
         empty.querySelector('h2').textContent=department?department+' — source on request':'Not listed? Let’s look for it.';
         empty.querySelector('p').textContent=query?'Tell us the exact product, size or model. We’ll check sourcing options and send a quote.':'Describe what you need. We confirm stock, price and delivery before you commit.';
         const request=document.getElementById('request-product');
         if(request){const url=new URL('source.html',location.href);if(query)url.searchParams.set('q',search.value.trim());if(category!=='all')url.searchParams.set('category',category);request.href=url.href;request.textContent=department?'Request '+department.toLowerCase()+' →':'Request this product →';}
-        document.getElementById('clear-filters').textContent='Browse listed essentials';
+        document.getElementById('clear-filters').textContent='Browse all listings';
       }
-      const result=document.getElementById('result-count');if(result)result.textContent=visible+' product'+(visible===1?'':'s');
+      const result=document.getElementById('result-count');if(result)result.textContent=visible+' listing'+(visible===1?'':'s')+' · includes exact model variants';
+      const selector=document.getElementById('department-select');if(selector)selector.value=category;
       filters.forEach(button=>{const active=button.dataset.filter===category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       if(document.body.dataset.page==='products'){const url=new URL(location.href);category==='all'?url.searchParams.delete('category'):url.searchParams.set('category',category);query?url.searchParams.set('q',search.value.trim()):url.searchParams.delete('q');history.replaceState(null,'',url);}
     }
@@ -69,7 +86,8 @@
       search.addEventListener('input',()=>{visibleLimit=24;filterCards();});
       search.form.addEventListener('submit',e=>{e.preventDefault();filterCards();});
       document.getElementById('clear-filters')?.addEventListener('click',()=>{search.value='';category='all';filterCards();search.focus();});
-      document.getElementById('product-sort')?.addEventListener('change',e=>{const sorted=[...cards];if(e.target.value!=='featured')sorted.sort((a,b)=>a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent)*(e.target.value==='za'?-1:1));sorted.forEach(card=>grid.append(card));});
+      document.getElementById('department-select')?.addEventListener('change',e=>{category=e.target.value;visibleLimit=24;filterCards();});
+      document.getElementById('product-sort')?.addEventListener('change',e=>{const sorted=[...cards];const mode=e.target.value;if(mode.startsWith('price-'))sorted.sort((a,b)=>(Number(a.dataset.price)-Number(b.dataset.price))*(mode==='price-down'?-1:1));else if(mode!=='featured')sorted.sort((a,b)=>a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent)*(mode==='za'?-1:1));sorted.forEach(card=>grid.append(card));filterCards();});
       filterCards();
     }
     document.querySelectorAll('[data-add]').forEach(button=>{

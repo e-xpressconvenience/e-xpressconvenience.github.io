@@ -4,7 +4,7 @@ Branded buildless storefront: `dist/`. GitHub source repository: e-xpressconveni
 
 ## Included
 - Approved Convenience, Delivery and front-basket Delivery Lite logos, prepared as WebP.
-- Six-product starting catalogue; Sneakers and Gadgets remain coming soon.
+- Imported supplier catalogue with 18 departments; departments without current listings accept sourcing requests.
 - Basket guidance updates when quantities change. Itau 12.5 kg excludes bicycle delivery; other baskets require pack/route review.
 - GPS is requested only on click. Address-only, manual coordinates and optional Leaflet map with draggable pin are supported.
 - Explicit destination confirmation and recipient information; persistent address saving is opt-in.
@@ -52,7 +52,7 @@ Validation: `node tests/search.test.cjs` covers pricing arithmetic, fee handling
 
 ## Live-source catalogue import — latest release
 
-Supersedes the empty-catalogue/pricing status above: the first actual Mobile Planet public Store API import now supplies 489 exact-price listings/variants from 139 parent product pages. The six existing essentials remain quote-only. Three records are quarantined in `data/import-report.json` (two missing/zero prices and one inconsistent model/year title). No descriptions, reviews or seller marketing claims were copied.
+Supersedes the empty-catalogue/pricing status above: the first actual Mobile Planet public Store API import now supplies 489 exact-price listings/variants from 139 parent product pages. The six legacy starter essentials were removed in the departments release. Three records are quarantined in `data/import-report.json` (two missing/zero prices and one inconsistent model/year title). No descriptions, reviews or seller marketing claims were copied.
 
 Run `python scripts/import-mobileplanet.py` to refresh the catalogue, then run checks and publish the resulting version. `--seed-dir` is only for previously downloaded public API responses. Import is not scheduled yet. Requests are bounded, paginated and read-only; failures retain the previous catalogue. `assets/imported-catalogue.js` is the source snapshot used by the storefront, basket and scanner. Supplier images use their original HTTPS thumbnail URLs and may require approved reuse/local copies before public launch.
 
@@ -61,3 +61,11 @@ Run `python scripts/import-mobileplanet.py` to refresh the catalogue, then run c
 Shoprite returned HTTP 403 during the source check; no feed was imported. Sefalana's discovered online store displayed BWP prices; no Botswana prices were reused as Maseru prices. Add a verified Lesotho feed or local supplier file before importing grocery prices.
 
 Browser checks: iPhone search returns actual storage/colour variants and calculated prices; selecting an imported variant preserves the exact item and estimated unit price in the basket, calculates a partial subtotal alongside unpriced essentials, and requests suitable electronics handling. Import validation checked unique IDs, source minor-unit conversion and positive price calculations. Existing 33 search/pricing/delivery assertions pass. Mobile layout and physical-camera checks remain outstanding for this release.
+
+
+## Department release — 13 November 2026
+The homepage and catalogue now use only source-backed imported records; all six starter cards and their basket IDs were removed. There are 18 browse/request departments. Current data occupies phones (474 exact variants/listings), computers (1), tablets (12) and accessories (2); the other departments are request-only, not stocked or priced. Counts include colour/storage variants, not 489 distinct product models. Classification is shared through `assets/departments.js` and survives supplier refreshes. Price sorting, pagination, URL department links, mobile department selector and sourcing form share the catalogue. Heavy delivery rules now use product weights rather than one hardcoded brand.
+
+No new grocery prices were imported in this release. Public Sefalana Shopper Lesotho mirrors showed expired October promotions; the Facebook page required login. The Wholesale page and current Pick n Pay offers remain unverified. Botswana Pula offers, loyalty-only discounts without conditions, expired promotions and average market prices must not become current Maseru offers. Needed next: exact recent retailer post/flyer URLs, legible pack/quantity and dates, Lesotho branch/currency and eligibility conditions. A recent price is evidence of an advertised offer, not proof of collection stock or a delivery ETA.
+
+`dist/` is the maintained storefront. `build_pages.py` is a legacy generator and must not be run: it would restore obsolete starter content. Validation: `node tests/departments.test.cjs`, `node tests/delivery.test.cjs`, `node tests/search.test.cjs`. Physical mobile/camera testing remains separate from desktop browser checks.

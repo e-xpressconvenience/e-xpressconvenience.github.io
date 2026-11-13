@@ -1,6 +1,8 @@
 (()=>{
  'use strict';const $=id=>document.getElementById(id),form=$('source-form');if(!form)return;
- const categories=['general','groceries','bulk','household','sneakers','gadgets'];
+ const categories=['general','gadgets',...window.XpressDepartments.departments.map(d=>d.id)];
+ const select=$('source-category');select.replaceChildren();
+ for(const d of [{id:'general',name:'Any product / shopping list'},...window.XpressDepartments.departments,{id:'gadgets',name:'All electronics'}]){const o=document.createElement('option');o.value=d.id;o.textContent=d.name;select.append(o);}
  const hints={sneakers:'Include brand, model, shoe size and sizing system (UK, US or EU), colour and quantity. Authenticity and availability must be checked.',gadgets:'Include model, storage, colour and condition. For iPhones, ask for battery health if used, network/activation-lock status and warranty terms.',bulk:'Include case or bag sizes and quantities. We check collection, weight and a suitable vehicle.',general:'Include exact specifications and quantities. You can attach a reference photo when sending in WhatsApp.',groceries:'Include brands, pack sizes, quantities and whether you would consider alternatives.',household:'Include size, dimensions or model where relevant, plus quantity.'};
  const params=new URLSearchParams(location.search),category=params.get('category');if(categories.includes(category))$('source-category').value=category;
  $('source-item').value=(params.get('q')||'').slice(0,1200);

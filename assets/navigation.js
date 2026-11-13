@@ -6,7 +6,7 @@
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){close();menu?.focus();}});
  document.addEventListener('click',e=>{if(!e.target.closest('.ec-header'))close();});
  const key='express-convenience-basket-v1';
- function count(){let cart={};try{cart=JSON.parse(localStorage.getItem(key)||'{}')}catch{};const allowed=["itau","ginger","rama","salt","sugar","tea",...(window.XpressImported?.products||[]).map(p=>p.id)];const n=Object.entries(cart||{}).reduce((n,[id,q])=>n+(allowed.includes(id)&&Number.isInteger(q)&&q>0&&q<=99?q:0),0);document.querySelectorAll('[data-cart-count]').forEach(el=>el.textContent=n);}
+ function count(){let cart={};try{cart=JSON.parse(localStorage.getItem(key)||'{}')}catch{};const allowed=[...(window.XpressImported?.products||[]).map(p=>p.id)];const n=Object.entries(cart||{}).reduce((n,[id,q])=>n+(allowed.includes(id)&&Number.isInteger(q)&&q>0&&q<=99?q:0),0);document.querySelectorAll('[data-cart-count]').forEach(el=>el.textContent=n);}
  count();window.addEventListener('storage',count);
  let installPrompt;const install=document.querySelector('.ec-install');
  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;if(install)install.hidden=false});
