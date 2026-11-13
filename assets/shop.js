@@ -29,18 +29,27 @@
   }
   function initProducts() {
     const grid=document.querySelector('.catalogue');
+    if(document.body.dataset.page==='products')for(const p of PRODUCTS.filter(p=>p.sourceId)){
+      const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.search=(p.name+' '+p.search).toLowerCase();
+      const pic=document.createElement('div');pic.className='item-image';const image=document.createElement('img');image.src=p.image;image.alt=p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>{image.onerror=null;image.src='assets/favicon.svg';};pic.append(image);
+      const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent='Phones & gadgets';const title=document.createElement('h3');title.textContent=p.name;
+      const note=document.createElement('p');const fresh=Date.parse(p.expiresAt)>Date.now();note.textContent=fresh?'Xpress estimate · delivery extra. Stock, condition and warranty confirmed before payment.':'Price check needed · this source price has expired.';
+      const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2}):'Refresh price';const add=document.createElement('button');add.type='button';add.className='button';add.dataset.add=p.id;add.textContent=p.supplierListedStock?'Add to basket':'Check availability';
+      const details=document.createElement('details');details.className='offer-source';const summary=document.createElement('summary');summary.textContent='Price & source';const info=document.createElement('p');info.textContent='Mobile Planet website listing, checked '+new Date(p.checkedAt).toLocaleDateString('en-ZA')+'. Source price R '+(p.supplierPriceMinor/100).toFixed(2)+'. Xpress estimate adds 3% + M25 handling. Supplier lists '+(p.supplierListedStock?'in stock':'out of stock')+'; collection stock is not reserved. Seller partnership not established.';const link=document.createElement('a');link.href=p.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';link.textContent='View original listing';details.append(summary,info,link);bottom.append(price,add);copy.append(tag,title,note,bottom,details);card.append(pic,copy);grid.append(card);
+    }
     const cards=[...grid.querySelectorAll('.item')];
     const filters=[...document.querySelectorAll('[data-filter]')];
     const search=document.getElementById('global-query');
     const empty=document.getElementById('empty-search');
     const params=new URLSearchParams(location.search);
-    let category=params.get('category')||'all';
+    let category=params.get('category')||'all';let visibleLimit=24;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
     if(!filters.some(b=>b.dataset.filter===category))category='all';
     if(document.body.dataset.page==='products')search.value=params.get('q')||'';
     function filterCards(){
       const query=search.value.trim().toLowerCase();let visible=0;
       if(query&&document.getElementById('product-sort')?.value==='featured'){[...cards].sort((a,b)=>window.XpressSearch.score({id:b.querySelector('[data-add]')?.dataset.add,name:b.querySelector('h3').textContent,search:b.dataset.search},query)-window.XpressSearch.score({id:a.querySelector('[data-add]')?.dataset.add,name:a.querySelector('h3').textContent,search:a.dataset.search},query)).forEach(card=>grid.append(card));}
-      cards.forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&window.XpressSearch.score({id:card.querySelector('[data-add]')?.dataset.add,name:card.querySelector('h3').textContent,search:card.dataset.search},query)>0;card.hidden=!match;if(match)visible++;});
+      [...grid.querySelectorAll('.item')].forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&window.XpressSearch.score({id:card.querySelector('[data-add]')?.dataset.add,name:card.querySelector('h3').textContent,search:card.dataset.search},query)>0;if(match)visible++;card.hidden=!match||visible>visibleLimit;});
+      more.hidden=visible<=visibleLimit;
       if(empty){
         empty.hidden=visible!==0;
         const names={sneakers:'Sneakers & streetwear',gadgets:'Phones & gadgets',household:'Home & household',bulk:'Bulk buys'};
@@ -55,9 +64,9 @@
       filters.forEach(button=>{const active=button.dataset.filter===category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       if(document.body.dataset.page==='products'){const url=new URL(location.href);category==='all'?url.searchParams.delete('category'):url.searchParams.set('category',category);query?url.searchParams.set('q',search.value.trim()):url.searchParams.delete('q');history.replaceState(null,'',url);}
     }
-    filters.forEach(button=>button.addEventListener('click',()=>{category=button.dataset.filter;filterCards();}));
+    filters.forEach(button=>button.addEventListener('click',()=>{category=button.dataset.filter;visibleLimit=24;filterCards();}));
     if(document.body.dataset.page==='products'){
-      search.addEventListener('input',filterCards);
+      search.addEventListener('input',()=>{visibleLimit=24;filterCards();});
       search.form.addEventListener('submit',e=>{e.preventDefault();filterCards();});
       document.getElementById('clear-filters')?.addEventListener('click',()=>{search.value='';category='all';filterCards();search.focus();});
       document.getElementById('product-sort')?.addEventListener('change',e=>{const sorted=[...cards];if(e.target.value!=='featured')sorted.sort((a,b)=>a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent)*(e.target.value==='za'?-1:1));sorted.forEach(card=>grid.append(card));});
