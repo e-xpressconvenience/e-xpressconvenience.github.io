@@ -1,7 +1,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.XpressDepartments=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const departments=[['phones','Phones'],['computers','Computers'],['tablets','Tablets'],['audio','Audio'],['wearables','Smart watches'],['accessories','Tech accessories'],['groceries','Groceries & pantry'],['fresh','Fresh & chilled'],['drinks','Soft drinks & water'],['household','Cleaning & household'],['beauty','Beauty & personal care'],['baby','Baby & kids'],['sneakers','Fashion & sneakers'],['home','Home & kitchen'],['appliances','Appliances'],['sports','Sports & outdoors'],['stationery','Stationery & office'],['bulk','Wholesale & bulk']].map(([id,name])=>({id,name}));
-const tech=['phones','computers','tablets','audio','wearables','accessories'];
+const departments=[['phones','Phones'],['computers','Computers'],['tablets','Tablets'],['televisions','TVs & entertainment'],['audio','Audio'],['wearables','Smart watches'],['accessories','Tech accessories'],['groceries','Groceries & pantry'],['fresh','Fresh & chilled'],['drinks','Soft drinks & water'],['household','Cleaning & household'],['beauty','Beauty & personal care'],['baby','Baby & kids'],['sneakers','Sneakers'],['clothing','Clothing & streetwear'],['fashion-accessories','Bags & accessories'],['jewellery','Chains & jewellery'],['watches','Watches'],['home','Home & kitchen'],['appliances','Appliances'],['sports','Sports & outdoors'],['stationery','Stationery & office'],['bulk','Wholesale & bulk']].map(([id,name])=>({id,name}));
+const tech=['phones','computers','tablets','audio','wearables','accessories','televisions'];
 function classify(p){
 if(p.category!=='gadgets')return p.category;
 const n=p.name.toLowerCase(),tags=(p.search||'').toLowerCase();

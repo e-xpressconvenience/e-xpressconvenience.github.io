@@ -78,3 +78,29 @@ Xpress now sets its own catalogue prices from observed market benchmarks and sou
 Supplier details and markup explanations were removed from product cards and WhatsApp basket drafts. Source evidence remains in repository files and existing imported-data payloads, so this is customer-interface simplification, not a confidentiality boundary. Sneakers capture requested UK/EU/US sizes in the basket; size availability is confirmed by staff. Checkout explicitly says timing, total and changes are agreed before payment. No stock reservations, automatic payment or messages occur.
 
 Verified with pricing and catalogue assertions, existing delivery/search tests and browser checks of grocery/sneaker cards, actual images, sneaker-size persistence and rounded mixed-basket subtotals. Physical Android and live camera tests are not part of this release. Refresh references and assess conversion/demand from real orders before calling an item popular.
+
+
+## Expanded departments — 13 November 2026
+
+Catalogue now contains 660 listings (includes exact electronics variants): 489 imported electronics records and 171 researched market-priced records. This release adds 128 records, including five Air Jordan 1 styles, 41 appliances, five televisions, 32 home/furniture listings, Apple AirPods and four Apple Watch listings, plus sports, baby care, toiletries, beverages, chilled milk and stationery. All 19 departments contain products. These are researched retail benchmarks, not confirmed inventory or supplier integrations; not every named retailer has been imported.
+
+Nike and OK Furniture product pages provide direct product images and benchmarks; additional everyday/Apple references use visible retailer offers on PriceCheck. Evidence URLs, dates, exact model names and reference prices are retained in data/market-references.json, outside deployed dist. Customer cards and WhatsApp drafts omit supplier links. Source repository records are not private procurement secrets.
+
+Xpress pricing: essentials add M1.50, rounded up to a whole maloti; sneakers add 8% + M50; sports 5% + M15; furniture 6% + M150; appliances 6% + M25; other technology 3% + M25. Non-essential rules round to nearest M10. Delivery, collection and cross-border charges require confirmation and are not silently included. These configurable business assumptions need margin review against actual procurement costs.
+
+Regional baskets explain possible South Africa/Ladybrand collection, subject to confirmation before payment. Bulky items exclude bicycle delivery and require a larger-vehicle quote; fresh items require local chilled handling review; mixed heavy/fresh baskets still exclude Lite. No retailer availability, customs arrangements, delivery date or specific route is guaranteed automatically.
+
+Validation: market, delivery, departments and search tests passed; browser search returned five Air Jordan 1 products with their actual images. Catalogue and pricing snapshots require regular refresh; there is no scheduled importer yet.
+
+
+## Sky-blue style expansion — latest release, 13 November 2026
+
+779 listings across 23 populated departments: 489 electronics variant records plus 290 researched market-price records. The combined release adds 247 records over the last published 532. The latest 119 comprise 24 Nike clothing listings, 24 bags, 23 additional glove listings, 40 Maybelline cosmetics, four conventional Casio watches and four chain necklaces. Product evidence remains outside deployed dist; customer-facing prices are Xpress prices, not supplier stock promises. Model/colour variants count as listings, not unique product families. No vape or alcohol listings added.
+
+Sky-blue/white surfaces and navy type now replace the green interface across the site; existing raster logos remain intact. Homepage links lead to four populated curated edits: streetwear, jewellery, beauty and watches. Clothing/gloves accept size/colour requests, cosmetics shade/finish and accessories finish/size, saved locally and included in the customer-reviewed WhatsApp draft. Requests are not confirmed variant inventory. Makeup uses the highest observed variant reference price where a product has several variants; the office confirms requested shade and total.
+
+Fashion pricing: reference +8% +M25 rounded nearest M10; conventional watches +5% +M25 nearest M10. Existing rules continue for other departments. Retail evidence checked 13 November 2026 from Nike ZA, Edgars Maybelline public product catalogue and visible PriceCheck retailer offers. No supplier partnership or complete retailer import is claimed. Stock and viable sourcing costs must be confirmed by staff.
+
+Cultural research informs curation, not measured demand: TikTok's official 2026 trend report (https://ads.tiktok.com/business/en-US/next?tt4b_lang_redirect=1) and Spotify's amapiano fashion feature (https://newsroom.spotify.com/2024-06-13/from-beats-to-the-streets-to-the-catwalks-how-amapiano-enabled-a-lifestyle/, June 2024 context). Music in Africa's rolling 2026 editorial list was reviewed (https://musicinafrica.net/magazine/top-amapiano-songs-2026/), not a verified live TikTok chart. No music is embedded or used commercially; no Ghost Hlubi/Peanuts product endorsement is asserted.
+
+Validation: existing search, delivery, department and expanded market tests; JavaScript syntax checks; desktop browser verified blue homepage, populated edits, makeup search, basket totals and shade persistence through reload. Physical Android/camera testing remains outstanding. No automatic stock sync, demand analytics, checkout payment or scheduled trend refresh is enabled.

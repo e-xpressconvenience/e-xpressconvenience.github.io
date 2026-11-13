@@ -11,8 +11,10 @@
     const cart=cleanCart(raw),items=products.filter(p=>cart[p.id]),count=Object.values(cart).reduce((a,b)=>a+b,0);
     if(!count)return {type:'empty',title:'Your delivery starts with your basket',reason:'Add your essentials to see the next delivery step.',count:0,lite:'pending'};
     const heavy=items.some(p=>p.heavy);
+    if(items.some(p=>p.bulky))return {type:'heavy',title:'Larger-vehicle delivery required',reason:'This basket includes bulky items. We confirm dimensions, collection, loading and access at your address before quoting delivery. Delivery Lite is excluded.',count,lite:'excluded'};
+    if(!heavy&&items.some(p=>p.coldChain))return {type:'review',title:'Fresh-food handling check',reason:'We confirm local availability, chilled handling and a suitable delivery window. Fresh items are not automatically assigned a cross-border route.',count,lite:'review'};
     if(heavy)return {type:'heavy',title:'Larger-vehicle quote recommended',reason:'This basket contains heavy items. This basket is not suitable for Delivery Lite. We will check a suitable vehicle and your route.',count,lite:'excluded',minimumKg:items.reduce((sum,p)=>sum+(p.netKg||0)*cart[p.id],0)};
-    if(items.some(p=>['gadgets','phones','computers','tablets','audio','wearables','accessories'].includes(p.category)))return {type:'review',title:'Protected delivery for electronics',reason:'We confirm the exact model, condition, supplier stock and secure collection before arranging delivery. No bicycle eligibility or arrival time is assumed.',count,lite:'review'};
+    if(items.some(p=>['gadgets','phones','computers','tablets','audio','wearables','accessories','televisions'].includes(p.category)))return {type:'review',title:'Protected delivery for electronics',reason:'We confirm the exact model, condition, supplier stock and secure collection before arranging delivery. No bicycle eligibility or arrival time is assumed.',count,lite:'review'};
     return {type:'review',title:'Let’s check your basket for Lite',reason:'Bicycle delivery may suit a small nearby order. Pack sizes, packed weight, handling and your route need checking before we confirm the service.',count,lite:'review'};
   }
   return {products,cleanCart,validCoords,recommend};
