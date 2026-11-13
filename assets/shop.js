@@ -42,11 +42,13 @@
       cards.forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&query.split(/\s+/).every(word=>card.dataset.search.includes(word));card.hidden=!match;if(match)visible++;});
       if(empty){
         empty.hidden=visible!==0;
-        const future=['sneakers','gadgets'].includes(category);
-        const title=category==='sneakers'?'Sneakers':'Gadgets';
-        empty.querySelector('h2').textContent=future?title+' — coming soon':'No matching essentials';
-        empty.querySelector('p').textContent=future?'We’re making room for this department. Products will appear here when the range is ready.':'Try a different search or browse all categories.';
-        document.getElementById('clear-filters').textContent=future?'Shop available products':'Clear search & filters';
+        const names={sneakers:'Sneakers & streetwear',gadgets:'Phones & gadgets',household:'Home & household',bulk:'Bulk buys'};
+        const department=names[category];
+        empty.querySelector('h2').textContent=department?department+' — source on request':'Not listed? Let’s look for it.';
+        empty.querySelector('p').textContent=query?'Tell us the exact product, size or model. We’ll check sourcing options and send a quote.':'Describe what you need. We confirm stock, price and delivery before you commit.';
+        const request=document.getElementById('request-product');
+        if(request){const url=new URL('source.html',location.href);if(query)url.searchParams.set('q',search.value.trim());if(category!=='all')url.searchParams.set('category',category);request.href=url.href;request.textContent=department?'Request '+department.toLowerCase()+' →':'Request this product →';}
+        document.getElementById('clear-filters').textContent='Browse listed essentials';
       }
       const result=document.getElementById('result-count');if(result)result.textContent=visible+' product'+(visible===1?'':'s');
       filters.forEach(button=>{const active=button.dataset.filter===category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});

@@ -1,6 +1,6 @@
 # Xpress storefront upgrade
 
-Branded buildless storefront: HTML pages and `assets/` in the repository root. GitHub source repository: e-xpressconvenience/e-xpressconvenience.github.io.
+Branded buildless storefront: `dist/`. GitHub source repository: e-xpressconvenience/e-xpressconvenience.github.io.
 
 ## Included
 - Approved Convenience, Delivery and front-basket Delivery Lite logos, prepared as WebP.
@@ -28,3 +28,10 @@ Do not deploy the commercial storefront to GitHub Pages. Keep GitHub for source 
 3. Authentic pack photos for salt, sugar and tea once brands are selected.
 4. Order history and one-tap reordering after backend verification.
 5. Partner portal and timed delivery slots after operations are stable.
+
+## Expanded sourcing direction
+Sneakers and Gadgets now accept sourcing requests; they are not future-only departments. `source.html` captures product/list, specifications, condition, total budget, preferred seller, delivery area and requested timing. Search misses retain the query and department when opening the sourcing form. Customers can include the existing catalogue basket in the WhatsApp draft. No request is sent automatically.
+
+This is an assisted sourcing service, not a live index of Maseru retailers. Build a verified offer catalogue next: product/variant, merchant and branch, purchase price, selling price or fee, stock evidence, last-checked timestamp, expiry, packed weight, handling, preparation time and collection location. Supplier price lists, permitted imports and merchant-confirmed updates should feed it. Do not present promotional flyers as live stock or claim retailer partnerships without agreements.
+
+Operational timing should include source confirmation, collection travel, queue/preparation, multi-stop consolidation, packing and last-mile travel. Publish a range after verification; update it if a source falls through. Use category-based contribution targets: low markup on suitable staples, disclosed sourcing charges where needed, and appropriate margins for high-value products. Reinvest measured profits in fast-moving stock and storage once repeat demand supports it.
