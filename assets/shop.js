@@ -42,15 +42,21 @@
     const compact=document.getElementById('department-filters');
     if(compact){const label=document.createElement('label');label.textContent='Department ';const select=document.createElement('select');select.id='department-select';for(const d of [{id:'all',name:'All products'},...D.departments]){const o=document.createElement('option');o.value=d.id;o.textContent=d.name;select.append(o);}label.append(select);compact.append(label);}
     const featured=[];const used=new Set();
-    for(const category of ['groceries','sneakers','household','beauty','baby','phones']){const p=PRODUCTS.find(p=>p.category===category);if(p){featured.push(p);used.add(p.id);}}
-    const display=isShop?PRODUCTS:featured;
+    for(const category of ['sneakers','clothing','beauty','watches','jewellery','fashion-accessories','phones','audio','groceries','appliances','home','baby']){const p=PRODUCTS.find(p=>category==='sneakers'?/Air Jordan 1/.test(p.name):category==='beauty'?/Sky High Mascara/.test(p.name):p.category===category);if(p){featured.push(p);used.add(p.id);}}
+    const display=isShop?PRODUCTS:featured.slice(0,12);
+    const edits=document.getElementById('style-edits');
+    if(edits){
+      const collections=[['THE WEEKEND FIT','Streetwear, your way.','clothing',p=>p.category==='clothing'],['FINISH THE LOOK','A little extra.','jewellery',p=>p.category==='jewellery'],['THE BEAUTY BAG','Your daily favourites.','beauty',p=>/Sky High Mascara/.test(p.name)],['ON YOUR TIME','Make every detail count.','watches',p=>p.category==='watches']];
+      for(const [eyebrow,title,cat,test] of collections){const product=PRODUCTS.find(test);if(!product)continue;const link=document.createElement('a');link.className='style-edit';link.href='products.html?category='+cat;const img=document.createElement('img');img.src=product.image;img.alt=product.name;img.loading='lazy';const small=document.createElement('span');small.textContent=eyebrow;const h=document.createElement('h3');h.textContent=title;const cta=document.createElement('strong');cta.textContent='Shop the edit ↗';link.append(small,h,img,cta);edits.append(link);}
+    }
+
     const hero=document.getElementById('hero-product');const phone=PRODUCTS.find(p=>/^iPhone 16 Pro Max/.test(p.name));
     if(hero&&phone){const img=document.createElement('img');img.src=phone.image;img.alt=phone.name;img.width=img.height=320;hero.append(img);}
     for(const p of display){
       const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.price=p.priceMinor;card.dataset.search=(p.name+' '+p.search).toLowerCase();
       const pic=document.createElement('div');pic.className='item-image';const image=document.createElement('img');image.src=p.image;image.alt=p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>{image.onerror=null;image.src='assets/favicon.svg';};pic.append(image);
       const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');title.textContent=p.name;
-      const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.category==='sneakers'?'Choose your size in the basket. Availability and delivery confirmed before payment.':'Sourced for you. Availability and delivery confirmed before payment.';
+      const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.bulky?'Sourced to order. Larger-vehicle delivery quoted for your address.':p.coldChain?'Fresh-food order. Local availability and chilled delivery confirmed before payment.':(p.optionLabel||p.category==='sneakers')?'Add your preferred size, shade or finish in the basket. Availability and delivery confirmed before payment.':'Sourced for you. Availability and delivery confirmed before payment.';
       const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):'Refresh price';const add=document.createElement('button');add.type='button';add.className='button';add.dataset.add=p.id;add.textContent='Add to basket';
       bottom.append(price,add);copy.append(tag,title,note,bottom);card.append(pic,copy);grid.append(card);
     }
@@ -59,7 +65,7 @@
     const search=document.getElementById('global-query');
     const empty=document.getElementById('empty-search');
     const params=new URLSearchParams(location.search);
-    let category=params.get('category')||'all';let visibleLimit=isShop?24:6;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
+    let category=params.get('category')||'all';let visibleLimit=isShop?24:12;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
     if(category!=='gadgets'&&category!=='all'&&!D.departments.some(d=>d.id===category))category='all';
     if(document.body.dataset.page==='products')search.value=params.get('q')||'';
     function filterCards(){

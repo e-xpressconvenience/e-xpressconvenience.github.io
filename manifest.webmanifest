@@ -4,8 +4,8 @@
   "description": "Everyday essentials and delivery in Maseru",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#fafbf8",
-  "theme_color": "#00594f",
+  "background_color": "#f7fbff",
+  "theme_color": "#85cffa",
   "icons": [
     {
       "src": "assets/favicon.svg",

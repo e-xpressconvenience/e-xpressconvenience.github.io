@@ -19,5 +19,36 @@
   },
   "deliveryIncluded": false,
   "availability": "confirm after basket; payment only after accepted total and delivery window",
-  "demand": "Category replenishment hypothesis only. Actual demand not yet measured."
+  "demand": "Category replenishment hypothesis only. Actual demand not yet measured.",
+  "home": {
+    "markupBps": 600,
+    "handlingMinor": 15000,
+    "roundNearestMinor": 1000
+  },
+  "appliances": {
+    "markupBps": 600,
+    "handlingMinor": 2500,
+    "roundNearestMinor": 1000
+  },
+  "sports": {
+    "markupBps": 500,
+    "handlingMinor": 1500,
+    "roundNearestMinor": 1000
+  },
+  "regional": "Collection, cross-border costs and arrival window confirmed before payment; no promised transit SLA",
+  "fashion": {
+    "categories": [
+      "clothing",
+      "fashion-accessories",
+      "jewellery"
+    ],
+    "markupBps": 800,
+    "handlingMinor": 2500,
+    "roundNearestMinor": 1000
+  },
+  "watches": {
+    "markupBps": 500,
+    "handlingMinor": 2500,
+    "roundNearestMinor": 1000
+  }
 }
