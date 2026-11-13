@@ -1,8 +1,9 @@
-(function(root,factory){const api=factory(root.XpressImported);if(typeof module==='object'&&module.exports)module.exports=api;else root.XpressDelivery=api;})(typeof globalThis!=='undefined'?globalThis:this,function(imported){
+(function(root,factory){const api=factory(root.XpressImported,root.XpressMarket);if(typeof module==='object'&&module.exports)module.exports=api;else root.XpressDelivery=api;})(typeof globalThis!=='undefined'?globalThis:this,function(imported,market){
   'use strict';
   // Net weights are not packed weights. Unknown dimensions/handling require review.
   const products=[];
-  if(imported?.products)products.push(...imported.products);
+  if(imported?.products)products.push(...imported.products.map(p=>({...p,priceMinor:Math.round(p.priceMinor/1000)*1000,priceStatus:'xpress',sourcingRequired:true})));
+  if(market?.products)products.unshift(...market.products);
   const allowed=new Set(products.map(p=>p.id));
   function cleanCart(raw){if(!raw||typeof raw!=='object'||Array.isArray(raw))return {};return Object.fromEntries(Object.entries(raw).filter(([id,n])=>allowed.has(id)&&Number.isInteger(n)&&n>0&&n<=99));}
   function validCoords(c){return !!c&&Number.isFinite(c.lat)&&Number.isFinite(c.lng)&&Math.abs(c.lat)<=90&&Math.abs(c.lng)<=180;}

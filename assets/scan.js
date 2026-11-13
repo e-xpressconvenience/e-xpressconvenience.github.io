@@ -1,7 +1,7 @@
 (()=>{
  'use strict';
  const $=id=>document.getElementById(id),engine=window.XpressSearch;
- const products=window.XpressDelivery.products.map(p=>({...p,barcodes:window.XpressCatalogue.barcodes[p.id]||[]}));
+ const products=window.XpressDelivery.products.map(p=>({...p,barcodes:window.XpressCatalogue.barcodes[p.id]||p.barcodes||[]}));
  let stream=null,reader=null,worker=null,generation=0,photoUrl=null,timer=null;
  const status=text=>{$('scan-status').textContent=text;};
  function stopCamera(){clearTimeout(timer);timer=null;if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('scan-video').srcObject=null;$('camera-view').hidden=true;}
