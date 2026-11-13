@@ -39,7 +39,8 @@
     if(document.body.dataset.page==='products')search.value=params.get('q')||'';
     function filterCards(){
       const query=search.value.trim().toLowerCase();let visible=0;
-      cards.forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&query.split(/\s+/).every(word=>card.dataset.search.includes(word));card.hidden=!match;if(match)visible++;});
+      if(query&&document.getElementById('product-sort')?.value==='featured'){[...cards].sort((a,b)=>window.XpressSearch.score({id:b.querySelector('[data-add]')?.dataset.add,name:b.querySelector('h3').textContent,search:b.dataset.search},query)-window.XpressSearch.score({id:a.querySelector('[data-add]')?.dataset.add,name:a.querySelector('h3').textContent,search:a.dataset.search},query)).forEach(card=>grid.append(card));}
+      cards.forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&window.XpressSearch.score({id:card.querySelector('[data-add]')?.dataset.add,name:card.querySelector('h3').textContent,search:card.dataset.search},query)>0;card.hidden=!match;if(match)visible++;});
       if(empty){
         empty.hidden=visible!==0;
         const names={sneakers:'Sneakers & streetwear',gadgets:'Phones & gadgets',household:'Home & household',bulk:'Bulk buys'};
