@@ -1,0 +1,23 @@
+{
+  "version": "xpress-market-v1",
+  "currency": "LSL",
+  "referenceCurrency": "ZAR",
+  "referenceConversion": 1,
+  "essentials": {
+    "addMinor": 150,
+    "roundUpMinor": 100
+  },
+  "sneakers": {
+    "markupBps": 800,
+    "handlingMinor": 5000,
+    "roundNearestMinor": 1000
+  },
+  "electronics": {
+    "markupBps": 300,
+    "handlingMinor": 2500,
+    "roundNearestMinor": 1000
+  },
+  "deliveryIncluded": false,
+  "availability": "confirm after basket; payment only after accepted total and delivery window",
+  "demand": "Category replenishment hypothesis only. Actual demand not yet measured."
+}

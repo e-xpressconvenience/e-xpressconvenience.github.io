@@ -1,22 +1,23 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#087f89">
-<title>Customer Account | Express Convenience</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="#087f89" name="theme-color"/>
+<title>Customer Account | Xpress Convenience</title>
 <style>
 :root{--teal:#087f89;--deep:#075b65;--peach:#f4bd91;--cream:#fffaf6;--ink:#242d2d;--muted:#5b6968;--line:#dce8e5}
 *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.wrap{width:min(980px,calc(100% - 32px));margin:auto}header{background:var(--deep);color:#fff}.head{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{font-weight:900;letter-spacing:-.03em}.brand span{color:var(--peach)}nav{display:flex;gap:18px;font-size:13px;font-weight:750}nav a{color:#fff;text-decoration:none}.hero{background:linear-gradient(135deg,var(--teal),var(--deep));color:#fff;padding:55px 0}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--peach)}h1{font-size:clamp(40px,6vw,66px);line-height:1;letter-spacing:-.06em;margin:12px 0}.hero p{max-width:650px;color:#dff3f1;line-height:1.6}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:25px;box-shadow:0 10px 30px #164d5210}main{padding:35px 0 70px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{margin:14px 0}.field label{display:block;font-size:12px;font-weight:850;margin-bottom:6px}.field input{width:100%;padding:13px;border:1px solid #cdddda;border-radius:9px;background:#fff;font:inherit}.button{border:0;border-radius:9px;background:var(--teal);color:#fff;padding:12px 17px;font-weight:850;cursor:pointer}.button.secondary{background:var(--peach);color:var(--ink)}.actions{display:flex;gap:9px;flex-wrap:wrap}.status{padding:13px;border-radius:10px;background:#edf7f5;font-size:13px;line-height:1.5;margin-top:14px}.error{background:#fff0ed;color:#8a3025}.success{background:#edf8ee;color:#28633a}.muted{color:var(--muted);line-height:1.6;font-size:14px}footer{background:var(--ink);color:#fff;padding:25px 0;font-size:12px}footer a{color:#fff}@media(max-width:700px){.grid{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}nav{display:none}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="assets/enhancements.css">
-<script src="assets/navigation.js" defer></script>
-<link rel="stylesheet" href="assets/retail.css"></head>
-<body>
-<div class="retail-top"><div class="wrap"><span>Everyday essentials. A little closer.</span><a href="tel:+26663540048">Need a hand? +266 6354 0048</a></div></div>
-<header class="ec-header retail-header"><div class="ec-header-inner"><a class="ec-brand" href="index.html" aria-label="Express Convenience home"><img src="assets/express-convenience-logo.jpeg" alt="Express Convenience" width="1280" height="1280"></a><form class="global-search" action="products.html" role="search"><label class="sr-only" for="global-query">Search products</label><input id="global-query" name="q" type="search" placeholder="Search your everyday essentials…"><button aria-label="Search" type="submit">⌕</button></form><a class="account-link" href="account.html">My account</a><a class="ec-basket" href="checkout.html">Basket <span data-cart-count>0</span></a><button class="ec-menu" type="button" aria-expanded="false" aria-controls="ec-nav">Menu</button></div><div class="retail-nav wrap"><nav id="ec-nav" class="ec-nav" aria-label="Main navigation"><a href="products.html">Shop all</a><a href="products.html?category=groceries">Groceries</a><a href="products.html?category=drinks">Drinks</a><a href="products.html?category=snacks">Snacks</a><a href="products.html?category=household">Household</a><a href="about.html">Our story</a><a href="account.html" class="mobile-account">My account</a><button type="button" class="ec-install" hidden>Install app</button></nav><a class="delivery-link" href="index.html#delivery-info">Delivery &amp; ordering →</a></div></header>
-<section class="hero"><div class="wrap"><span class="eyebrow">For Smart Shoppers</span><h1>Your Express Convenience account.</h1><p>Create an account to keep your customer profile connected to your orders and delivery requests. Sign in to continue to your delivery dashboard.</p></div></section>
+<link href="assets/enhancements.css" rel="stylesheet"/>
+<script defer="" src="assets/navigation.js"></script>
+<link href="assets/retail.css" rel="stylesheet"/><link href="assets/xpress.css" rel="stylesheet"/></head>
+<body><div class="retail-top"><div class="wrap"><span>For Smart Shoppers. Made for Maseru.</span><a href="tel:+26663540048">Need a hand? +266 6354 0048</a></div></div><header class="ec-header retail-header"><div class="ec-header-inner"><a aria-label="Xpress Convenience home" class="ec-brand" href="index.html"><img alt="Xpress Convenience" height="1280" src="assets/xpress-convenience.webp" width="1280"/></a><form action="products.html" class="global-search" role="search"><label class="sr-only" for="global-query">Search products</label><input id="global-query" name="q" placeholder="Search groceries, sneakers, phones…" type="search"/><a class="scan-search-link" href="scan.html" aria-label="Scan a barcode or product label" title="Scan & search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4M8 9v6m4-6v6m4-6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Scan</span></a><button aria-label="Search" type="submit">⌕</button></form><a class="account-link" href="account.html">My account</a><a class="ec-basket" href="checkout.html">Basket <span data-cart-count="">0</span></a><button aria-controls="ec-nav" aria-expanded="false" class="ec-menu" type="button">Menu</button></div><div class="retail-nav wrap"><nav aria-label="Main navigation" class="ec-nav" id="ec-nav"><a href="products.html">Shop all</a><a href="delivery.html">Delivery</a><a href="products.html?category=groceries">Groceries</a><a href="products.html?category=phones">Phones</a><a href="source.html">Find it for me</a><a class="mobile-account" href="account.html">My account</a><button class="ec-install" hidden="" type="button">Install app</button></nav><a class="delivery-link" href="checkout.html">Plan your delivery →</a></div></header>
+
+
+<section class="hero"><div class="wrap"><span class="eyebrow">For Smart Shoppers</span><h1>Your Xpress Convenience account.</h1><p>Create an account to keep your customer profile connected to your orders and delivery requests. Sign in to continue to your delivery dashboard.</p></div></section>
 <main class="wrap">
 <div class="card">
 <div class="grid">
@@ -24,26 +25,26 @@
 <span class="eyebrow" style="color:var(--teal)">New customer</span>
 <h2>Create your account</h2>
 <p class="muted">Use your email and a password. Your name and phone number are saved to your customer profile.</p>
-<div class="field"><label for="name">Full name</label><input id="name" autocomplete="name" placeholder="Your full name"></div>
-<div class="field"><label for="phone">Phone</label><input id="phone" autocomplete="tel" placeholder="+266 ..."></div>
-<div class="field"><label for="signupEmail">Email</label><input id="signupEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
-<div class="field"><label for="signupPassword">Password</label><input id="signupPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
+<div class="field"><label for="name">Full name</label><input autocomplete="name" id="name" placeholder="Your full name"/></div>
+<div class="field"><label for="phone">Phone</label><input autocomplete="tel" id="phone" placeholder="+266 ..."/></div>
+<div class="field"><label for="signupEmail">Email</label><input autocomplete="email" id="signupEmail" placeholder="you@example.com" type="email"/></div>
+<div class="field"><label for="signupPassword">Password</label><input autocomplete="new-password" id="signupPassword" placeholder="At least 6 characters" type="password"/></div>
 <button class="button secondary" id="signup" type="button">Create customer account</button>
 </div>
 <div>
 <span class="eyebrow" style="color:var(--teal)">Returning customer</span>
 <h2>Sign in</h2>
 <p class="muted">Sign in to access your account and delivery centre.</p>
-<div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
-<div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Your password"></div>
-<div class="actions"><button class="button" id="login" type="button">Sign in</button><button class="button secondary" id="logout" type="button" style="display:none">Sign out</button></div>
+<div class="field"><label for="loginEmail">Email</label><input autocomplete="email" id="loginEmail" placeholder="you@example.com" type="email"/></div>
+<div class="field"><label for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Your password" type="password"/></div>
+<div class="actions"><button class="button" id="login" type="button">Sign in</button><button class="button secondary" id="logout" style="display:none" type="button">Sign out</button></div>
 </div>
 </div>
-<div id="status" class="status" role="status">You are not signed in.</div>
-<div id="account" class="status" style="display:none"></div>
+<div class="status" id="status" role="status">You are not signed in.</div>
+<div class="status" id="account" style="display:none"></div>
 </div>
 </main>
-<footer><div class="wrap">Express Convenience · For Smart Shoppers · <a href="delivery.html">Delivery Centre</a></div></footer>
+<footer><div class="wrap">Xpress Convenience · For Smart Shoppers · <a href="operations.html">Delivery Centre</a></div></footer>
 <script>
 const SUPABASE_URL='https://zheqnbaiqsyeubakrolm.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZPNXLqvhmav9OZ-Up4d-TQ_KCdzerBu';

@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict');
+global.XpressImported={products:[{id:'heavy',name:'Heavy fixture',netKg:12.5,heavy:true,category:'groceries'},{id:'light',category:'groceries'},{id:'phone',category:'gadgets'}]};
+const d=require('../assets/delivery-engine.js');
+assert.deepEqual(d.cleanCart({heavy:2,light:1,unknown:5,phone:-1,itau:1}),{heavy:2,light:1});
+assert.deepEqual(d.cleanCart(null),{});assert.deepEqual(d.cleanCart([]),{});
+assert.equal(d.recommend({}).type,'empty');
+assert.equal(d.recommend({heavy:1,light:1}).lite,'excluded');
+assert.equal(d.recommend({heavy:2}).minimumKg,25);
+assert.equal(d.recommend({light:1}).type,'review');
+assert.equal(d.recommend({light:99}).lite,'review');
+assert.equal(d.recommend({phone:1}).title,'Protected delivery for electronics');
+assert.equal(d.recommend({heavy:-1}).type,'empty');
+assert(d.validCoords({lat:0,lng:0}));assert(!d.validCoords({lat:NaN,lng:27}));assert(!d.validCoords({lat:-91,lng:27}));assert(!d.validCoords({lat:'-29',lng:27}));
+console.log('Delivery rules passed.');

@@ -2,68 +2,8 @@
   "use strict";
   const KEY = "express-convenience-basket-v1";
   const LOCATION_KEY = "express-convenience-delivery-location-v1";
-  const PRODUCTS = [
-  {
-    "id": "bread",
-    "name": "Blue Ribbon White Bread",
-    "image": "assets/bread-studio.webp"
-  },
-  {
-    "id": "itau",
-    "name": "Itau Papa 12.5 kg",
-    "image": "assets/itau.webp"
-  },
-  {
-    "id": "ginger",
-    "name": "Ginger Smash",
-    "image": "assets/ginger.webp"
-  },
-  {
-    "id": "rama",
-    "name": "Rama Original",
-    "image": "assets/rama.webp"
-  },
-  {
-    "id": "eggs",
-    "name": "Eggs",
-    "image": "assets/eggs-studio.webp"
-  },
-  {
-    "id": "sausages",
-    "name": "Russian sausages",
-    "image": "assets/sausages-studio.webp"
-  },
-  {
-    "id": "drinks",
-    "name": "Coca-Cola Original",
-    "image": "assets/drinks-studio.webp"
-  },
-  {
-    "id": "snacks",
-    "name": "Bakers Topper Chocolate",
-    "image": "assets/snacks-studio.webp"
-  },
-  {
-    "id": "salt",
-    "name": "Salt",
-    "image": "assets/salt.webp"
-  },
-  {
-    "id": "sugar",
-    "name": "Sugar",
-    "image": "assets/sugar.webp"
-  },
-  {
-    "id": "tea",
-    "name": "Tea bags",
-    "image": "assets/tea.webp"
-  },
-  {
-    "id": "tissue",
-    "name": "Household tissue",
-    "image": "assets/household-studio.webp"
-  }
-];
+  const D = window.XpressDepartments;
+  const PRODUCTS = window.XpressDelivery.products.map(p=>({...p,category:D.classify(p)}));
   const byId = new Map(PRODUCTS.map(p => [p.id,p]));
   let fallbackCart = {};
 
@@ -90,35 +30,64 @@
   }
   function initProducts() {
     const grid=document.querySelector('.catalogue');
+    const isShop=document.body.dataset.page==='products';
+    const counts=Object.fromEntries(D.departments.map(d=>[d.id,PRODUCTS.filter(p=>D.matches(p,d.id)).length]));
+    const home=document.getElementById('department-grid');
+    for(const department of [{id:'all',name:'All products'},...D.departments]){
+      const count=department.id==='all'?PRODUCTS.length:counts[department.id];
+      const target=document.getElementById('department-sidebar');
+      if(target){const b=document.createElement('button');b.type='button';b.className='department-filter';b.dataset.filter=department.id;b.textContent=department.name+' · '+(count||'Request');target.append(b);}
+      if(home&&department.id!=='all'){const a=document.createElement('a');a.href='products.html?category='+department.id;a.className='department-tile';const name=document.createElement('strong');name.textContent=department.name;const sub=document.createElement('span');sub.textContent=count?count+' listing'+(count===1?'':'s')+' →':'Request sourcing →';a.append(name,sub);home.append(a);}
+    }
+    const compact=document.getElementById('department-filters');
+    if(compact){const label=document.createElement('label');label.textContent='Department ';const select=document.createElement('select');select.id='department-select';for(const d of [{id:'all',name:'All products'},...D.departments]){const o=document.createElement('option');o.value=d.id;o.textContent=d.name;select.append(o);}label.append(select);compact.append(label);}
+    const featured=[];const used=new Set();
+    for(const category of ['groceries','sneakers','household','beauty','baby','phones']){const p=PRODUCTS.find(p=>p.category===category);if(p){featured.push(p);used.add(p.id);}}
+    const display=isShop?PRODUCTS:featured;
+    const hero=document.getElementById('hero-product');const phone=PRODUCTS.find(p=>/^iPhone 16 Pro Max/.test(p.name));
+    if(hero&&phone){const img=document.createElement('img');img.src=phone.image;img.alt=phone.name;img.width=img.height=320;hero.append(img);}
+    for(const p of display){
+      const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.price=p.priceMinor;card.dataset.search=(p.name+' '+p.search).toLowerCase();
+      const pic=document.createElement('div');pic.className='item-image';const image=document.createElement('img');image.src=p.image;image.alt=p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>{image.onerror=null;image.src='assets/favicon.svg';};pic.append(image);
+      const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');title.textContent=p.name;
+      const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.category==='sneakers'?'Choose your size in the basket. Availability and delivery confirmed before payment.':'Sourced for you. Availability and delivery confirmed before payment.';
+      const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):'Refresh price';const add=document.createElement('button');add.type='button';add.className='button';add.dataset.add=p.id;add.textContent='Add to basket';
+      bottom.append(price,add);copy.append(tag,title,note,bottom);card.append(pic,copy);grid.append(card);
+    }
     const cards=[...grid.querySelectorAll('.item')];
     const filters=[...document.querySelectorAll('[data-filter]')];
     const search=document.getElementById('global-query');
     const empty=document.getElementById('empty-search');
     const params=new URLSearchParams(location.search);
-    let category=params.get('category')||'all';
-    if(!filters.some(b=>b.dataset.filter===category))category='all';
+    let category=params.get('category')||'all';let visibleLimit=isShop?24:6;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
+    if(category!=='gadgets'&&category!=='all'&&!D.departments.some(d=>d.id===category))category='all';
     if(document.body.dataset.page==='products')search.value=params.get('q')||'';
     function filterCards(){
       const query=search.value.trim().toLowerCase();let visible=0;
-      cards.forEach(card=>{const match=(category==='all'||card.dataset.category===category)&&query.split(/\s+/).every(word=>card.dataset.search.includes(word));card.hidden=!match;if(match)visible++;});
+      if(query&&document.getElementById('product-sort')?.value==='featured'){[...cards].sort((a,b)=>window.XpressSearch.score({id:b.querySelector('[data-add]')?.dataset.add,name:b.querySelector('h3').textContent,search:b.dataset.search},query)-window.XpressSearch.score({id:a.querySelector('[data-add]')?.dataset.add,name:a.querySelector('h3').textContent,search:a.dataset.search},query)).forEach(card=>grid.append(card));}
+      [...grid.querySelectorAll('.item')].forEach(card=>{const match=D.matches({category:card.dataset.category},category)&&window.XpressSearch.score({id:card.querySelector('[data-add]')?.dataset.add,name:card.querySelector('h3').textContent,search:card.dataset.search},query)>0;if(match)visible++;card.hidden=!match||visible>visibleLimit;});
+      more.hidden=visible<=visibleLimit;
       if(empty){
         empty.hidden=visible!==0;
-        const future=['sneakers','gadgets'].includes(category);
-        const title=category==='sneakers'?'Sneakers':'Gadgets';
-        empty.querySelector('h2').textContent=future?title+' — coming soon':'No matching essentials';
-        empty.querySelector('p').textContent=future?'We’re making room for this department. Products will appear here when the range is ready.':'Try a different search or browse all categories.';
-        document.getElementById('clear-filters').textContent=future?'Shop available products':'Clear search & filters';
+        const department=category==='all'?null:D.label(category);
+        empty.querySelector('h2').textContent=department?department+' — source on request':'Not listed? Let’s look for it.';
+        empty.querySelector('p').textContent=query?'Tell us the exact product, size or model. We’ll check sourcing options and send a quote.':'Describe what you need. We confirm stock, price and delivery before you commit.';
+        const request=document.getElementById('request-product');
+        if(request){const url=new URL('source.html',location.href);if(query)url.searchParams.set('q',search.value.trim());if(category!=='all')url.searchParams.set('category',category);request.href=url.href;request.textContent=department?'Request '+department.toLowerCase()+' →':'Request this product →';}
+        document.getElementById('clear-filters').textContent='Browse all listings';
       }
-      const result=document.getElementById('result-count');if(result)result.textContent=visible+' product'+(visible===1?'':'s');
+      const result=document.getElementById('result-count');if(result)result.textContent=visible+' listing'+(visible===1?'':'s')+' · includes exact model variants';
+      const selector=document.getElementById('department-select');if(selector)selector.value=category;
       filters.forEach(button=>{const active=button.dataset.filter===category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       if(document.body.dataset.page==='products'){const url=new URL(location.href);category==='all'?url.searchParams.delete('category'):url.searchParams.set('category',category);query?url.searchParams.set('q',search.value.trim()):url.searchParams.delete('q');history.replaceState(null,'',url);}
     }
-    filters.forEach(button=>button.addEventListener('click',()=>{category=button.dataset.filter;filterCards();}));
+    filters.forEach(button=>button.addEventListener('click',()=>{category=button.dataset.filter;visibleLimit=24;filterCards();}));
     if(document.body.dataset.page==='products'){
-      search.addEventListener('input',filterCards);
+      search.addEventListener('input',()=>{visibleLimit=24;filterCards();});
       search.form.addEventListener('submit',e=>{e.preventDefault();filterCards();});
       document.getElementById('clear-filters')?.addEventListener('click',()=>{search.value='';category='all';filterCards();search.focus();});
-      document.getElementById('product-sort')?.addEventListener('change',e=>{const sorted=[...cards];if(e.target.value!=='featured')sorted.sort((a,b)=>a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent)*(e.target.value==='za'?-1:1));sorted.forEach(card=>grid.append(card));});
+      document.getElementById('department-select')?.addEventListener('change',e=>{category=e.target.value;visibleLimit=24;filterCards();});
+      document.getElementById('product-sort')?.addEventListener('change',e=>{const sorted=[...cards];const mode=e.target.value;if(mode.startsWith('price-'))sorted.sort((a,b)=>(Number(a.dataset.price)-Number(b.dataset.price))*(mode==='price-down'?-1:1));else if(mode!=='featured')sorted.sort((a,b)=>a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent)*(mode==='za'?-1:1));sorted.forEach(card=>grid.append(card));filterCards();});
       filterCards();
     }
     document.querySelectorAll('[data-add]').forEach(button=>{
@@ -134,112 +103,6 @@
       minus.addEventListener('click',()=>change(-1));plus.addEventListener('click',()=>change(1));window.addEventListener('storage',sync);sync();
     });updateCounts();
   }
-  function initCheckout() {
-    const list = document.getElementById("cart-items");
-    const send = document.getElementById("send-enquiry");
-    const summary = document.getElementById("summary-note");
-    function render() {
-      const cart = readCart();
-      list.replaceChildren();
-      const entries = PRODUCTS.filter(p => cart[p.id]);
-      send.disabled = entries.length === 0;
-      summary.hidden = entries.length === 0;
-      if (!entries.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty-cart";
-        const message = document.createElement("p");
-        message.textContent = "Your basket is waiting. Add your everyday essentials to get started.";
-        const link = document.createElement("a");
-        link.className = "button";
-        link.href = "products.html";
-        link.textContent = "Browse products";
-        empty.append(message,link);
-        list.append(empty);
-      }
-      for (const p of entries) {
-        const row = document.createElement("div");
-        row.className = "cart-line";
-        const image = document.createElement("img");
-        image.src = p.image; image.alt = ""; image.width = 66; image.height = 66;
-        const detail = document.createElement("div");
-        const name = document.createElement("strong"); name.textContent = p.name;
-        const note = document.createElement("small"); note.textContent = "Price confirmed after enquiry";
-        const remove = document.createElement("button");
-        remove.type = "button"; remove.className = "remove"; remove.textContent = "Remove";
-        remove.addEventListener("click",() => change(p.id,0));
-        detail.append(name,note,remove);
-        const qty = document.createElement("div"); qty.className = "qty";
-        const minus = document.createElement("button");
-        minus.type = "button"; minus.setAttribute("aria-label","Remove one "+p.name);
-        minus.textContent = "−"; minus.addEventListener("click",() => change(p.id,cart[p.id]-1));
-        const amount = document.createElement("span"); amount.textContent = String(cart[p.id]);
-        const plus = document.createElement("button");
-        plus.type = "button"; plus.setAttribute("aria-label","Add one "+p.name);
-        plus.textContent = "+"; plus.disabled = cart[p.id] >= 99;
-        plus.addEventListener("click",() => change(p.id,cart[p.id]+1));
-        qty.append(minus,amount,plus);
-        row.append(image,detail,qty);
-        list.append(row);
-      }
-      updateCounts(cart);
-    }
-    function change(id,qty) {
-      const cart = readCart();
-      if (qty <= 0) delete cart[id];
-      else cart[id] = Math.min(qty,99);
-      writeCart(cart);
-      render();
-    }
-    send.addEventListener("click",() => {
-      const cart = readCart();
-      const entries = PRODUCTS.filter(p => cart[p.id]);
-      if (!entries.length) return;
-      const payment = document.querySelector('input[name="payment"]:checked')?.value || "Not selected";
-      const delivery = {address:addressInput?.value.trim(),notes:notesInput?.value.trim(),coords:deliveryCoords};
-      const message = [
-        "Hi Express Convenience, I would like to enquire about these products:",
-        ...entries.map(p => "- "+p.name+" x "+cart[p.id]),
-        "",
-        "Preferred payment method: "+payment,
-        "Delivery address: "+(delivery.address||"not provided"),
-        "GPS location: "+(delivery.coords ? delivery.coords.lat+", "+delivery.coords.lng+" (accuracy "+delivery.coords.accuracy+"m)" : "not provided"),
-        "Delivery notes: "+(delivery.notes||"none"),
-        "Please calculate delivery distance and estimated delivery time before confirming the order.",
-        "Please confirm availability, prices, total, delivery and payment instructions before I pay."
-      ].join("\n");
-      window.location.href = "https://wa.me/26663540048?text=" + encodeURIComponent(message);
-    });
-    const useLocation = document.getElementById("use-location");
-    const locationResult = document.getElementById("location-result");
-    const addressInput = document.getElementById("delivery-address");
-    const notesInput = document.getElementById("delivery-notes");
-    let savedLocation={};
-    try { savedLocation=JSON.parse(localStorage.getItem(LOCATION_KEY)||'{}')||{}; } catch {}
-    if(addressInput)addressInput.value=typeof savedLocation.address==='string'?savedLocation.address:'';
-    if(notesInput)notesInput.value=typeof savedLocation.notes==='string'?savedLocation.notes:'';
-    let deliveryCoords=savedLocation.coords||null;
-    if(locationResult && (addressInput?.value || deliveryCoords))locationResult.textContent=deliveryCoords?'Saved GPS location is included.':'Your saved address is ready.';
-    const clearLocation=document.createElement('button');clearLocation.type='button';clearLocation.className='remove';clearLocation.textContent='Remove saved GPS location';
-    clearLocation.hidden=!deliveryCoords;locationResult?.after(clearLocation);
-    clearLocation.addEventListener('click',()=>saveLocation(null));
-    function saveLocation(coords) {
-      deliveryCoords=coords;clearLocation.hidden=!coords;
-      const value = {address: addressInput?.value.trim() || "", notes: notesInput?.value.trim() || "", coords};
-      try { localStorage.setItem(LOCATION_KEY, JSON.stringify(value)); } catch {}
-      if (locationResult) locationResult.textContent = coords ? "Precise location saved for delivery planning." : "Address saved.";
-    }
-    if (useLocation) useLocation.addEventListener("click", () => {
-      if (!navigator.geolocation) { locationResult.textContent = "Location services unavailable. Enter your address instead."; return; }
-      locationResult.textContent = "Requesting precise location permission…";
-      navigator.geolocation.getCurrentPosition(p => {
-        saveLocation({lat:Number(p.coords.latitude.toFixed(6)),lng:Number(p.coords.longitude.toFixed(6)),accuracy:Math.round(p.coords.accuracy)});
-      }, () => { locationResult.textContent = "Location was not shared. Enter your delivery address instead."; }, {enableHighAccuracy:true,timeout:15000,maximumAge:0});
-    });
-    [addressInput,notesInput].forEach(input => input?.addEventListener("input", () => {
-      saveLocation(deliveryCoords);
-    }));
-    render();
-  }
   if (["products","home"].includes(document.body.dataset.page)) initProducts();
-  if (document.body.dataset.page === "checkout") initCheckout();
+
 })();

@@ -1,0 +1,27 @@
+{
+  "updatedAt": "2026-11-13T13:17:56.525955+00:00",
+  "sourceParents": 139,
+  "publishedExactListings": 489,
+  "review": [
+    {
+      "id": 4715,
+      "name": "MacBook PRO M1 2025 Rosegold",
+      "reason": "Model/year needs manual verification"
+    },
+    {
+      "id": 3427,
+      "name": "iPhone 13",
+      "reason": "Invalid price"
+    },
+    {
+      "id": 3421,
+      "name": "iPhone 7",
+      "reason": "Invalid price"
+    }
+  ],
+  "sourceStatus": {
+    "mobileplanet": "public listings imported; commercial relationship and fulfilment unverified",
+    "shoprite": "403 on homepage; no current feed imported",
+    "sefalana": "online prices found in BWP; Lesotho feed not established"
+  }
+}

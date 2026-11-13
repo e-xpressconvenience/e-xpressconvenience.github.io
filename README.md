@@ -1,39 +1,80 @@
-# Express Convenience — enhanced website
+# Xpress storefront upgrade
 
-Static, build-free website for the existing GitHub Pages address. Original brand, contact details, product assets and Supabase project configuration are retained.
+Branded buildless storefront: `dist/`. GitHub source repository: e-xpressconvenience/e-xpressconvenience.github.io.
 
-## Deploy to the existing GitHub repository
+## Included
+- Approved Convenience, Delivery and front-basket Delivery Lite logos, prepared as WebP.
+- Imported supplier catalogue with 18 departments; departments without current listings accept sourcing requests.
+- Basket guidance updates when quantities change. Itau 12.5 kg excludes bicycle delivery; other baskets require pack/route review.
+- GPS is requested only on click. Address-only, manual coordinates and optional Leaflet map with draggable pin are supported.
+- Explicit destination confirmation and recipient information; persistent address saving is opt-in.
+- WhatsApp quote draft; no invented prices, payment processing, booked dispatch or route ETAs.
+- Consumer delivery page separated from preserved operations integration.
 
-1. Extract the ZIP.
-2. Upload the six HTML pages, `assets/`, `sw.js`, and `manifest.webmanifest` into the root of `e-xpressconvenience/e-xpressconvenience.github.io`, replacing matching files. Keep the assets directory structure.
-3. Commit the update to the branch selected in GitHub Settings → Pages (normally `main`).
-4. Once GitHub Pages completes deployment, refresh the website. The updated service worker replaces the previous Express cache.
+## Validation
+Run `node tests/delivery.test.cjs`. Validate all standalone and inline JS syntax, internal links and unique IDs. Browser checks cover basket changes, empty validation, coordinates, saved details, map load and responsive pages.
 
-No build command or hosting change is required. This package has not been pushed or deployed automatically.
+## Launch configuration still needed
+Confirm exact product packs, packed weights/dimensions, handling, inventory and prices; collection point, service zones, safe equipment limits, operating hours, rider availability and delivery rates. Add a real road-routing service and server-side authoritative quotes before enabling confirmed automatic selection or checkout payments.
 
-## Changes
+Supabase account and operations integrations are inherited and have not been verified live. Audit RLS, role authorisation, order transitions, idempotency and payment confirmation before use. Client-side role fields cannot authorise privileged roles.
 
-- Shared sticky header and accessible mobile menu on all six pages; basket badge available throughout.
-- Cleaner logo framing, more compact layouts, restrained transitions, improved touch targets and reduced-motion support.
-- Clearer customer copy, shop-first homepage action, and category links that open filtered products.
-- Category filtering, search, basket feedback and persisted quantities.
-- Checkout restores saved address/notes, includes current form values in the WhatsApp draft, and allows removal of saved GPS coordinates.
-- WhatsApp enquiry is the primary checkout path. Existing signed-in delivery submission is retained in a separate disclosure, with address validation and a pending-request button lock.
-- Fixed malformed JavaScript that prevented the entire Delivery Centre script from executing.
-- Deferred auth-event work outside the auth callback; rider location watching stops on sign-out.
-- Account email-confirmation instructions are no longer immediately overwritten by a refresh.
-- Service worker caches only same-origin static website resources, not third-party APIs/auth traffic, and clears obsolete Express caches.
+## Hosting
+Do not deploy the commercial storefront to GitHub Pages. Keep GitHub for source and use commercial-use-compatible hosting. The Sites deployment is an owner-private review version, not the public customer launch. No existing audience or domain is changed.
 
-## Validation completed
+## Next upgrade priorities
+1. Exact prices and stock for a real basket total.
+2. Route-aware fees after collection point and service zones are confirmed.
+3. Authentic pack photos for salt, sugar and tea once brands are selected.
+4. Order history and one-tap reordering after backend verification.
+5. Partner portal and timed delivery slots after operations are stable.
 
-- JavaScript syntax checks for all inline and standalone scripts.
-- Local page/asset link and duplicate-ID checks.
-- Desktop visual review and phone-sized iframe layout review at 360/390px.
-- Browser checks: homepage category navigation, add to basket, increment quantity, reload persistence, saved address restoration, no-results search, mobile menu expansion, signed-out rider dashboard.
-- No application console errors observed during those browser flows.
+## Expanded sourcing direction
+Sneakers and Gadgets now accept sourcing requests; they are not future-only departments. `source.html` captures product/list, specifications, condition, total budget, preferred seller, delivery area and requested timing. Search misses retain the query and department when opening the sourcing form. Customers can include the existing catalogue basket in the WhatsApp draft. No request is sent automatically.
 
-## Still requires owner testing
+This is an assisted sourcing service, not a live index of Maseru retailers. Build a verified offer catalogue next: product/variant, merchant and branch, purchase price, selling price or fee, stock evidence, last-checked timestamp, expiry, packed weight, handling, preparation time and collection location. Supplier price lists, permitted imports and merchant-confirmed updates should feed it. Do not present promotional flyers as live stock or claim retailer partnerships without agreements.
 
-The existing remote backend was not changed. No live orders, accounts, payments, or messages were created during testing. Signed-in customer/rider/admin access, row-level security, database functions, routing, delivery fees and dispatch require a test account and backend review before relying on them operationally. Preventing concurrent duplicate orders across devices requires server-side idempotency; the UI lock only prevents repeated clicks while a request is pending.
+Operational timing should include source confirmation, collection travel, queue/preparation, multi-stop consolidation, packing and last-mile travel. Publish a range after verification; update it if a source falls through. Use category-based contribution targets: low markup on suitable staples, disclosed sourcing charges where needed, and appropriate margins for high-value products. Reinvest measured profits in fast-moving stock and storage once repeat demand supports it.
 
-Catalogue prices, stock, pack sizes and coverage remain confirmation-based. No prices, delivery guarantees or merchant details were invented. Payment options express a preference; this site does not collect payments.
+## Scan & search (November 2026)
+
+`scan.html` supports camera barcode scanning, photo capture, image upload, and manual barcode entry. ZXing Browser 0.1.5 is bundled as a fallback for browsers without BarcodeDetector. Tesseract.js 6.0.1 reads printed English labels in a local Web Worker; its worker, WASM core and English language data load from jsDelivr on demand. Photos are not sent to Xpress. First-use downloads require connectivity and may be slow on mobile data. Camera use requires HTTPS and user permission. Cancel, page exit and backgrounding stop the stream. Uploads accept JPEG/PNG/WebP up to 12 MB; OCR has a 75-second timeout. This is label OCR and barcode matching, not visual object recognition.
+
+Matches require customer confirmation before adding to the existing quote basket. No real product barcodes have been supplied: `catalogue-data.js` intentionally contains an empty mapping. Never guess barcodes. Add verified exact pack/variant GTINs as `barcodes: {productId: ['digits']}`. Valid unlisted codes produce an honest no-match message. Label matches work immediately with the six existing products.
+
+`search-engine.js` supports aliases (including khemere, phoofo, letswai and tsoekere), prefix matching, conservative single-edit spelling tolerance, GTIN checksum validation and exact variant offer selection. Normal text search uses all query words; photo OCR ranks possible label matches for customer review.
+
+Pricing groundwork: `quote()` uses integer lisente, supplier cost, handling allowance, fixed markup, markup basis points and payment-fee basis points. It rejects stale/future-dated, unavailable, unverified, malformed and non-LSL offers. `scripts/price-offers.cjs` reads private offer input and outputs a review report. Delivery is not included or estimated by this calculator. No approved supplier offers or margins are configured, and the calculator is not yet connected to checkout. Keep supplier costs outside the public repository. Before accepting payment, a server must independently recheck/reserve stock, calculate a signed quote and final basket delivery fee; client arithmetic is never authoritative.
+
+Input for the operator utility has `offers`, `requests` and `policies`. Offers require `productId`, `variantKey`, `sellerId`, `sellerVerified`, `stockStatus`, `currency`, `sourceUrl`, `supplierCostMinor`, `checkedAt`, `expiresAt`. Requests specify `productId`, `variantKey`, `policyKey`. Policies have `handlingMinor`, `fixedMarkupMinor`, `markupBps`, `paymentFeeBps`. Run `node scripts/price-offers.cjs /absolute/private-offers.json`.
+
+Validation: `node tests/search.test.cjs` covers pricing arithmetic, fee handling, expiry, verification, exact variants, barcode checksums, aliases and typos. Browser QA confirmed label OCR with a synthetic Ginger Smash label, confirmed add-to-basket, barcode image decoding and invalid/unmapped barcode handling. Live physical-camera use and the customer's Android browser still require device testing. No retailer feed, payment processing or automatic Maseru-wide stock search is connected by this release.
+
+## Live-source catalogue import — latest release
+
+Supersedes the empty-catalogue/pricing status above: the first actual Mobile Planet public Store API import now supplies 489 exact-price listings/variants from 139 parent product pages. The six legacy starter essentials were removed in the departments release. Three records are quarantined in `data/import-report.json` (two missing/zero prices and one inconsistent model/year title). No descriptions, reviews or seller marketing claims were copied.
+
+Run `python scripts/import-mobileplanet.py` to refresh the catalogue, then run checks and publish the resulting version. `--seed-dir` is only for previously downloaded public API responses. Import is not scheduled yet. Requests are bounded, paginated and read-only; failures retain the previous catalogue. `assets/imported-catalogue.js` is the source snapshot used by the storefront, basket and scanner. Supplier images use their original HTTPS thumbnail URLs and may require approved reuse/local copies before public launch.
+
+`config/pricing.json` defines the provisional electronics estimate: ZAR source price converted at 1:1 to LSL, plus 3% markup and M25 handling per unit; delivery excluded. This is a review policy, not an approved operating margin. Currency minor-unit metadata is respected (the supplier API uses zero decimal places). Storefront cards show estimates and source details. Basket totals include fresh priced items only, explicitly excluding unknown-price essentials and delivery. Estimates expire after 24 hours and fall back to a price-check message; refresh and republish to renew. No supplier relationship, seller verification, stock reservation, warranty or final payable quote is asserted. Source stock flags are observations, not fulfilment guarantees. Checkout still prepares a quote request rather than accepting payment.
+
+Shoprite returned HTTP 403 during the source check; no feed was imported. Sefalana's discovered online store displayed BWP prices; no Botswana prices were reused as Maseru prices. Add a verified Lesotho feed or local supplier file before importing grocery prices.
+
+Browser checks: iPhone search returns actual storage/colour variants and calculated prices; selecting an imported variant preserves the exact item and estimated unit price in the basket, calculates a partial subtotal alongside unpriced essentials, and requests suitable electronics handling. Import validation checked unique IDs, source minor-unit conversion and positive price calculations. Existing 33 search/pricing/delivery assertions pass. Mobile layout and physical-camera checks remain outstanding for this release.
+
+
+## Department release — 13 November 2026
+The homepage and catalogue now use only source-backed imported records; all six starter cards and their basket IDs were removed. There are 18 browse/request departments. Current data occupies phones (474 exact variants/listings), computers (1), tablets (12) and accessories (2); the other departments are request-only, not stocked or priced. Counts include colour/storage variants, not 489 distinct product models. Classification is shared through `assets/departments.js` and survives supplier refreshes. Price sorting, pagination, URL department links, mobile department selector and sourcing form share the catalogue. Heavy delivery rules now use product weights rather than one hardcoded brand.
+
+No new grocery prices were imported in this release. Public Sefalana Shopper Lesotho mirrors showed expired October promotions; the Facebook page required login. The Wholesale page and current Pick n Pay offers remain unverified. Botswana Pula offers, loyalty-only discounts without conditions, expired promotions and average market prices must not become current Maseru offers. Needed next: exact recent retailer post/flyer URLs, legible pack/quantity and dates, Lesotho branch/currency and eligibility conditions. A recent price is evidence of an advertised offer, not proof of collection stock or a delivery ETA.
+
+`dist/` is the maintained storefront. `build_pages.py` is a legacy generator and must not be run: it would restore obsolete starter content. Validation: `node tests/departments.test.cjs`, `node tests/delivery.test.cjs`, `node tests/search.test.cjs`. Physical mobile/camera testing remains separate from desktop browser checks.
+
+## Xpress market pricing — latest release, 13 November 2026
+Xpress now sets its own catalogue prices from observed market benchmarks and sources after basket submission. 43 new records: 25 Nike/Puma footwear colourways, 12 groceries, 5 household products and 1 bulk pack. Combined total: 532 records including electronics storage/colour variants. These are not claims of local stock, market-wide coverage, confirmed supplier partnerships or measured demand.
+
+`data/market-references.json` retains evidence and reference-market metadata outside deployed static assets. South African references are pricing inputs, not verified Maseru offers. `scripts/build-market-catalogue.py` compiles customer records without supplier names, source URLs or reference costs. Grocery/household/bulk: benchmark + M1.50 rounded upward to whole LSL; sneakers: benchmark × 1.08 + M50 rounded to nearest M10. Electronics retain the existing 3% + M25 calculation and are rounded once at the shared delivery-engine boundary to nearest M10, consistently in shop, scanner and basket. Customer prices are Xpress offer prices subject to accepted fulfilment confirmation, no longer expired automatically when a source snapshot reaches 24 hours. Procurement must confirm viable costs; the formula alone cannot guarantee profit, transport/import expenses or customer willingness to pay.
+
+Supplier details and markup explanations were removed from product cards and WhatsApp basket drafts. Source evidence remains in repository files and existing imported-data payloads, so this is customer-interface simplification, not a confidentiality boundary. Sneakers capture requested UK/EU/US sizes in the basket; size availability is confirmed by staff. Checkout explicitly says timing, total and changes are agreed before payment. No stock reservations, automatic payment or messages occur.
+
+Verified with pricing and catalogue assertions, existing delivery/search tests and browser checks of grocery/sneaker cards, actual images, sneaker-size persistence and rounded mixed-basket subtotals. Physical Android and live camera tests are not part of this release. Refresh references and assess conversion/demand from real orders before calling an item popular.
