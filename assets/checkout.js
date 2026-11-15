@@ -2,7 +2,8 @@
  'use strict';
  if(document.body.dataset.page!=='checkout')return;
  const engine=window.XpressDelivery, products=engine.products;
- const SIZES='xpress-requested-sizes-v1';
+ const SIZES='xpress-requested-sizes-v1', SUBS='xpress-substitutions-v1';
+ const substitution=id=>{const value=read(localStorage,SUBS,{})[id];return ['Contact me first','Similar item within the same price','No substitution'].includes(value)?value:'Contact me first';};
  const CART='express-convenience-basket-v1', DETAILS='xpress-delivery-details-v2',SESSION='xpress-delivery-session-v2';
  const $=id=>document.getElementById(id);
  let memoryCart={},coords=null,map=null,marker=null,locationRequest=0,mapLoading=null;
@@ -31,6 +32,7 @@
      if(product.optionLabel||product.category==='sneakers'){
        const label=document.createElement('label');label.textContent=product.optionLabel||'Requested size(s)';label.className='size-label';const input=document.createElement('input');input.type='text';input.maxLength=100;input.placeholder=product.category==='sneakers'?'e.g. UK 7; or 1 × UK 7, 1 × UK 8':'Enter size, shade or finish; we will confirm';input.value=read(localStorage,SIZES,{})[product.id]||'';input.oninput=()=>{const sizes=read(localStorage,SIZES,{});sizes[product.id]=input.value;try{localStorage.setItem(SIZES,JSON.stringify(sizes));}catch{}};label.append(input);detail.append(label);
      }
+     if(product.food){const label=document.createElement('label');label.className='size-label';label.textContent='If unavailable';const select=document.createElement('select');for(const text of ['Contact me first','Similar item within the same price','No substitution']){const option=document.createElement('option');option.value=option.textContent=text;select.append(option);}select.value=substitution(product.id);select.onchange=()=>{const prefs=read(localStorage,SUBS,{});prefs[product.id]=select.value;try{localStorage.setItem(SUBS,JSON.stringify(prefs));}catch{}};label.append(select);detail.append(label);}
      const qty=document.createElement('div');qty.className='qty';const minus=document.createElement('button'),plus=document.createElement('button'),amount=document.createElement('span');
      minus.type=plus.type='button';minus.textContent='−';plus.textContent='+';minus.setAttribute('aria-label','Remove one '+product.name);plus.setAttribute('aria-label','Add one '+product.name);amount.textContent=cart[product.id];plus.disabled=cart[product.id]>=99;
      minus.onclick=()=>change(product.id,-1);plus.onclick=()=>change(product.id,1);qty.append(minus,amount,plus);row.append(img,detail,qty);list.append(row);
@@ -87,7 +89,7 @@
    if(!/^[+\d\s()-]+$/.test(d.phone)||d.phone.replace(/\D/g,'').length<8||d.phone.replace(/\D/g,'').length>15)return fail('Please enter a valid recipient phone number.','recipient-phone');
    if(coords&&!d.confirmed)return fail('Please check and confirm the destination pin, or remove it to use the address only.','confirm-pin');
    $('quote-error').hidden=true;persist();
-   const message=['Hi Xpress Convenience, please quote for:',...products.filter(p=>cart[p.id]).map(p=>'- '+p.name+' × '+cart[p.id]+(p.priceMinor>0?' | Xpress unit M '+(p.priceMinor/100).toFixed(0)+((p.optionLabel||p.category==='sneakers')?' | requested option: '+(read(localStorage,SIZES,{})[p.id]||'Please confirm with me'):''):'')),'','Recipient: '+d.name,'Contact: '+d.phone,'Delivery address / landmark: '+d.address,coords?`Confirmed destination: https://www.google.com/maps?q=${coords.lat},${coords.lng}`:'Location: address only',coords?.accuracy!=null?'GPS accuracy: approximately '+coords.accuracy+' m':'','Instructions: '+(d.notes||'None'),'Delivery guidance: '+r.title,'Please verify pack sizes, route and suitable vehicle.','Payment preference: '+(document.querySelector('[name="payment"]:checked')?.value||'Not selected'),'Please confirm stock, all prices, delivery fee, total and arrival window before I pay.'].filter(Boolean).join('\n');
+   const message=['Hi Xpress Convenience, please quote for:',...products.filter(p=>cart[p.id]).map(p=>'- '+p.name+' × '+cart[p.id]+(p.priceMinor>0?' | Xpress unit M '+(p.priceMinor/100).toFixed(0)+((p.optionLabel||p.category==='sneakers')?' | requested option: '+(read(localStorage,SIZES,{})[p.id]||'Please confirm with me'):'')+(p.food?' | if unavailable: '+substitution(p.id):''):'')),'','Recipient: '+d.name,'Contact: '+d.phone,'Delivery address / landmark: '+d.address,coords?`Confirmed destination: https://www.google.com/maps?q=${coords.lat},${coords.lng}`:'Location: address only',coords?.accuracy!=null?'GPS accuracy: approximately '+coords.accuracy+' m':'','Instructions: '+(d.notes||'None'),'Delivery guidance: '+r.title,'Please verify pack sizes, route and suitable vehicle.','Payment preference: '+(document.querySelector('[name="payment"]:checked')?.value||'Not selected'),'Please confirm stock, all prices, delivery fee, total and arrival window before I pay.'].filter(Boolean).join('\n');
    window.location.href='https://wa.me/26663540048?text='+encodeURIComponent(message);
  };
  // No silent migration of previously persisted precise coordinates.

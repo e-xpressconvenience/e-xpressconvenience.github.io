@@ -37,28 +37,28 @@
       const count=department.id==='all'?PRODUCTS.length:counts[department.id];
       const target=document.getElementById('department-sidebar');
       if(target){const b=document.createElement('button');b.type='button';b.className='department-filter';b.dataset.filter=department.id;b.textContent=department.name+' · '+(count||'Request');target.append(b);}
-      if(home&&department.id!=='all'){const a=document.createElement('a');a.href='products.html?category='+department.id;a.className='department-tile';const name=document.createElement('strong');name.textContent=department.name;const sub=document.createElement('span');sub.textContent=count?count+' listing'+(count===1?'':'s')+' →':'Request sourcing →';a.append(name,sub);home.append(a);}
+      if(home&&['food','fruit','vegetables','dairy','meat','bakery','breakfast','condiments','household','personal-care','baby','wigs'].includes(department.id)){const a=document.createElement('a');a.href='products.html?category='+department.id;a.className='department-tile';const name=document.createElement('strong');name.textContent=department.name;const sub=document.createElement('span');sub.textContent=count?count+' listing'+(count===1?'':'s')+' →':'Request sourcing →';a.append(name,sub);home.append(a);}
     }
     const compact=document.getElementById('department-filters');
     if(compact){const label=document.createElement('label');label.textContent='Department ';const select=document.createElement('select');select.id='department-select';for(const d of [{id:'all',name:'All products'},...D.departments]){const o=document.createElement('option');o.value=d.id;o.textContent=d.name;select.append(o);}label.append(select);compact.append(label);}
     const featured=[];const used=new Set();
-    for(const category of ['sneakers','clothing','beauty','watches','jewellery','fashion-accessories','phones','audio','groceries','appliances','home','baby']){const p=PRODUCTS.find(p=>category==='sneakers'?/Air Jordan 1/.test(p.name):category==='beauty'?/Sky High Mascara/.test(p.name):p.category===category);if(p){featured.push(p);used.add(p.id);}}
+    for(const category of ['fruit','vegetables','groceries','dairy','meat','bakery','breakfast','tinned','condiments','drinks','household','baby']){const p=PRODUCTS.find(p=>category==='sneakers'?/Air Jordan 1/.test(p.name):category==='beauty'?/Sky High Mascara/.test(p.name):p.category===category);if(p){featured.push(p);used.add(p.id);}}
     const display=isShop?PRODUCTS:featured.slice(0,12);
     const edits=document.getElementById('style-edits');
     if(edits){
-      const collections=[['THE WEEKEND FIT','Streetwear, your way.','clothing',p=>p.category==='clothing'],['FINISH THE LOOK','A little extra.','jewellery',p=>p.category==='jewellery'],['THE BEAUTY BAG','Your daily favourites.','beauty',p=>/Sky High Mascara/.test(p.name)],['ON YOUR TIME','Make every detail count.','watches',p=>p.category==='watches']];
+      const collections=[['YOUR HAIR EDIT','Make it your look.','wigs',p=>p.category==='wigs'],['NAILS & BEAUTY','The finishing touch.','nails',p=>p.category==='nails'],['SHADES ON','Find your frames.','eyewear',p=>p.category==='eyewear'],['THE SNEAKER EDIT','Step out your way.','sneakers',p=>/Air Jordan 1/.test(p.name)]];
       for(const [eyebrow,title,cat,test] of collections){const product=PRODUCTS.find(test);if(!product)continue;const link=document.createElement('a');link.className='style-edit';link.href='products.html?category='+cat;const img=document.createElement('img');img.src=product.image;img.alt=product.name;img.loading='lazy';const small=document.createElement('span');small.textContent=eyebrow;const h=document.createElement('h3');h.textContent=title;const cta=document.createElement('strong');cta.textContent='Shop the edit ↗';link.append(small,h,img,cta);edits.append(link);}
     }
 
-    const hero=document.getElementById('hero-product');const phone=PRODUCTS.find(p=>/^iPhone 16 Pro Max/.test(p.name));
-    if(hero&&phone){const img=document.createElement('img');img.src=phone.image;img.alt=phone.name;img.width=img.height=320;hero.append(img);}
+        const hero=document.getElementById('hero-product');
+    if(hero){for(const test of [p=>/Sunfoil.*2L/i.test(p.name),p=>p.category==='fruit'&&/banana/i.test(p.name),p=>p.category==='dairy'&&/eggs/i.test(p.name),p=>p.category==='bakery'&&/brown/i.test(p.name)]){const product=PRODUCTS.find(test);if(!product)continue;const box=document.createElement('div');const img=document.createElement('img');img.src=product.image;img.alt=product.name;const label=document.createElement('span');label.textContent=product.name;box.append(img,label);hero.append(box);}}
     for(const p of display){
       const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.price=p.priceMinor;card.dataset.search=(p.name+' '+p.search).toLowerCase();
       const pic=document.createElement('div');pic.className='item-image';const image=document.createElement('img');image.src=p.image;image.alt=p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>{image.onerror=null;image.src='assets/favicon.svg';};pic.append(image);
       const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');title.textContent=p.name;
       const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.bulky?'Sourced to order. Larger-vehicle delivery quoted for your address.':p.coldChain?'Fresh-food order. Local availability and chilled delivery confirmed before payment.':(p.optionLabel||p.category==='sneakers')?'Add your preferred size, shade or finish in the basket. Availability and delivery confirmed before payment.':'Sourced for you. Availability and delivery confirmed before payment.';
       const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):'Refresh price';const add=document.createElement('button');add.type='button';add.className='button';add.dataset.add=p.id;add.textContent='Add to basket';
-      bottom.append(price,add);copy.append(tag,title,note,bottom);card.append(pic,copy);grid.append(card);
+      bottom.append(price,add);copy.append(tag,title);if(p.unitLabel){const unit=document.createElement('small');unit.className='product-unit';unit.textContent=p.unitLabel;copy.append(unit);}copy.append(note,bottom);card.append(pic,copy);grid.append(card);
     }
     const cards=[...grid.querySelectorAll('.item')];
     const filters=[...document.querySelectorAll('[data-filter]')];

@@ -104,3 +104,12 @@ Fashion pricing: reference +8% +M25 rounded nearest M10; conventional watches +5
 Cultural research informs curation, not measured demand: TikTok's official 2026 trend report (https://ads.tiktok.com/business/en-US/next?tt4b_lang_redirect=1) and Spotify's amapiano fashion feature (https://newsroom.spotify.com/2024-06-13/from-beats-to-the-streets-to-the-catwalks-how-amapiano-enabled-a-lifestyle/, June 2024 context). Music in Africa's rolling 2026 editorial list was reviewed (https://musicinafrica.net/magazine/top-amapiano-songs-2026/), not a verified live TikTok chart. No music is embedded or used commercially; no Ghost Hlubi/Peanuts product endorsement is asserted.
 
 Validation: existing search, delivery, department and expanded market tests; JavaScript syntax checks; desktop browser verified blue homepage, populated edits, makeup search, basket totals and shade persistence through reload. Physical Android/camera testing remains outstanding. No automatic stock sync, demand analytics, checkout payment or scheduled trend refresh is enabled.
+
+
+## Full-shop expansion — 14 November 2026
+
+Catalogue: 1,283 listings including exact model variants; 297 food listings. Added 354 grocery/household/care references and 150 hair, nail, beauty-tool and eyewear references from public retailer catalogues. Evidence is retained in data/market-references.json; not verified Maseru stock. Facebook leads supplied by owner are saved in config/local-sourcing-leads.json; page identity mapping and inventory remain unverified. No complete SHEIN mirror or automatic supplier sync is claimed.
+
+Stronger blue interface, grocery-led homepage, food department filters, pack labels and persisted substitution choices. Known basket weights accumulate for delivery guidance. Wigs and eyewear use reference ×1.08 + M25 rounded to nearest M10; food/essentials retain reference + M1.50 rounded upward to a whole maloti. Delivery and final availability remain quote-confirmed.
+
+Validation: four Node suites pass; browser verified homepage product collage, basket addition and substitution preference after reload. Physical mobile/camera checks remain outstanding.
