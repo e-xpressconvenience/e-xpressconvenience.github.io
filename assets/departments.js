@@ -1,7 +1,8 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.XpressDepartments=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const departments=[['phones','Phones'],['computers','Computers'],['tablets','Tablets'],['audio','Audio'],['wearables','Smart watches'],['accessories','Tech accessories'],['groceries','Groceries & pantry'],['fresh','Fresh & chilled'],['drinks','Soft drinks & water'],['household','Cleaning & household'],['beauty','Beauty & personal care'],['baby','Baby & kids'],['sneakers','Fashion & sneakers'],['home','Home & kitchen'],['appliances','Appliances'],['sports','Sports & outdoors'],['stationery','Stationery & office'],['bulk','Wholesale & bulk']].map(([id,name])=>({id,name}));
-const tech=['phones','computers','tablets','audio','wearables','accessories'];
+const departments=[["food", "All groceries"], ["groceries", "Staples & baking"], ["fruit", "Fresh fruit"], ["vegetables", "Vegetables & salads"], ["dairy", "Dairy & eggs"], ["meat", "Meat & fish"], ["frozen", "Frozen food"], ["bakery", "Bread & bakery"], ["breakfast", "Breakfast & spreads"], ["tinned", "Tinned food & pulses"], ["condiments", "Oil, sauces & seasoning"], ["snacks", "Snacks & treats"], ["drinks", "Drinks, tea & coffee"], ["fresh", "Fresh & chilled"], ["household", "Cleaning & household"], ["personal-care", "Personal care"], ["baby", "Baby & kids"], ["beauty", "Makeup & skincare"], ["wigs", "Wigs, frontals & extensions"], ["haircare", "Haircare & accessories"], ["nails", "Nails & manicure"], ["beauty-tools", "Beauty tools & brushes"], ["eyewear", "Sunglasses & eyewear"], ["sneakers", "Sneakers"], ["clothing", "Clothing & streetwear"], ["fashion-accessories", "Bags & accessories"], ["jewellery", "Chains & jewellery"], ["watches", "Watches"], ["phones", "Phones"], ["computers", "Computers"], ["tablets", "Tablets"], ["televisions", "TVs & entertainment"], ["audio", "Audio"], ["wearables", "Smart watches"], ["accessories", "Tech accessories"], ["home", "Home & kitchen"], ["appliances", "Appliances"], ["sports", "Sports & outdoors"], ["stationery", "Stationery & office"], ["bulk", "Wholesale & bulk"]].map(([id,name])=>({id,name}));
+const food=["groceries", "fruit", "vegetables", "dairy", "meat", "frozen", "bakery", "breakfast", "tinned", "condiments", "snacks", "drinks", "fresh"];
+const tech=['phones','computers','tablets','audio','wearables','accessories','televisions'];
 function classify(p){
 if(p.category!=='gadgets')return p.category;
 const n=p.name.toLowerCase(),tags=(p.search||'').toLowerCase();
@@ -13,7 +14,7 @@ if(/ipad|tablet|galaxy tab/.test(n)||/tablets/.test(tags))return 'tablets';
 if(/phones/.test(tags)||/iphone|samsung|huawei/.test(n))return 'phones';
 return 'accessories';
 }
-function matches(product,category){return category==='all'||(category==='gadgets'?tech.includes(classify(product)):classify(product)===category);}
+function matches(product,category){return category==='all'||(category==='food'?food.includes(classify(product)):category==='gadgets'?tech.includes(classify(product)):classify(product)===category);}
 function label(id){return departments.find(d=>d.id===id)?.name||'Electronics';}
-return {departments,tech,classify,matches,label};
+return {departments,food,tech,classify,matches,label};
 });
