@@ -113,3 +113,10 @@ Catalogue: 1,283 listings including exact model variants; 297 food listings. Add
 Stronger blue interface, grocery-led homepage, food department filters, pack labels and persisted substitution choices. Known basket weights accumulate for delivery guidance. Wigs and eyewear use reference ×1.08 + M25 rounded to nearest M10; food/essentials retain reference + M1.50 rounded upward to a whole maloti. Delivery and final availability remain quote-confirmed.
 
 Validation: four Node suites pass; browser verified homepage product collage, basket addition and substitution preference after reload. Physical mobile/camera checks remain outstanding.
+
+## Product presentation — 16 November 2026
+Blue version of the existing shopping-bag logo, blue favicon, compact delivery section, navy help footer and ordering-help page. All catalogue cards now open stable product URLs with exact family option selection, quantity and basket integration. Product galleries support thumbnail changes and image enlargement. 25 researched product/family records enrich 57 listings; 56 have multiple photographs. Other products retain their known photo and basic facts; missing photos use an explicit placeholder.
+
+Budget collections filter groceries below M50 and beauty below M200. No percentage discount is activated without an approved genuine prior price and expiry. No fabricated reviews, stock levels, warranties or delivery dates. Photo/spec evidence is retained in data/research/product-enrichment.json; Samsung S22 Plus screen corrected to 6.6 inches using Samsung specs. Logo edit preserves the existing brand with royal blue replacing green.
+
+Validation: five Node suites pass; local asset/link check passes. Browser checked logo/footer, alternate gallery selection, phone option/price change and exact 128GB Black iPhone 16 basket line. Physical mobile and camera testing remain outstanding.

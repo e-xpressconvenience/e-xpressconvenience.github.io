@@ -3,7 +3,7 @@
   const KEY = "express-convenience-basket-v1";
   const LOCATION_KEY = "express-convenience-delivery-location-v1";
   const D = window.XpressDepartments;
-  const PRODUCTS = window.XpressDelivery.products.map(p=>({...p,category:D.classify(p)}));
+  const PRODUCTS = window.XpressDelivery.products.map(p=>({...p,...window.XpressProductDetails?.[p.id],category:D.classify(p)}));
   const byId = new Map(PRODUCTS.map(p => [p.id,p]));
   let fallbackCart = {};
 
@@ -54,24 +54,24 @@
     if(hero){for(const test of [p=>/Sunfoil.*2L/i.test(p.name),p=>p.category==='fruit'&&/banana/i.test(p.name),p=>p.category==='dairy'&&/eggs/i.test(p.name),p=>p.category==='bakery'&&/brown/i.test(p.name)]){const product=PRODUCTS.find(test);if(!product)continue;const box=document.createElement('div');const img=document.createElement('img');img.src=product.image;img.alt=product.name;const label=document.createElement('span');label.textContent=product.name;box.append(img,label);hero.append(box);}}
     for(const p of display){
       const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.price=p.priceMinor;card.dataset.search=(p.name+' '+p.search).toLowerCase();
-      const pic=document.createElement('div');pic.className='item-image';const image=document.createElement('img');image.src=p.image;image.alt=p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>{image.onerror=null;image.src='assets/favicon.svg';};pic.append(image);
-      const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');title.textContent=p.name;
-      const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.bulky?'Sourced to order. Larger-vehicle delivery quoted for your address.':p.coldChain?'Fresh-food order. Local availability and chilled delivery confirmed before payment.':(p.optionLabel||p.category==='sneakers')?'Add your preferred size, shade or finish in the basket. Availability and delivery confirmed before payment.':'Sourced for you. Availability and delivery confirmed before payment.';
+      const pic=document.createElement('a');pic.href='product.html?id='+encodeURIComponent(p.id);pic.className='item-image';pic.setAttribute('aria-label','View '+p.name);const image=document.createElement('img');image.src=p.images?.[0]||p.image;image.alt=p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>{image.onerror=null;image.src='assets/product-unavailable.svg';};pic.append(image);
+      const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');const titleLink=document.createElement('a');titleLink.href=pic.href;titleLink.textContent=p.name;title.append(titleLink);
+      const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.coldChain?'Fresh · handling to confirm':p.bulky?'Large item · delivery quoted':'Sourced to order';
       const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):'Refresh price';const add=document.createElement('button');add.type='button';add.className='button';add.dataset.add=p.id;add.textContent='Add to basket';
-      bottom.append(price,add);copy.append(tag,title);if(p.unitLabel){const unit=document.createElement('small');unit.className='product-unit';unit.textContent=p.unitLabel;copy.append(unit);}copy.append(note,bottom);card.append(pic,copy);grid.append(card);
+      bottom.append(price,add);copy.append(tag,title);if(p.unitLabel){const unit=document.createElement('small');unit.className='product-unit';unit.textContent=p.unitLabel;copy.append(unit);}const family=window.XpressProductModel.variants(p,PRODUCTS);if(family.length>1){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent=family.length+' listed options · view colours / configurations';copy.append(options);}else if(p.optionLabel){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent='Choose size / shade preferences';copy.append(options);}copy.append(note,bottom);card.append(pic,copy);grid.append(card);
     }
     const cards=[...grid.querySelectorAll('.item')];
     const filters=[...document.querySelectorAll('[data-filter]')];
     const search=document.getElementById('global-query');
     const empty=document.getElementById('empty-search');
-    const params=new URLSearchParams(location.search);
+    const params=new URLSearchParams(location.search);let maxPrice=Number(params.get('max'))>0?Number(params.get('max')):null;const budget=document.createElement('button');budget.type='button';budget.className='budget-filter';if(maxPrice){budget.textContent='Under M'+maxPrice+' · Clear ×';grid.before(budget);budget.onclick=()=>{maxPrice=null;budget.remove();filterCards();};}
     let category=params.get('category')||'all';let visibleLimit=isShop?24:12;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
     if(category!=='gadgets'&&category!=='all'&&!D.departments.some(d=>d.id===category))category='all';
     if(document.body.dataset.page==='products')search.value=params.get('q')||'';
     function filterCards(){
       const query=search.value.trim().toLowerCase();let visible=0;
       if(query&&document.getElementById('product-sort')?.value==='featured'){[...cards].sort((a,b)=>window.XpressSearch.score({id:b.querySelector('[data-add]')?.dataset.add,name:b.querySelector('h3').textContent,search:b.dataset.search},query)-window.XpressSearch.score({id:a.querySelector('[data-add]')?.dataset.add,name:a.querySelector('h3').textContent,search:a.dataset.search},query)).forEach(card=>grid.append(card));}
-      [...grid.querySelectorAll('.item')].forEach(card=>{const match=D.matches({category:card.dataset.category},category)&&window.XpressSearch.score({id:card.querySelector('[data-add]')?.dataset.add,name:card.querySelector('h3').textContent,search:card.dataset.search},query)>0;if(match)visible++;card.hidden=!match||visible>visibleLimit;});
+      [...grid.querySelectorAll('.item')].forEach(card=>{const match=(!maxPrice||Number(card.dataset.price)<maxPrice*100)&&D.matches({category:card.dataset.category},category)&&window.XpressSearch.score({id:card.querySelector('[data-add]')?.dataset.add,name:card.querySelector('h3').textContent,search:card.dataset.search},query)>0;if(match)visible++;card.hidden=!match||visible>visibleLimit;});
       more.hidden=visible<=visibleLimit;
       if(empty){
         empty.hidden=visible!==0;
@@ -85,13 +85,13 @@
       const result=document.getElementById('result-count');if(result)result.textContent=visible+' listing'+(visible===1?'':'s')+' · includes exact model variants';
       const selector=document.getElementById('department-select');if(selector)selector.value=category;
       filters.forEach(button=>{const active=button.dataset.filter===category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
-      if(document.body.dataset.page==='products'){const url=new URL(location.href);category==='all'?url.searchParams.delete('category'):url.searchParams.set('category',category);query?url.searchParams.set('q',search.value.trim()):url.searchParams.delete('q');history.replaceState(null,'',url);}
+      if(document.body.dataset.page==='products'){const url=new URL(location.href);category==='all'?url.searchParams.delete('category'):url.searchParams.set('category',category);query?url.searchParams.set('q',search.value.trim()):url.searchParams.delete('q');maxPrice?url.searchParams.set('max',maxPrice):url.searchParams.delete('max');history.replaceState(null,'',url);}
     }
     filters.forEach(button=>button.addEventListener('click',()=>{category=button.dataset.filter;visibleLimit=24;filterCards();}));
     if(document.body.dataset.page==='products'){
       search.addEventListener('input',()=>{visibleLimit=24;filterCards();});
       search.form.addEventListener('submit',e=>{e.preventDefault();filterCards();});
-      document.getElementById('clear-filters')?.addEventListener('click',()=>{search.value='';category='all';filterCards();search.focus();});
+      document.getElementById('clear-filters')?.addEventListener('click',()=>{search.value='';category='all';maxPrice=null;budget.remove();filterCards();search.focus();});
       document.getElementById('department-select')?.addEventListener('change',e=>{category=e.target.value;visibleLimit=24;filterCards();});
       document.getElementById('product-sort')?.addEventListener('change',e=>{const sorted=[...cards];const mode=e.target.value;if(mode.startsWith('price-'))sorted.sort((a,b)=>(Number(a.dataset.price)-Number(b.dataset.price))*(mode==='price-down'?-1:1));else if(mode!=='featured')sorted.sort((a,b)=>a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent)*(mode==='za'?-1:1));sorted.forEach(card=>grid.append(card));filterCards();});
       filterCards();

@@ -1,0 +1,806 @@
+{
+  "version": 1,
+  "checkedAt": "2026-11-15",
+  "status": "Retailer-reference enrichment; availability and exact supplied condition unconfirmed",
+  "products": [
+    {
+      "id": "xp-ba06bed6eac0",
+      "name": "Vietnamese 13X4 Lace Wig Straight Col 4 22 Inch",
+      "sourceUrl": "https://www.haircity.co.za/products/vietnamese-13x4-lace-wig-straight-col-4-22-inch?variant=68328934146199",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Vietnamesecol422.jpg?v=1794490776",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Vietnamese_col_422_2.jpg?v=1794491005"
+      ],
+      "description": "Straight Vietnamese-hair wig with a 13×4 lace frontal, 22-inch length and Colour 4 brown finish.",
+      "specifications": {
+        "Brand": "Vietnamese",
+        "Product type": "Vietnamese"
+      },
+      "options": [
+        {
+          "name": "Length",
+          "values": [
+            "22 Inch"
+          ]
+        }
+      ],
+      "variantId": "68328934146199",
+      "variants": [
+        {
+          "id": "68328934146199",
+          "title": "22 Inch",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-4b23eb139fbc",
+      "name": "Peruvian 2x6 Pre Cut Straight Bob Wig — 10 Inch",
+      "sourceUrl": "https://www.haircity.co.za/products/peruvian-2x6-pre-cut-straight-bob-wig?variant=68316089974935",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/IMG_3830.jpg?v=1792590795",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Hair_City_Ready_To_Wear_New_Model_6x9_fde72e28-6e79-46d5-9ba9-1f54ecb2a911.jpg?v=1792589502",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/IMG_3831.jpg?v=1792589541"
+      ],
+      "description": "Glueless straight bob with pre-trimmed lace and a 2×6 middle-part area. This listing is the 10-inch option.",
+      "specifications": {
+        "Brand": "PERUVIAN LACE WIG",
+        "Product type": "Peruvian Lace Wig"
+      },
+      "options": [
+        {
+          "name": "Length",
+          "values": [
+            "10 Inch",
+            "12 Inch"
+          ]
+        }
+      ],
+      "variantId": "68316089974935",
+      "variants": [
+        {
+          "id": "68316089974935",
+          "title": "10 Inch",
+          "image": null
+        },
+        {
+          "id": "68316090335383",
+          "title": "12 Inch",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-e65a804b05c0",
+      "name": "Peruvian LUX 13x4 Lace Frontal Wig Deep Wave Col 4 18 Inch",
+      "sourceUrl": "https://www.haircity.co.za/products/peruvian-lux-13x4-lace-frontal-wig-deep-wave-col-4-18-inch?variant=45013624488087",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/plux_col4.jpg?v=1764050924",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/IMG_3685_2.jpg?v=1764050924",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/IMG_3686_2.jpg?v=1764050924"
+      ],
+      "description": "Deep-wave Peruvian-hair wig with a 13×4 frontal, thin Swiss lace and adjustable straps. Colour 4; 18-inch length.",
+      "specifications": {
+        "Brand": "Peruvian Lux Wigs",
+        "Product type": "Peruvian Lux Wigs"
+      },
+      "options": [],
+      "variantId": "45013624488087",
+      "variants": [
+        {
+          "id": "45013624488087",
+          "title": "Default Title",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-0e5a451ef7a3",
+      "name": "Brazilian Full Cap Fringe Loose Deep Nat 12 inch",
+      "sourceUrl": "https://www.haircity.co.za/products/brazilian-full-cap-fringe-loose-deep-nat-12-inch?variant=45579865981079",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/DSC9920.jpg?v=1749207012",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/DSC9923.jpg?v=1764264855",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Brazilian_Full_Cap_Fringe_Loose_Deep_Nat_12_inch_1.jpg?v=1764264855",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/DSC9915.jpg?v=1764264855"
+      ],
+      "description": "Full-cap Brazilian-hair wig with a fringe and loose-deep texture. Natural 1B colour, 12-inch length and adjustable straps; no lace cutting required.",
+      "specifications": {
+        "Brand": "Beginner Wig",
+        "Product type": "Beginner Wig"
+      },
+      "options": [],
+      "variantId": "45579865981079",
+      "variants": [
+        {
+          "id": "45579865981079",
+          "title": "Default Title",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-4bffa1db1e1f",
+      "name": "Brazilian Water Wave Fringe Zoe Col 4",
+      "sourceUrl": "https://www.haircity.co.za/products/brazilian-water-wave-fringe-zoe-1?variant=45615937880215",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/DSC05101.jpg?v=1750664948",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/ZOE_COLOUR_4_1.jpg?v=1782459680",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/DSC05107.jpg?v=1750664946",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/ZOE_COLOUR_4_2.jpg?v=1782459661",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/ZOE_COLOUR_4_3.jpg?v=1782459660",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/DSC05106.jpg?v=1750664946"
+      ],
+      "description": "Water-wave fringe bob in dark brown Colour 4, with adjustable straps and a glueless fit.",
+      "specifications": {
+        "Brand": "BRAZILIAN FULL CAP WIG",
+        "Product type": "BRAZILIAN FULL CAP WIG"
+      },
+      "options": [
+        {
+          "name": "Colour",
+          "values": [
+            "4"
+          ]
+        }
+      ],
+      "variantId": "45615937880215",
+      "variants": [
+        {
+          "id": "45615937880215",
+          "title": "4",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-ed56a6dd92f5",
+      "name": "Brazilian Full Cap Wig - Eva",
+      "sourceUrl": "https://www.haircity.co.za/products/brazilian-full-cap-wig-eva?variant=42726163021975",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/IMG_2355.png?v=1739795021",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Brazilian_Full_Cap_Wig_Eva_2.webp?v=1791366576",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Brazilian_Full_Cap_Wig_Eva_1.webp?v=1791366577",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Untitled_design_45_c467f560-61d2-403d-847a-8d3d1d84a41f.png?v=1779440247",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Untitled_design_44.png?v=1779439941"
+      ],
+      "description": "Glueless Brazilian full-cap wig designed for either a dry or wet-look style.",
+      "specifications": {
+        "Brand": "BRAZILIAN FULL CAP WIG",
+        "Product type": "BRAZILIAN FULL CAP WIG"
+      },
+      "options": [],
+      "variantId": "42726163021975",
+      "variants": [
+        {
+          "id": "42726163021975",
+          "title": "Default Title",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-c90985f7caf3",
+      "name": "Dior Vernis Nail polish with gel effect and couture colour — 713",
+      "sourceUrl": "https://www.edgars.co.za/products/dior-xmas26-vernis-44685701?variant=62606480834930",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/3348901851053_1.jpg?v=1792758171",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/3348901851053_2.jpg?v=1792758171",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/3348901851046_1.jpg?v=1792758289",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/3348901851046_2.jpg?v=1792758289"
+      ],
+      "description": "Glossy, gel-effect nail polish. This listing is shade 713; check the selected shade before ordering.",
+      "specifications": {
+        "Brand": "Dior",
+        "Product type": "Nails"
+      },
+      "options": [
+        {
+          "name": "Beauty Colour",
+          "values": [
+            "713",
+            "767"
+          ]
+        }
+      ],
+      "variantId": "62606480834930",
+      "variants": [
+        {
+          "id": "62606480834930",
+          "title": "713",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/3348901851053_1.jpg?v=1792758171"
+        },
+        {
+          "id": "62606480867698",
+          "title": "767",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/3348901851046_1.jpg?v=1792758289"
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-8e13d36ef294",
+      "name": "Catrice Super Brights Nail Polish",
+      "sourceUrl": "https://www.edgars.co.za/products/cat-super-brights-nail-polish-33876102?variant=62598057296242",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/250_8c281bb3-e7ac-45a6-bf12-4459d4b3ddd7.png?v=1792674630",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/251_9281eff2-06a4-4a35-8a8d-e3c83c76fa03.png?v=1792674630"
+      ],
+      "description": "Bright-colour nail polish with an opaque finish.",
+      "specifications": {
+        "Brand": "Catrice",
+        "Product type": "Nail Polish"
+      },
+      "options": [
+        {
+          "name": "Beauty Colour",
+          "values": [
+            "OPT2",
+            "OPT3"
+          ]
+        }
+      ],
+      "variantId": "62598057296242",
+      "variants": [
+        {
+          "id": "62598057296242",
+          "title": "OPT2",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/250_8c281bb3-e7ac-45a6-bf12-4459d4b3ddd7.png?v=1792674630"
+        },
+        {
+          "id": "62598057329010",
+          "title": "OPT3",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/251_9281eff2-06a4-4a35-8a8d-e3c83c76fa03.png?v=1792674630"
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-51887a956c26",
+      "name": "Catrice Multi Repair Base Coat",
+      "sourceUrl": "https://www.edgars.co.za/products/cat-multi-repair-base-coat-44245901?variant=62509719093618",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/Megs-EDGBeauty_78_9cf1e507-acd9-4e44-818e-b0b69091d0ca.png?v=1792053339"
+      ],
+      "description": "Clear, glossy base coat intended to smooth the nail surface before colour application.",
+      "specifications": {
+        "Brand": "Catrice",
+        "Product type": "Nail Polish"
+      },
+      "options": [
+        {
+          "name": "Beauty Colour",
+          "values": [
+            "OPT1"
+          ]
+        }
+      ],
+      "variantId": "62509719093618",
+      "variants": [
+        {
+          "id": "62509719093618",
+          "title": "OPT1",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-429152dfd4e8",
+      "name": "Catrice Gel Affair Nail Lacquer — 58",
+      "sourceUrl": "https://www.edgars.co.za/products/cat-gel-affair-nail-lacquer-44245801?variant=62509718995314",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729630476_1963047CatriceGELAFFAIRNailLacquer058.jpg?v=1792134563",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729630506_1963050CatriceGELAFFAIRNailLacquer061.jpg?v=1792134654"
+      ],
+      "description": "High-shine, gel-look nail lacquer that does not require a UV lamp. This listing is shade 58.",
+      "specifications": {
+        "Brand": "Catrice",
+        "Product type": "Nail Polish"
+      },
+      "options": [
+        {
+          "name": "Beauty Colour",
+          "values": [
+            "58",
+            "61"
+          ]
+        }
+      ],
+      "variantId": "62509718995314",
+      "variants": [
+        {
+          "id": "62509718995314",
+          "title": "58",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729630476_1963047CatriceGELAFFAIRNailLacquer058.jpg?v=1792134563"
+        },
+        {
+          "id": "62509719028082",
+          "title": "61",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729630506_1963050CatriceGELAFFAIRNailLacquer061.jpg?v=1792134654"
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-6c631500a53b",
+      "name": "Catrice Cozy Mood Nail Polish — 10",
+      "sourceUrl": "https://www.edgars.co.za/products/cat-cozy-mood-nail-polish-44245401?variant=62509718700402",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729621467_1962146CatriceCozyMoodNailPolish010.jpg?v=1792068628",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729621474_1962147CatriceCozyMoodNailPolish020.jpg?v=1792068664",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729621481_1962148CatriceCozyMoodNailPolish030.jpg?v=1792068712",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729621498_1962149CatriceCozyMoodNailPolish040.jpg?v=1792068764"
+      ],
+      "description": "Creamy light-brown nail polish with silver shimmer and a glossy finish. Shade 10.",
+      "specifications": {
+        "Brand": "Catrice",
+        "Product type": "Nail Polish"
+      },
+      "options": [
+        {
+          "name": "Beauty Colour",
+          "values": [
+            "10",
+            "20",
+            "30",
+            "40"
+          ]
+        }
+      ],
+      "variantId": "62509718700402",
+      "variants": [
+        {
+          "id": "62509718700402",
+          "title": "10",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729621467_1962146CatriceCozyMoodNailPolish010.jpg?v=1792068628"
+        },
+        {
+          "id": "62509718733170",
+          "title": "20",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729621474_1962147CatriceCozyMoodNailPolish020.jpg?v=1792068664"
+        },
+        {
+          "id": "62509718765938",
+          "title": "30",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729621481_1962148CatriceCozyMoodNailPolish030.jpg?v=1792068712"
+        },
+        {
+          "id": "62509718798706",
+          "title": "40",
+          "image": "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/4059729621498_1962149CatriceCozyMoodNailPolish040.jpg?v=1792068764"
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-a1cf9b1bec5a",
+      "name": "Barbie Nail Gift Set",
+      "sourceUrl": "https://www.edgars.co.za/products/kids-character-xmas26-barbie-nail-gift-set-44482701?variant=62471403766130",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/6007856207519_PK.jpg?v=1791868533",
+        "https://cdn.shopify.com/s/files/1/0854/9947/8299/files/6007856207519_Back.jpg?v=1791868533"
+      ],
+      "description": "Nail gift set containing two 5 ml peel-off polishes, a nail file, eleven nail stickers and a toe separator.",
+      "specifications": {
+        "Brand": "Kids Character",
+        "Product type": "Gift Set"
+      },
+      "options": [],
+      "variantId": "62471403766130",
+      "variants": [
+        {
+          "id": "62471403766130",
+          "title": "Default Title",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-982766992a0a",
+      "name": "Hair Majesty Lace Glue Spray 150ml",
+      "sourceUrl": "https://www.haircity.co.za/products/hair-majesty-lace-glue-spray-150ml?variant=46402880045207",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/hair-majesty-lace-glue-spray-shopify.jpg?v=1794388837",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/hairmajestylacegluespray2.png?v=1765197069",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/hairmajestylacegluespray3.png?v=1765197095",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/hairmajestylacegluespray1.png?v=1765197069"
+      ],
+      "description": "150 ml holding spray for lace wigs, frontals and closures. Water-soluble formulation.",
+      "specifications": {
+        "Brand": "Hair Care Products",
+        "Product type": "Hair Care Products"
+      },
+      "options": [],
+      "variantId": "46402880045207",
+      "variants": [
+        {
+          "id": "46402880045207",
+          "title": "Default Title",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-1a6e825d1b5e",
+      "name": "HC Hanger & Travel Bag",
+      "sourceUrl": "https://www.haircity.co.za/products/hc-hanger-travel-bag?variant=42726162530455",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/Travel_bag_image.png?v=1777035232",
+        "https://cdn.shopify.com/s/files/1/0180/6221/products/travelbag_e93faf4e-2cb9-4e3a-91fd-2169b00297ac.png?v=1682417221"
+      ],
+      "description": "Wig and hair-extension storage set with a hanger and zippered non-woven travel bag.",
+      "specifications": {
+        "Brand": "NB HC LABEL",
+        "Product type": "Hair Care Products"
+      },
+      "options": [],
+      "variantId": "42726162530455",
+      "variants": [
+        {
+          "id": "42726162530455",
+          "title": "Default Title",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-2c71ee22b184",
+      "name": "Wig Cap - 2 Caps per Pack — Black",
+      "sourceUrl": "https://www.haircity.co.za/products/wig-cap-2-caps-per-pack?variant=42726210994327",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/hair-city-wig-cap-under-1mb.jpg?v=1794307949",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/hair-city-brown-wig-cap-03-closeup.jpg?v=1794306837",
+        "https://cdn.shopify.com/s/files/1/0180/6221/files/hair-city-brown-wig-cap-02-benefits.jpg?v=1794306837"
+      ],
+      "description": "Pack of two black wig caps.",
+      "specifications": {
+        "Brand": "2 PACK WIG CAP",
+        "Product type": "2 PACK WIG CAP"
+      },
+      "options": [
+        {
+          "name": "COLOUR",
+          "values": [
+            "Black"
+          ]
+        }
+      ],
+      "variantId": "42726210994327",
+      "variants": [
+        {
+          "id": "42726210994327",
+          "title": "Black",
+          "image": null
+        }
+      ],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-a8c704fbc6e7",
+      "name": "Nike Court Vision Low Premium Sneaker Mens Wolf Grey/White",
+      "sourceUrl": "https://www.studio-88.co.za/nike-court-vision-low-premium-sneaker-mens-wolf-grey-white",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk3549wg-nike-court-gry-wht-hv8139-002-v1_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk3549wg-nike-court-gry-wht-hv8139-002-v2_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk3549wg-nike-court-gry-wht-hv8139-002-v3_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk3549wg-nike-court-gry-wht-hv8139-002-v4_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk3549wg-nike-court-gry-wht-hv8139-002-v5_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk3549wg-nike-court-gry-wht-hv8139-002-v6_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk3549wg-nike-court-gry-wht-hv8139-002-v7_jpg.jpg"
+      ],
+      "description": "Men’s low-top Court Vision sneaker in Wolf Grey/White, with basketball-inspired styling.",
+      "specifications": {},
+      "options": [],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-4c7250f85705",
+      "name": "Nike Court Vision Alta Sneaker Womens Silt Red/Pink",
+      "sourceUrl": "https://www.studio-88.co.za/nike-court-vision-alta-sneaker-womens-silt-red-pink",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445rp-nike-cort-red-pink-dm0113-601-v1_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445rp-nike-cort-red-pink-dm0113-601-v2_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445rp-nike-cort-red-pink-dm0113-601-v3_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445rp-nike-cort-red-pink-dm0113-601-v4_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445rp-nike-cort-red-pink-dm0113-601-v5_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445rp-nike-cort-red-pink-dm0113-601-v6_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445rp-nike-cort-red-pink-dm0113-601-v7_jpg.jpg"
+      ],
+      "description": "Women’s Court Vision Alta in Silt Red/Pink, with a leather upper, raised midsole and padded tongue.",
+      "specifications": {},
+      "options": [],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-df63094c73ce",
+      "name": "Nike Court Vision Alta Sneaker Womens White/Black",
+      "sourceUrl": "https://www.studio-88.co.za/nike-court-vision-alta-sneaker-womens-white-black",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445wb-nike-court-wht-blk-dz5394-107-v1_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445wb-nike-court-wht-blk-dz5394-107-v2_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445wb-nike-court-wht-blk-dz5394-107-v3_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445wb-nike-court-wht-blk-dz5394-107-v4_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445wb-nike-court-wht-blk-dz5394-107-v5_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445wb-nike-court-wht-blk-dz5394-107-v6_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2445wb-nike-court-wht-blk-dz5394-107-v7_jpg.jpg"
+      ],
+      "description": "Women’s Court Vision Alta with a leather upper, perforated toe, raised foam midsole and padded tongue. Confirm the exact colourway with the quote.",
+      "specifications": {},
+      "options": [],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "xp-b6722e45346b",
+      "name": "Nike Court Vision Low Next Nature Sneaker Womens White/Pink",
+      "sourceUrl": "https://www.studio-88.co.za/nike-court-vision-low-next-nature-sneaker-womens-white-pink",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2219wp-nike-court-vision-white-dh3158-102-v1_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2219wp-nike-court-vision-white-dh3158-102-v2_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2219wp-nike-court-vision-white-dh3158-102-v3_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2219wp-nike-court-vision-white-dh3158-102-v4_jpg.jpg",
+        "https://www.studio-88.co.za/media/catalog/product/cache/60023b40f56fdff39b9c495b8e044aef/n/k/nkk2219wp-nike-court-vision-white-dh3158-102-v5_jpg.jpg"
+      ],
+      "description": "Women’s low-top Court Vision Next Nature sneaker in White/Pink, with retro basketball-inspired styling.",
+      "specifications": {},
+      "options": [],
+      "galleryNote": "Product gallery may show other listed colours or options. Confirm your selected option before ordering."
+    },
+    {
+      "id": "mp-4099",
+      "productIds": [
+        "mp-4099",
+        "mp-4098"
+      ],
+      "name": "Samsung Z FLIP 5 2023",
+      "sourceUrl": "https://mobileplanetls.com/product/samsung-z-flip-5-2023/",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://mobileplanetls.com/wp-content/uploads/2025/07/Prod_image_-_WEBSITE___6_-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/07/Prod_image_-_WEBSITE___4_-removebg-preview.png"
+      ],
+      "description": "Compact folding Samsung phone with an AMOLED display and dual-camera system.",
+      "specifications": {
+        "Design": "Clamshell foldable",
+        "Display type": "Dynamic AMOLED"
+      },
+      "options": [
+        {
+          "name": "storage",
+          "values": [
+            "256GB",
+            "512GB"
+          ]
+        }
+      ],
+      "galleryNote": "Gallery shows this model in multiple colours. Confirm selected storage, colour and condition before ordering."
+    },
+    {
+      "id": "mp-4085",
+      "productIds": [
+        "mp-4085",
+        "mp-4084"
+      ],
+      "name": "Samsung Galaxy Z FOLD 5",
+      "sourceUrl": "https://mobileplanetls.com/product/samsung-galaxy-z-fold-5/",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://mobileplanetls.com/wp-content/uploads/2025/07/Prod_image_-_WEBSITE___8_-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/07/Prod_image_-_WEBSITE___10_-removebg-preview.png"
+      ],
+      "description": "Book-style folding Samsung phone with separate cover and inner displays.",
+      "specifications": {
+        "Inner display": "7.6-inch Dynamic AMOLED 2X",
+        "Cover display": "6.2-inch",
+        "Memory": "12GB RAM"
+      },
+      "options": [
+        {
+          "name": "storage",
+          "values": [
+            "256GB",
+            "512GB"
+          ]
+        }
+      ],
+      "galleryNote": "Gallery shows this model in multiple colours. Confirm selected storage, colour and condition before ordering."
+    },
+    {
+      "id": "mp-3950",
+      "productIds": [
+        "mp-3950",
+        "mp-3949"
+      ],
+      "name": "Samsung S22 PLUS",
+      "sourceUrl": "https://mobileplanetls.com/product/samsung-s22-plus/",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://mobileplanetls.com/wp-content/uploads/2025/07/Prod-image-WEBSITE-69-Background-Removed.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/07/Prod-image-WEBSITE-66-Background-Removed.png"
+      ],
+      "description": "Samsung smartphone with a 6.6-inch AMOLED display and triple rear cameras.",
+      "specifications": {
+        "Display": "6.6-inch Dynamic AMOLED",
+        "Rear cameras": "Triple-lens system"
+      },
+      "options": [
+        {
+          "name": "storage",
+          "values": [
+            "128GB",
+            "256GB"
+          ]
+        }
+      ],
+      "galleryNote": "Gallery shows this model in multiple colours. Confirm selected storage, colour and condition before ordering.",
+      "verificationUrl": "https://www.samsung.com/ca/business/smartphones/galaxy-s22/"
+    },
+    {
+      "id": "mp-3946",
+      "productIds": [
+        "mp-3946",
+        "mp-3945"
+      ],
+      "name": "Samsung S22 ULTRA",
+      "sourceUrl": "https://mobileplanetls.com/product/samsung-s22-ultra/",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://mobileplanetls.com/wp-content/uploads/2025/07/Prod-image-WEBSITE-64-Background-Removed.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/07/Prod-image-WEBSITE-60-Background-Removed-1.png"
+      ],
+      "description": "Samsung smartphone with a 6.8-inch AMOLED display and a 108MP main rear camera.",
+      "specifications": {
+        "Display": "6.8-inch Dynamic AMOLED",
+        "Main rear camera": "108MP"
+      },
+      "options": [
+        {
+          "name": "storage",
+          "values": [
+            "128GB",
+            "256GB"
+          ]
+        }
+      ],
+      "galleryNote": "Gallery shows this model in multiple colours. Confirm selected storage, colour and condition before ordering."
+    },
+    {
+      "id": "mp-3883",
+      "productIds": [
+        "mp-3883",
+        "mp-3882",
+        "mp-3881",
+        "mp-3880",
+        "mp-3879",
+        "mp-3878",
+        "mp-3877",
+        "mp-3876",
+        "mp-3875",
+        "mp-3874",
+        "mp-3873",
+        "mp-3872",
+        "mp-3871",
+        "mp-3870",
+        "mp-3869"
+      ],
+      "name": "iPhone 16 Plus",
+      "sourceUrl": "https://mobileplanetls.com/product/iphone-16-plus/",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_ultramarine_pdp_image_position_1__wwen_3-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_ultramarine_pdp_image_position_1__wwen_3-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_pink_pdp_image_position_1__wwen_3-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_white_pdp_image_position_1__wwen_3-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_teal_pdp_image_position_1__wwen_3-removebg-preview.png"
+      ],
+      "description": "Large-screen Apple iPhone with a Super Retina XDR display.",
+      "specifications": {
+        "Display": "Super Retina XDR"
+      },
+      "options": [
+        {
+          "name": "storage",
+          "values": [
+            "128GB",
+            "256GB",
+            "512GB"
+          ]
+        },
+        {
+          "name": "Color",
+          "values": [
+            "Black",
+            "Pink",
+            "teal",
+            "ultramarine",
+            "White"
+          ]
+        }
+      ],
+      "galleryNote": "Gallery shows this model in multiple colours. Confirm selected storage, colour and condition before ordering."
+    },
+    {
+      "id": "mp-3866",
+      "productIds": [
+        "mp-3866",
+        "mp-3865",
+        "mp-3864",
+        "mp-3863",
+        "mp-3862",
+        "mp-3861",
+        "mp-3860",
+        "mp-3859",
+        "mp-3858",
+        "mp-3857",
+        "mp-3856",
+        "mp-3855",
+        "mp-3854",
+        "mp-3853",
+        "mp-3852"
+      ],
+      "name": "iPhone 16",
+      "sourceUrl": "https://mobileplanetls.com/product/iphone-16/",
+      "checkedAt": "2026-11-15",
+      "images": [
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_teal_pdp_image_position_1__wwen_3-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_ultramarine_pdp_image_position_1__wwen_3-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_pink_pdp_image_position_1__wwen_3-removebg-preview.png",
+        "https://mobileplanetls.com/wp-content/uploads/2025/06/iphone_16_white_pdp_image_position_1__wwen_3-removebg-preview.png"
+      ],
+      "description": "Apple iPhone with a 6.1-inch Super Retina XDR display and A18 chip.",
+      "specifications": {
+        "Display": "6.1-inch Super Retina XDR",
+        "Processor": "Apple A18"
+      },
+      "options": [
+        {
+          "name": "storage",
+          "values": [
+            "128GB",
+            "256GB",
+            "512GB"
+          ]
+        },
+        {
+          "name": "Color",
+          "values": [
+            "Black",
+            "Pink",
+            "teal",
+            "ultramarine",
+            "White"
+          ]
+        }
+      ],
+      "galleryNote": "Gallery shows this model in multiple colours. Confirm selected storage, colour and condition before ordering."
+    }
+  ]
+}
