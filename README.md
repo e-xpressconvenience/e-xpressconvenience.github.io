@@ -120,3 +120,11 @@ Blue version of the existing shopping-bag logo, blue favicon, compact delivery s
 Budget collections filter groceries below M50 and beauty below M200. No percentage discount is activated without an approved genuine prior price and expiry. No fabricated reviews, stock levels, warranties or delivery dates. Photo/spec evidence is retained in data/research/product-enrichment.json; Samsung S22 Plus screen corrected to 6.6 inches using Samsung specs. Logo edit preserves the existing brand with royal blue replacing green.
 
 Validation: five Node suites pass; local asset/link check passes. Browser checked logo/footer, alternate gallery selection, phone option/price change and exact 128GB Black iPhone 16 basket line. Physical mobile and camera testing remain outstanding.
+
+### Everyday shopping and sourcing savings — 16 November 2026
+
+Everyday aisles bring pantry, bread, roll-ons, body care, oral hygiene, snacks, cleaning and baby essentials into direct shopping links. A basket preference requests either local sourcing first or a lower-cost option with a longer wait. It is carried into the customer-reviewed WhatsApp quote request; no message is sent automatically.
+
+`savings.html` explains the quotation route. No manufacturer-direct deal, discount percentage, supplier relationship or delivery SLA is asserted. `config/sourcing-savings.json` records the proposed landed-cost and real-comparison-price rules. Ordinary catalogue benchmarks are not procurement quotes and must be checked before accepting an order.
+
+Next operational priorities: verified supplier availability and price dates, split-delivery quotes for mixed baskets, saved repeat grocery lists, price-per-unit comparisons and post-delivery verified reviews. Never display invented ratings, countdowns or discounts.
