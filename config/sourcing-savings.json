@@ -1,0 +1,10 @@
+{
+  "version": "2026-11-16",
+  "status": "quote-only; no manufacturer-direct offers approved",
+  "currency": "LSL",
+  "landedCostComponents": ["supplier cost", "inbound transport", "applicable import costs", "handling and packaging", "payment costs", "returns allowance"],
+  "formula": "quoted product price = total landed cost + approved contribution margin",
+  "savingsFormula": "floor(100 * (current comparable regular Xpress price - approved batch price) / current comparable regular Xpress price)",
+  "discountRules": ["Exact same brand, model, size and pack quantity", "Documented valid regular comparison price", "Verified supplier quote and minimum order quantity", "Positive contribution after all costs", "Offer expiry and realistic arrival range", "Customer accepts full quote and cancellation terms before payment", "Exclude fresh and perishable groceries from overseas consolidation"],
+  "approvedOffers": []
+}

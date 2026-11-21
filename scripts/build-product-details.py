@@ -6,11 +6,11 @@ market=json.loads((R/'data/market-references.json').read_text())
 raw=(D/'assets/imported-catalogue.js').read_text(); imported=json.loads(raw.split('=',1)[1].rstrip(';\n'))['products']
 items={}
 for p in imported:
- items[p['id']]={'familyId':'family-'+hashlib.sha256(p['sourceUrl'].encode()).hexdigest()[:12],'variantLabel':p.get('variant',''),'images':[p['image'] if p['image']!='assets/favicon.svg' else 'assets/product-unavailable.svg'],'specs':[]}
+ items[p['id']]={'familyId':'family-'+hashlib.sha256(p['sourceUrl'].encode()).hexdigest()[:12],'variantLabel':p.get('variant',''),'images':list(dict.fromkeys(p.get('images') or [p['image'] if p['image']!='assets/favicon.svg' else 'assets/product-unavailable.svg'])),'specs':[]}
 for p in market:
  pid='xp-'+hashlib.sha256(p['sourceUrl'].encode()).hexdigest()[:12]
  base=p['sourceUrl'].split('?variant=')[0]
- items[pid]={'familyId':'family-'+hashlib.sha256(base.encode()).hexdigest()[:12],'variantLabel':p['name'].split(' — ')[-1] if ' — ' in p['name'] else p['name'],'images':[p['image'] if p['image']!='assets/favicon.svg' else 'assets/product-unavailable.svg'],'specs':[]}
+ items[pid]={'familyId':'family-'+hashlib.sha256(base.encode()).hexdigest()[:12],'variantLabel':p['name'].split(' — ')[-1] if ' — ' in p['name'] else p['name'],'images':list(dict.fromkeys(p.get('images') or [p['image'] if p['image']!='assets/favicon.svg' else 'assets/product-unavailable.svg'])),'specs':[]}
 p=R/'data/research/product-enrichment.json'
 if p.exists():
  for e in json.loads(p.read_text())['products']:
