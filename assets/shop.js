@@ -39,12 +39,32 @@
       const count=department.id==='all'?PRODUCTS.length:counts[department.id];
       const target=document.getElementById('department-sidebar');
       if(target){const b=document.createElement('button');b.type='button';b.className='department-filter';b.dataset.filter=department.id;b.textContent=department.name+' · '+(count||'Request');if(department.id==='all')target.prepend(b);else{const key=['food',...D.food,'household','personal-care','baby','bulk'].includes(department.id)?'daily':['beauty','wigs','haircare','nails','beauty-tools','eyewear','sneakers','clothing','fashion-accessories','jewellery','watches'].includes(department.id)?'style':'other';groupTargets[key].append(b);}}
-      if(home&&['food','groceries','fruit','vegetables','dairy','bakery','breakfast','condiments','snacks','drinks','household','personal-care','baby','beauty','sneakers','phones'].includes(department.id)){const a=document.createElement('a');a.href='products.html?category='+department.id;a.className='department-tile';const name=document.createElement('strong');name.textContent=department.name;const sub=document.createElement('span');sub.textContent=count?count+' listing'+(count===1?'':'s')+' →':'Request sourcing →';const example=PRODUCTS.find(p=>D.matches(p,department.id));if(example){const img=document.createElement('img');img.src=example.image;img.alt='';img.loading='lazy';img.width=img.height=84;img.onerror=()=>{img.onerror=null;img.src='assets/product-unavailable.svg';};a.append(img);}a.append(name,sub);home.append(a);}
+      if(home&&['food','groceries','fruit','vegetables','dairy','bakery','breakfast','snacks','drinks','household','personal-care','oral-care','skincare','fragrances','baby','beauty','sneakers','clothing','phones','appliances'].includes(department.id)){
+        const a=document.createElement('a');a.href='products.html?category='+department.id;a.className='department-tile';
+        const collage=document.createElement('div');collage.className='department-preview';
+        const candidates=PRODUCTS.filter(p=>D.matches(p,department.id)&&/^https?:\/\//.test(p.image||''));
+        const selected=[],usedBrands=new Set();
+        for(const p of candidates){const brand=p.name.split(/\s+/)[0].toLowerCase();if(usedBrands.has(brand))continue;selected.push(p);usedBrands.add(brand);if(selected.length===4)break;}
+        for(const p of candidates){if(selected.length===4)break;if(!selected.some(s=>s.id===p.id))selected.push(p);}
+        for(const p of selected){const img=document.createElement('img');img.src=p.image;img.alt='';img.loading='lazy';img.onerror=()=>{img.onerror=null;img.src='assets/product-unavailable.svg';};collage.append(img);}
+        const label=document.createElement('strong');label.textContent=department.name;
+        const sub=document.createElement('span');sub.textContent=count?count+' products to explore →':'Ask us to source →';
+        a.append(collage,label,sub);home.append(a);
+      }
     }
     const compact=document.getElementById('department-filters');
     if(compact){const label=document.createElement('label');label.textContent='Department ';const select=document.createElement('select');select.id='department-select';for(const d of [{id:'all',name:'All products'},...D.departments]){const o=document.createElement('option');o.value=d.id;o.textContent=d.name;select.append(o);}label.append(select);compact.append(label);}
-    const featured=[];const used=new Set();
-    for(const category of ['fruit','vegetables','groceries','dairy','meat','bakery','breakfast','tinned','condiments','drinks','household','baby']){const p=PRODUCTS.find(p=>category==='sneakers'?/Air Jordan 1/.test(p.name):category==='beauty'?/Sky High Mascara/.test(p.name):p.category===category);if(p){featured.push(p);used.add(p.id);}}
+    const featuredPatterns=[
+      /Blue Ribbon Classic Brown Bread 700/i,/Huletts Sunsweet Brown Sugar 2KG/i,
+      /Colgate Triple Action Toothpaste/i,/Gentle Magic The Skincare Soap/i,
+      /POND'S Perfect Colour Complex/i,/Yardley Lace Perfume Body Spray/i,
+      /Baby Soft Fresh White 2-Ply Toilet Paper/i,/Sunfoil Sunflower Oil 2L/i,
+      /Nivea Rich Nourishing Body Lotion 400ml/i,/Tastic Long Grain Parboiled Rice 2kg/i,
+      /OMO Superlift Auto Washing Powder/i,/Clover.*Milk/i
+    ];
+    const featured=[],used=new Set();
+    for(const re of featuredPatterns){const p=PRODUCTS.find(p=>re.test(p.name));if(p&&!used.has(p.id)){featured.push(p);used.add(p.id);}}
+    for(const category of ['dairy','fruit','bakery','household','groceries','skincare','oral-care','fragrances']){if(featured.length>=12)break;const p=PRODUCTS.find(p=>D.matches(p,category)&&!used.has(p.id)&&/^https?:\/\//.test(p.image||''));if(p){featured.push(p);used.add(p.id);}}
     const display=isShop?PRODUCTS:featured.slice(0,12);
     const edits=document.getElementById('style-edits');
     if(edits){
