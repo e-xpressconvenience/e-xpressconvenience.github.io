@@ -28,7 +28,7 @@
      const row=document.createElement('div');row.className='cart-line';
      const img=document.createElement('img');img.src=product.image;img.alt='';img.width=66;img.height=66;
      const detail=document.createElement('div'),name=document.createElement('strong'),note=document.createElement('small'),remove=document.createElement('button');
-     name.textContent=product.name;note.textContent=product.priceMinor>0?'M '+(product.priceMinor/100).toFixed(0)+' each · availability and delivery to confirm':'Price confirmed in your quote';remove.textContent='Remove';remove.className='remove';remove.type='button';remove.setAttribute('aria-label','Remove '+product.name+' from basket');remove.onclick=()=>change(product.id,-cart[product.id]);detail.append(name,note,remove);
+     name.textContent=product.name;note.textContent=product.priceMinor>0?'Indicative M '+(product.priceMinor/100).toFixed(0)+' each · confirm before payment':'Product price and sourcing to be confirmed';remove.textContent='Remove';remove.className='remove';remove.type='button';remove.setAttribute('aria-label','Remove '+product.name+' from basket');remove.onclick=()=>change(product.id,-cart[product.id]);detail.append(name,note,remove);
      if(product.optionLabel||product.category==='sneakers'){
        const label=document.createElement('label');label.textContent=product.optionLabel||'Requested size(s)';label.className='size-label';const input=document.createElement('input');input.type='text';input.maxLength=100;input.placeholder=product.category==='sneakers'?'e.g. UK 7; or 1 × UK 7, 1 × UK 8':'Enter size, shade or finish; we will confirm';input.value=read(localStorage,SIZES,{})[product.id]||'';input.oninput=()=>{const sizes=read(localStorage,SIZES,{});sizes[product.id]=input.value;try{localStorage.setItem(SIZES,JSON.stringify(sizes));}catch{}};label.append(input);detail.append(label);
      }
@@ -89,7 +89,18 @@
    if(!/^[+\d\s()-]+$/.test(d.phone)||d.phone.replace(/\D/g,'').length<8||d.phone.replace(/\D/g,'').length>15)return fail('Please enter a valid recipient phone number.','recipient-phone');
    if(coords&&!d.confirmed)return fail('Please check and confirm the destination pin, or remove it to use the address only.','confirm-pin');
    $('quote-error').hidden=true;persist();
-   const message=['Hi Xpress Convenience, please quote for:',...products.filter(p=>cart[p.id]).map(p=>'- '+p.name+' × '+cart[p.id]+(p.priceMinor>0?' | Xpress unit M '+(p.priceMinor/100).toFixed(0)+((p.optionLabel||p.category==='sneakers')?' | requested option: '+(read(localStorage,SIZES,{})[p.id]||'Please confirm with me'):'')+(p.food?' | if unavailable: '+substitution(p.id):''):'')),'','Recipient: '+d.name,'Contact: '+d.phone,'Delivery address / landmark: '+d.address,coords?`Confirmed destination: https://www.google.com/maps?q=${coords.lat},${coords.lng}`:'Location: address only',coords?.accuracy!=null?'GPS accuracy: approximately '+coords.accuracy+' m':'','Instructions: '+(d.notes||'None'),'Delivery guidance: '+r.title,'Please verify pack sizes, route and suitable vehicle.','Sourcing preference: '+(document.getElementById('sourcing-preference')?.value==='flexible'?'Compare a lower-cost option; I can wait. Quote savings and arrival range separately; keep fresh food on a suitable local route.':'Prioritise local sourcing and earlier arrival.'),'Payment preference: '+(document.querySelector('[name="payment"]:checked')?.value||'Not selected'),'Please confirm stock, all prices, delivery fee, total and arrival window before I pay.'].filter(Boolean).join('\n');
+   const requested=read(localStorage,SIZES,{});
+   const lines=products.filter(p=>cart[p.id]).map(p=>{
+     let item='- '+p.name+' × '+cart[p.id];
+     item+=p.priceMinor>0?' | Indicative unit M '+(p.priceMinor/100).toFixed(0):' | Price to be quoted';
+     if(p.optionLabel||p.category==='sneakers')item+=' | Requested size / option: '+(requested[p.id]||'Please confirm with me');
+     if(p.food)item+=' | If unavailable: '+substitution(p.id);
+     if(p.sourceName)item+=' | Potential source: '+p.sourceName;
+     if(p.sourceUrl)item+=' | Retailer collection: '+p.sourceUrl;
+     if(p.estimateLabel)item+=' | Planning timeline: '+p.estimateLabel;
+     return item;
+   });
+   const message=['Hi Xpress Convenience, please quote for this sourcing order request:',...lines,'','Recipient: '+d.name,'Contact: '+d.phone,'Delivery address / landmark: '+d.address,coords?'Confirmed destination: https://www.google.com/maps?q='+coords.lat+','+coords.lng:'Location: address only',coords?.accuracy!=null?'GPS accuracy: approximately '+coords.accuracy+' m':'','Instructions: '+(d.notes||'None'),'Delivery guidance: '+r.title,'Please verify pack sizes, routes and a suitable vehicle.','Sourcing preference: '+(document.getElementById('sourcing-preference')?.value==='flexible'?'Compare a lower-cost option; I can wait. Quote savings and arrival range separately; keep fresh food on a suitable local route.':'Prioritise local sourcing and earlier arrival.'),'Payment preference: '+(document.querySelector('[name="payment"]:checked')?.value||'Not selected'),'Please confirm supplier stock, final prices, sourcing charges, delivery fee, total and a feasible arrival window before I approve payment.'].filter(Boolean).join('\n');
    window.location.href='https://wa.me/26663540048?text='+encodeURIComponent(message);
  };
  // No silent migration of previously persisted precise coordinates.
