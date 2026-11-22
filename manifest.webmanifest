@@ -1,17 +1,25 @@
 {
   "name": "Xpress Convenience",
   "short_name": "Xpress",
-  "description": "Everyday essentials and delivery in Maseru",
-  "start_url": "index.html",
+  "description": "Everyday shopping and delivery in Maseru",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f7fbff",
-  "theme_color": "#1266c9",
+  "background_color": "#E6F2FF",
+  "theme_color": "#0052B5",
   "icons": [
     {
-      "src": "assets/favicon.svg",
+      "src": "assets/app-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    },
+    {
+      "src": "assets/app-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
