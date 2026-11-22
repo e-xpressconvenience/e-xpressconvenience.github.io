@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Xpress Convenience shopping bag">
+  <rect width="512" height="512" rx="92" fill="#E6F2FF"/>
+  <path d="M146 156H365c19 0 34 13 39 32l43 211c7 25-11 42-34 42H97c-25 0-39-16-33-41l46-211c5-20 18-33 36-33Z" fill="#0052B5"/>
+  <circle cx="176" cy="180" r="20" fill="#FFF"/>
+  <circle cx="335" cy="180" r="20" fill="#FFF"/>
+  <path d="M176 178v-36c0-47 34-72 80-72s79 26 79 72v36" fill="none" stroke="#C9692C" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M136 222h75l45 55 43-55h75l-73 90 79 99h-77l-47-58-49 58h-82l85-99-74-90Z" fill="#FFF"/>
+</svg>
