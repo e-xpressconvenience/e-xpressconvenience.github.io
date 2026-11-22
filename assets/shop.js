@@ -72,7 +72,38 @@
       for(const [eyebrow,title,cat,test] of collections){const product=PRODUCTS.find(test);if(!product)continue;const link=document.createElement('a');link.className='style-edit';link.href='products.html?category='+cat;const img=document.createElement('img');img.src=product.image;img.alt=product.name;img.loading='lazy';const small=document.createElement('span');small.textContent=eyebrow;const h=document.createElement('h3');h.textContent=title;const cta=document.createElement('strong');cta.textContent='Shop the edit ↗';link.append(small,h,img,cta);edits.append(link);}
     }
 
-        const hero=document.getElementById('hero-product');
+        const shopFloor=document.getElementById('shop-floor-shelves');
+    if(shopFloor){
+      const collections=[
+        {title:'Bread, sugar & pantry',intro:'The things on every household shopping list.',href:'products.html?category=food',wanted:[/Blue Ribbon Classic Brown Bread/i,/Blue Ribbon Toaster White Bread/i,/Huletts Sunsweet Brown Sugar 2KG/i,/Selati Brown Sugar 2KG/i,/Tastic Long Grain Parboiled Rice 2kg/i,/Sunfoil Sunflower Oil 2L/i],cats:['bakery','groceries','breakfast']},
+        {title:'Bathroom essentials',intro:'Toothpaste, soap, body care and daily hygiene.',href:'products.html?category=personal-care',wanted:[/Colgate Triple Action Toothpaste/i,/Aquafresh All In One Protection/i,/Baby Soft Fresh White/i,/Vaseline Blue Seal Original/i,/Lifebuoy Total 10/i,/Nivea Deodorant Roll-On Fresh Sensation/i],cats:['oral-care','personal-care','household']},
+        {title:'Skincare people know',intro:'Gentle Magic, POND’S, Garnier and more.',href:'products.html?category=skincare',wanted:[/Gentle Magic The Skincare Soap/i,/POND'S Perfect Colour Complex/i,/Gentle Magic The Skincare Cream Jar/i,/POND'S Flawless Radiance Even Tone/i,/Garnier Micellar Cleansing Water/i,/Nivea.*Body Lotion/i],cats:['skincare','beauty','personal-care']},
+        {title:'Perfumes & body sprays',intro:'Everyday fragrances and something special.',href:'products.html?category=fragrances',wanted:[/Yardley Lace Perfume/i,/Lentheric Solo Original/i,/Coty Exclamation Cologne/i,/Yardley English Blazer Eau de Toilette/i,/Yardley Gorgeous Perfume/i,/Lentheric Kaleidoscope Perfume/i],cats:['fragrances']},
+        {title:'The cleaning cupboard',intro:'Laundry, dishes, household hygiene and tissue.',href:'products.html?category=household',wanted:[/OMO Superlift Auto Washing Powder/i,/Sunlight Original Dishwashing Liquid/i,/Baby Soft Fresh White/i,/Dettol Original Antiseptic Liquid/i,/Sunlight Hand Washing Powder Tropical/i,/Sunlight Washing powder Tropical/i],cats:['household']},
+        {title:'The grocery top-up',intro:'Meals, breakfast and small everyday extras.',href:'products.html?category=food',wanted:[/KOO Baked Beans/i,/Bokomo Weet-Bix/i,/Clover.*Milk/i,/Eggs/i,/Blue Ribbon Classic Brown Bread/i,/Ricoffy/i],cats:['tinned','breakfast','dairy','groceries','fruit']}
+      ];
+      for(const collection of collections){
+        const section=document.createElement('section');section.className='shop-floor-shelf';
+        const heading=document.createElement('div');heading.className='shop-floor-shelf-head';
+        const h=document.createElement('h3');h.textContent=collection.title;
+        const see=document.createElement('a');see.href=collection.href;see.textContent='See all →';
+        const lead=document.createElement('p');lead.textContent=collection.intro;heading.append(h,see,lead);
+        const rail=document.createElement('div');rail.className='shop-floor-rail';const picked=[],seen=new Set();
+        const add=p=>{if(!p||seen.has(p.id)||!/^https?:\/\//.test(p.image||''))return;seen.add(p.id);picked.push(p);};
+        for(const regex of collection.wanted)add(PRODUCTS.find(p=>regex.test(p.name)));
+        if(picked.length<6)for(const p of PRODUCTS){if(picked.length>=6)break;if(collection.cats.some(c=>D.matches(p,c)))add(p);}
+        for(const p of picked.slice(0,6)){
+          const link=document.createElement('a');link.href='product.html?id='+encodeURIComponent(p.id);link.className='shop-floor-item';
+          const photo=document.createElement('div');photo.className='shop-floor-photo';const img=document.createElement('img');img.src=p.image;img.alt=p.name;img.loading='lazy';img.onerror=()=>{img.onerror=null;img.src='assets/product-unavailable.svg';};photo.append(img);
+          const name=document.createElement('strong');name.textContent=p.name;
+          const cost=document.createElement('span');cost.textContent=p.priceMinor>0?'Indicative M '+Math.round(p.priceMinor/100).toLocaleString('en-ZA'):'Ask for price';
+          link.append(photo,name,cost);rail.append(link);
+        }
+        section.append(heading,rail);shopFloor.append(section);
+      }
+    }
+
+    const hero=document.getElementById('hero-product');
     if(hero){for(const test of [p=>/Sunfoil.*2L/i.test(p.name),p=>p.category==='fruit'&&/banana/i.test(p.name),p=>p.category==='dairy'&&/eggs/i.test(p.name),p=>p.category==='bakery'&&/brown/i.test(p.name)]){const product=PRODUCTS.find(test);if(!product)continue;const box=document.createElement('div');const img=document.createElement('img');img.src=product.image;img.alt=product.name;const label=document.createElement('span');label.textContent=product.name;box.append(img,label);hero.append(box);}}
     function createCard(p){
       const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.productId=p.id;card.dataset.price=p.priceMinor;card.dataset.search=(p.name+' '+p.search).toLowerCase();
