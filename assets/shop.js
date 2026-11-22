@@ -128,6 +128,19 @@
       if(sortMode==='price-up'||sortMode==='price-down')ranked.sort((a,b)=>{const av=a.p.priceMinor>0?a.p.priceMinor:Infinity,bv=b.p.priceMinor>0?b.p.priceMinor:Infinity;return av===Infinity&&bv===Infinity?0:av===Infinity?1:bv===Infinity?-1:(av-bv)*(sortMode==='price-down'?-1:1);});
       else if(sortMode==='za'||sortMode==='az')ranked.sort((a,b)=>a.p.name.localeCompare(b.p.name)*(sortMode==='za'?-1:1));
       else if(query)ranked.sort((a,b)=>b.score-a.score);
+      else if(sortMode==='featured'&&isShop){
+        // Make the first screen a balanced retailer's shelf, not 24 similar electronics.
+        const preference=['bakery','groceries','oral-care','skincare','fragrances','household','personal-care','breakfast','dairy','tinned','snacks','fruit','vegetables','drinks','beauty','baby','sneakers','clothing','home','appliances','phones','computers','audio'];
+        const keyOf=({p})=>category==='all'?(preference.includes(p.category)?p.category:'other-'+p.category):p.name.trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z0-9]/g,'');
+        const groups=new Map();
+        for(const entry of ranked){const key=keyOf(entry);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(entry);}
+        const topScore=p=>/Blue Ribbon Classic Brown Bread|Huletts Sunsweet Brown Sugar 2KG|Colgate Triple Action|Gentle Magic The Skincare Soap|POND'S Perfect Colour Complex|Yardley Lace Perfume|Baby Soft Fresh White|Sunfoil Sunflower Oil 2L/i.test(p.name)?4:/^https?:\/\//.test(p.image||'')?2:0;
+        for(const group of groups.values())group.sort((a,b)=>topScore(b.p)-topScore(a.p));
+        const order=[...groups.keys()].sort((a,b)=>{const ia=preference.indexOf(a),ib=preference.indexOf(b);return(ia<0?999:ia)-(ib<0?999:ib);});
+        const arranged=[];let left=ranked.length;
+        while(left>0){for(const key of order){const next=groups.get(key).shift();if(next){arranged.push(next);left--;}}}
+        ranked.splice(0,ranked.length,...arranged);
+      }
       const visible=ranked.length,frag=document.createDocumentFragment();
       for(const {p}of ranked.slice(0,visibleLimit))frag.append(createCard(p));
       grid.replaceChildren(frag);
