@@ -4,6 +4,10 @@
   const LOCATION_KEY = "express-convenience-delivery-location-v1";
   const D = window.XpressDepartments;
   const PRODUCTS = window.XpressDelivery.products.map(p=>({...p,...window.XpressProductDetails?.[p.id],category:D.classify(p)}));
+  const displayedImage=p=>p.images?.[0]||p.image||'';
+  const hasPrice=p=>(Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0)||(Number.isSafeInteger(p.referencePriceMinor)&&p.referencePriceMinor>0&&p.referenceCurrency==='ZAR');
+  const retailReady=p=>/^https:\/\//i.test(displayedImage(p))&&p.photoStatus!=='reference'&&hasPrice(p);
+  const READY=PRODUCTS.filter(retailReady), SOURCING=PRODUCTS.filter(p=>!retailReady(p));
   const everyday=window.XpressEveryday;
   const aisleNav=document.getElementById('everyday-aisles');if(aisleNav&&everyday){for(const a of everyday.aisles){const link=document.createElement('a');link.href='products.html?aisle='+a.id;link.textContent=a.name;aisleNav.append(link);}}
   const byId = new Map(PRODUCTS.map(p => [p.id,p]));
@@ -33,20 +37,20 @@
   function initProducts() {
     const grid=document.querySelector('.catalogue');
     const isShop=document.body.dataset.page==='products';
-    const counts=Object.fromEntries(D.departments.map(d=>[d.id,PRODUCTS.filter(p=>D.matches(p,d.id)).length]));
+    const counts=Object.fromEntries(D.departments.map(d=>[d.id,READY.filter(p=>D.matches(p,d.id)).length]));
     const home=document.getElementById('department-grid');const sidebar=document.getElementById('department-sidebar');const groupTargets={};if(sidebar){for(const [key,name] of [['daily','Everyday essentials'],['style','Beauty & style'],['other','Tech, home & more']]){const group=document.createElement('details');group.className='department-group';group.open=key==='daily';const summary=document.createElement('summary');summary.textContent=name;const target=document.createElement('div');group.append(summary,target);sidebar.append(group);groupTargets[key]=target;}}
     for(const department of [{id:'all',name:'All products'},...D.departments]){
-      const count=department.id==='all'?PRODUCTS.length:counts[department.id];
+      const count=department.id==='all'?READY.length:counts[department.id];
       const target=document.getElementById('department-sidebar');
       if(target){const b=document.createElement('button');b.type='button';b.className='department-filter';b.dataset.filter=department.id;b.textContent=department.name+' · '+(count||'Request');if(department.id==='all')target.prepend(b);else{const key=['food',...D.food,'household','personal-care','oral-care','baby','bulk'].includes(department.id)?'daily':['beauty','skincare','fragrances','wigs','haircare','nails','beauty-tools','eyewear','sneakers','clothing','fashion-accessories','jewellery','watches'].includes(department.id)?'style':'other';groupTargets[key].append(b);}}
       if(home&&['food','groceries','fruit','vegetables','dairy','bakery','breakfast','snacks','drinks','household','personal-care','oral-care','skincare','fragrances','baby','beauty','sneakers','clothing','phones','appliances'].includes(department.id)){
         const a=document.createElement('a');a.href='products.html?category='+department.id;a.className='department-tile';
         const collage=document.createElement('div');collage.className='department-preview';
-        const candidates=PRODUCTS.filter(p=>D.matches(p,department.id)&&/^https?:\/\//.test(p.image||''));
+        const candidates=READY.filter(p=>D.matches(p,department.id));
         const selected=[],usedBrands=new Set();
         for(const p of candidates){const brand=p.name.split(/\s+/)[0].toLowerCase();if(usedBrands.has(brand))continue;selected.push(p);usedBrands.add(brand);if(selected.length===4)break;}
         for(const p of candidates){if(selected.length===4)break;if(!selected.some(s=>s.id===p.id))selected.push(p);}
-        for(const p of selected){const img=document.createElement('img');img.src=p.image;img.alt='';img.loading='lazy';img.onerror=()=>{img.onerror=null;img.src='assets/product-unavailable.svg';};collage.append(img);}
+        for(const p of selected){const img=document.createElement('img');img.src=p.image;img.alt='';img.loading='lazy';img.onerror=()=>img.remove();collage.append(img);}
         const label=document.createElement('strong');label.textContent=department.name;
         const sub=document.createElement('span');sub.textContent=count?count+' products to explore →':'Ask us to source →';
         a.append(collage,label,sub);home.append(a);
@@ -63,13 +67,13 @@
       /OMO Superlift Auto Washing Powder/i,/Clover.*Milk/i
     ];
     const featured=[],used=new Set();
-    for(const re of featuredPatterns){const p=PRODUCTS.find(p=>re.test(p.name));if(p&&!used.has(p.id)){featured.push(p);used.add(p.id);}}
-    for(const category of ['dairy','fruit','bakery','household','groceries','skincare','oral-care','fragrances']){if(featured.length>=12)break;const p=PRODUCTS.find(p=>D.matches(p,category)&&!used.has(p.id)&&/^https?:\/\//.test(p.image||''));if(p){featured.push(p);used.add(p.id);}}
-    const display=isShop?PRODUCTS:featured.slice(0,12);
+    for(const re of featuredPatterns){const p=READY.find(p=>re.test(p.name));if(p&&!used.has(p.id)){featured.push(p);used.add(p.id);}}
+    for(const category of ['dairy','fruit','bakery','household','groceries','skincare','oral-care','fragrances']){if(featured.length>=12)break;const p=READY.find(p=>D.matches(p,category)&&!used.has(p.id));if(p){featured.push(p);used.add(p.id);}}
+    const display=isShop?READY:featured.slice(0,12);
     const edits=document.getElementById('style-edits');
     if(edits){
       const collections=[['Your hair edit','Make it your look.','wigs',p=>p.category==='wigs'],['Nails & beauty','The finishing touch.','nails',p=>p.category==='nails'],['Shades on','Find your frames.','eyewear',p=>p.category==='eyewear'],['The sneaker edit','Step out your way.','sneakers',p=>/Air Jordan 1/.test(p.name)]];
-      for(const [eyebrow,title,cat,test] of collections){const product=PRODUCTS.find(test);if(!product)continue;const link=document.createElement('a');link.className='style-edit';link.href='products.html?category='+cat;const img=document.createElement('img');img.src=product.image;img.alt=product.name;img.loading='lazy';const small=document.createElement('span');small.textContent=eyebrow;const h=document.createElement('h3');h.textContent=title;const cta=document.createElement('strong');cta.textContent='Shop the edit ↗';link.append(small,h,img,cta);edits.append(link);}
+      for(const [eyebrow,title,cat,test] of collections){const product=READY.find(test);if(!product)continue;const link=document.createElement('a');link.className='style-edit';link.href='products.html?category='+cat;const img=document.createElement('img');img.src=product.image;img.alt=product.name;img.loading='lazy';const small=document.createElement('span');small.textContent=eyebrow;const h=document.createElement('h3');h.textContent=title;const cta=document.createElement('strong');cta.textContent='Shop the edit ↗';link.append(small,h,img,cta);edits.append(link);}
     }
 
         const shopFloor=document.getElementById('shop-floor-shelves');
@@ -89,28 +93,28 @@
         const see=document.createElement('a');see.href=collection.href;see.textContent='See all →';
         const lead=document.createElement('p');lead.textContent=collection.intro;heading.append(h,see,lead);
         const rail=document.createElement('div');rail.className='shop-floor-rail';const picked=[],seen=new Set();
-        const add=p=>{if(!p||seen.has(p.id)||!/^https?:\/\//.test(p.image||''))return;seen.add(p.id);picked.push(p);};
-        for(const regex of collection.wanted)add(PRODUCTS.find(p=>regex.test(p.name)));
-        if(picked.length<6)for(const p of PRODUCTS){if(picked.length>=6)break;if(collection.cats.some(c=>D.matches(p,c)))add(p);}
+        const add=p=>{if(!p||seen.has(p.id)||!retailReady(p))return;seen.add(p.id);picked.push(p);};
+        for(const regex of collection.wanted)add(READY.find(p=>regex.test(p.name)));
+        if(picked.length<6)for(const p of READY){if(picked.length>=6)break;if(collection.cats.some(c=>D.matches(p,c)))add(p);}
         for(const p of picked.slice(0,6)){
           const link=document.createElement('a');link.href='product.html?id='+encodeURIComponent(p.id);link.className='shop-floor-item';
-          const photo=document.createElement('div');photo.className='shop-floor-photo';const img=document.createElement('img');img.src=p.image;img.alt=p.name;img.loading='lazy';img.onerror=()=>{img.onerror=null;img.src='assets/product-unavailable.svg';};photo.append(img);
+          const photo=document.createElement('div');photo.className='shop-floor-photo';const img=document.createElement('img');img.src=p.image;img.alt=p.name;img.loading='lazy';img.onerror=()=>link.remove();photo.append(img);
           const name=document.createElement('strong');name.textContent=p.name;
-          const cost=document.createElement('span');cost.textContent=p.priceMinor>0?'Indicative M '+Math.round(p.priceMinor/100).toLocaleString('en-ZA'):'Ask for price';
+          const cost=document.createElement('span');cost.textContent=p.priceMinor>0?'Indicative M '+Math.round(p.priceMinor/100).toLocaleString('en-ZA'):'Retailer R '+(p.referencePriceMinor/100).toFixed(2);
           link.append(photo,name,cost);rail.append(link);
         }
-        section.append(heading,rail);shopFloor.append(section);
+        if(picked.length){section.append(heading,rail);shopFloor.append(section);}
       }
     }
 
     const hero=document.getElementById('hero-product');
-    if(hero){for(const test of [p=>/Sunfoil.*2L/i.test(p.name),p=>p.category==='fruit'&&/banana/i.test(p.name),p=>p.category==='dairy'&&/eggs/i.test(p.name),p=>p.category==='bakery'&&/brown/i.test(p.name)]){const product=PRODUCTS.find(test);if(!product)continue;const box=document.createElement('div');const img=document.createElement('img');img.src=product.image;img.alt=product.name;const label=document.createElement('span');label.textContent=product.name;box.append(img,label);hero.append(box);}}
+    if(hero){for(const test of [p=>/Sunfoil.*2L/i.test(p.name),p=>p.category==='fruit'&&/banana/i.test(p.name),p=>p.category==='dairy'&&/eggs/i.test(p.name),p=>p.category==='bakery'&&/brown/i.test(p.name)]){const product=READY.find(test);if(!product)continue;const box=document.createElement('div');const img=document.createElement('img');img.src=product.image;img.alt=product.name;const label=document.createElement('span');label.textContent=product.name;box.append(img,label);hero.append(box);}}
     function createCard(p){
       const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.productId=p.id;card.dataset.price=p.priceMinor;card.dataset.search=(p.name+' '+p.search).toLowerCase();
-      const pic=document.createElement('a');pic.href='product.html?id='+encodeURIComponent(p.id);pic.className='item-image';pic.setAttribute('aria-label','View '+p.name);const image=document.createElement('img');image.src=p.images?.[0]||p.image;image.alt=p.photoStatus==='reference'?'Category illustration; exact product photo pending':p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>{image.onerror=null;image.src='assets/product-unavailable.svg';};pic.append(image);
+      const pic=document.createElement('a');pic.href='product.html?id='+encodeURIComponent(p.id);pic.className='item-image';pic.setAttribute('aria-label','View '+p.name);const image=document.createElement('img');image.src=p.images?.[0]||p.image;image.alt=p.photoStatus==='reference'?'Category illustration; exact product photo pending':p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>card.remove();pic.append(image);
       const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');const titleLink=document.createElement('a');titleLink.href=pic.href;titleLink.textContent=p.name;title.append(titleLink);
       const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.priceStatus==='quote_required'?'Sourced on request · stock and delivery to confirm':p.coldChain?'Fresh · handling to confirm':p.bulky?'Large item · delivery quoted':'Sourced to order';
-      const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'Indicative M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):p.referencePriceMinor>0&&p.referenceCurrency==='ZAR'?'Retailer R '+(p.referencePriceMinor/100).toFixed(2)+' · quote delivery':'Price being sourced';const add=document.createElement('a');add.className='button';add.href=pic.href;add.textContent='View product';
+      const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'Indicative M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):'Retailer R '+(p.referencePriceMinor/100).toFixed(2);const add=document.createElement('a');add.className='button';add.href=pic.href;add.textContent='View product';
       bottom.append(price,add);copy.append(tag,title);if(p.unitLabel){const unit=document.createElement('small');unit.className='product-unit';unit.textContent=p.unitLabel;copy.append(unit);}const family=window.XpressProductModel.variants(p,PRODUCTS);if(family.length>1){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent=family.length+' listed options · view colours / configurations';copy.append(options);}else if(p.optionLabel){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent='Choose size / shade preferences';copy.append(options);}copy.append(note,bottom);card.append(pic,copy);card.addEventListener('click',e=>{if(!e.target.closest('a,button,input,select'))location.href=pic.href;});return card;
     }
     
