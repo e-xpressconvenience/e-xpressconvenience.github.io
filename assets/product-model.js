@@ -10,13 +10,22 @@
    const model=m[1]+(suffix==='e'?'e':suffix?'-'+suffix:'');
    return model;
  };
+ const shoeModel=p=>{
+   if(p.category!=='sneakers'||p.familyId)return null;
+   // Only collapse clear colourway suffixes; distinctive releases remain separate.
+   const n=String(p.name||''),base=n.replace(/\s+(?:Black|White|Grey|Gray|Navy|Blue|Red|Pink|Cream|Green|Yellow|Beige|Gold|Silver|Brown|Orange|Purple|Tan|Burgundy|Charcoal|Anthracite)(?:\s*\/\s*(?:Black|White|Grey|Gray|Navy|Blue|Red|Pink|Cream|Green|Yellow|Beige|Gold|Silver|Brown|Orange|Purple|Tan|Burgundy|Charcoal|Anthracite)){1,3}(?:\s+(?:Sneaker|Shoes|Shoe))?$/i,'');
+   return base===n?null:base;
+ };
  const groupKey=p=>{
    const iphone=iphoneModel(p);if(iphone)return 'apple-iphone-'+iphone;
-   return p.familyId||p.canonicalId||('single-'+String(p.name||p.id).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''));
+   if(p.familyId)return p.familyId;
+   const shoe=shoeModel(p);if(shoe)return 'shoe-'+shoe.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+   return p.canonicalId||('single-'+String(p.name||p.id).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''));
  };
  const displayTitle=p=>{
    const iphone=iphoneModel(p);
    if(iphone)return 'Apple iPhone '+iphone.replace(/^(\d+)(e?)($|-)/,(_,n,e,sep)=>n+(e||'')+(sep==='-'?' ':'')).replace('pro-max','Pro Max').replace('pro','Pro').replace('plus','Plus');
+   const shoe=shoeModel(p);if(shoe)return shoe.replace(/ Sneaker Mens$/i," Men's Sneaker");
    if(p.familyId&&String(p.name||'').includes(' · '))return p.name.split(' · ')[0];
    return p.name;
  };
@@ -30,5 +39,5 @@
  const money=n=>'M '+(n/100).toLocaleString('en-ZA',{maximumFractionDigits:0});
  const promotion=(p,now=Date.now())=>p.promotion&&p.promotion.approved===true&&Number.isSafeInteger(p.promotion.wasMinor)&&p.promotion.wasMinor>p.priceMinor&&Date.parse(p.promotion.endsAt)>now?p.promotion:null;
  const relatedScore=(a,b)=>{const tokens=x=>x.name.toLowerCase().match(/[a-z]{3,}/g)||[];const aa=tokens(a),bb=tokens(b);return (aa[0]===bb[0]?5:0)+aa.filter(t=>bb.includes(t)).length;};
- return {groupKey,displayTitle,iphoneModel,variants,variantParts,money,promotion,relatedScore};
+ return {groupKey,displayTitle,iphoneModel,shoeModel,variants,variantParts,money,promotion,relatedScore};
 });
