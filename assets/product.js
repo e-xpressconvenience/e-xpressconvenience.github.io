@@ -16,14 +16,15 @@
  const read=key=>{try{return JSON.parse(localStorage.getItem(key)||'{}')||{};}catch{return {};}};
  function show(p){
   if(!ready(p)){location.replace(sourceUrl(p));return;}
-  current=p;root.replaceChildren();document.title=p.name+' | Xpress Convenience';
+  current=p;root.replaceChildren();document.title=M.displayTitle(p)+' | Xpress Convenience';
   const url=new URL(location.href);url.searchParams.set('id',p.id);history.replaceState(null,'',url);
   const crumb=el('nav','product-breadcrumb');crumb.setAttribute('aria-label','Breadcrumb');const back=el('a','',D.label(p.category));back.href='products.html?category='+p.category;crumb.append(back,el('span','',' / Product details'));root.append(crumb);
   const layout=el('div','product-layout'),gallery=el('section','product-gallery'),info=el('section','product-info');
   const photos=[...new Set(p.images?.length?p.images:[p.image])];const big=el('button','gallery-main');big.type='button';big.setAttribute('aria-label','Enlarge product image');const image=el('img');image.src=photos[0];image.alt=p.photoStatus==='reference'?'Category illustration; exact product photo pending':p.name;image.onerror=()=>location.replace(sourceUrl(p));big.append(image);gallery.append(big);
   const thumbs=el('div','gallery-thumbs');photos.forEach((src,i)=>{const b=el('button');b.type='button';b.setAttribute('aria-label','View product image '+(i+1));b.setAttribute('aria-pressed',String(i===0));const img=el('img');img.src=src;img.alt='';b.append(img);b.onclick=()=>{image.src=src;thumbs.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));};thumbs.append(b);});gallery.append(thumbs,el('p','gallery-caption',p.photoStatus==='reference'?'Reference illustration · exact product photo confirmed with supplier':photos.length>1?photos.length+' product photos · tap to enlarge':'Product photo · tap to enlarge'));
   big.onclick=()=>{const dialog=el('dialog','image-dialog');const close=el('button','button','Close image');const full=el('img');full.src=image.src;full.alt=p.name;close.onclick=()=>dialog.close();dialog.append(close,full);dialog.addEventListener('close',()=>{dialog.remove();big.focus();});document.body.append(dialog);dialog.showModal();};
-  info.append(el('span','kicker',D.label(p.category)),el('h1','',p.name));
+  info.append(el('span','kicker',D.label(p.category)),el('h1','',M.displayTitle(p)));
+  if(M.variants(p,products).length>1)info.append(el('p','choice-note','Select the exact colour and storage option below; prices vary by configuration.'));
   if(p.description)info.append(el('p','product-summary',p.description));
   if(p.picturedVariant)info.append(el('p','choice-note','Product photo shows '+p.picturedVariant+'. Specify your preferred colour and configuration before ordering.'));
   const price=el('div','detail-price',p.priceMinor>0?M.money(p.priceMinor):p.referencePriceMinor>0&&p.referenceCurrency==='ZAR'?'Retailer guide: R '+(p.referencePriceMinor/100).toFixed(2):'Price being sourced');info.append(price);
@@ -32,9 +33,56 @@
    if(p.estimateLabel)info.append(el('p','lead-estimate',p.estimateLabel));
    if(p.sourceName){const source=el('div','supplier-reference');source.append(el('strong','','Possible sourcing reference: '+p.sourceName),el('p','','Independent retailer reference, not a confirmed supplier agreement or stock commitment.'));if(p.sourceUrl){const link=el('a','','View retailer collection ↗');link.href=p.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';if(p.sourceLinkType==='exact_product')link.textContent='View product at retailer ↗';source.append(link);}info.append(source);}
   const family=M.variants(p,products.filter(ready));
-  if(family.length>1){const label=el('label','variant-label','Choose your option');const select=el('select');select.setAttribute('aria-label','Choose product option');for(const v of family){const o=el('option','',(v.variantLabel||v.name)+' — '+(v.priceMinor>0?M.money(v.priceMinor):'Request quote'));o.value=v.id;o.selected=v.id===p.id;select.append(o);}select.onchange=()=>show(products.find(x=>x.id===select.value));label.append(select);info.append(label,el('p','choice-note','Listed colours, sizes and configurations are subject to confirmation.'));
-   const preview=el('div','variant-previews');const used=new Set();const storage=(p.variant||'').match(/storage:\s*([^,]+)/i)?.[1];const ordered=[...family].sort((a,b)=>Number(!!storage&&(b.variant||'').includes('storage: '+storage))-Number(!!storage&&(a.variant||'').includes('storage: '+storage)));for(const v of ordered){if(used.has(v.image)||used.size>=8)continue;used.add(v.image);const b=el('button');b.type='button';b.title=v.variantLabel||v.name;b.setAttribute('aria-label','Select '+(v.variantLabel||v.name));b.setAttribute('aria-pressed',String(v.id===p.id));const img=el('img');img.src=v.image;img.alt='';b.append(img);b.onclick=()=>show(v);preview.append(b);}info.append(preview);
+  const structured=family.filter(v=>{const x=M.variantParts(v);return x.storage&&x.color;});
+  if(M.iphoneModel(p)&&structured.length>1){
+    const state=M.variantParts(p);
+    // Non-configured retailer references open the closest documented, priced variant.
+    if(!state.storage||!state.color){const first=[...structured].sort((a,b)=>(a.priceMinor||Infinity)-(b.priceMinor||Infinity))[0];if(first&&first.id!==p.id){show(first);return;}}
+    const currentOption=M.variantParts(p);
+    const sorts=(a,b)=>parseFloat(a)-parseFloat(b);
+    const capacities=[...new Set(structured.map(v=>M.variantParts(v).storage))].sort(sorts);
+    const colors=[...new Set(structured.map(v=>M.variantParts(v).color))];
+    const choices=el('div','phone-options');
+    const storageLabel=el('label','variant-label','Storage');
+    const storageSelect=el('select');storageSelect.setAttribute('aria-label','Choose storage capacity');
+    for(const st of capacities){
+      const cheapest=Math.min(...structured.filter(v=>M.variantParts(v).storage===st).map(v=>v.priceMinor>0?v.priceMinor:Infinity));
+      const o=el('option','',st+(Number.isFinite(cheapest)?' — '+M.money(cheapest):' — Request quote'));
+      o.value=st;o.selected=st===currentOption.storage;storageSelect.append(o);
+    }
+    storageLabel.append(storageSelect);
+    const colorLabel=el('label','variant-label','Colour');
+    const colorSelect=el('select');colorSelect.setAttribute('aria-label','Choose phone colour');
+    for(const color of colors){const o=el('option','',color);o.value=color;o.selected=color.toLowerCase()===String(currentOption.color||'').toLowerCase();colorSelect.append(o);}
+    colorLabel.append(colorSelect);
+    const choose=(storage,color)=>{
+      const v=structured.find(v=>{const o=M.variantParts(v);return o.storage===storage&&o.color.toLowerCase()===color.toLowerCase();})||
+        structured.find(v=>M.variantParts(v).storage===storage)||structured[0];
+      if(v&&v.id!==p.id)show(v);
+    };
+    storageSelect.onchange=()=>choose(storageSelect.value,colorSelect.value);
+    colorSelect.onchange=()=>choose(storageSelect.value,colorSelect.value);
+    choices.append(storageLabel,colorLabel);
+    info.append(choices,el('p','choice-note','Shown prices are indicative for the selected configuration. We reconfirm availability and the delivered total before payment.'));
+    const preview=el('div','variant-previews');
+    const pictured=new Set();
+    for(const v of structured.filter(v=>M.variantParts(v).storage===currentOption.storage)){
+      const option=M.variantParts(v),photo=fullImage(v);
+      if(pictured.has(option.color.toLowerCase())||pictured.size>=8)continue;
+      pictured.add(option.color.toLowerCase());
+      const button=el('button');button.type='button';button.title=option.color;button.setAttribute('aria-label','View '+option.color+' '+option.storage);
+      button.setAttribute('aria-pressed',String(v.id===p.id));const img=el('img');img.src=photo;img.alt=option.color;
+      button.append(img);button.onclick=()=>show(v);preview.append(button);
+    }
+    info.append(preview);
+  }else if(family.length>1){
+    const label=el('label','variant-label','Choose your option');
+    const select=el('select');select.setAttribute('aria-label','Choose product option');
+    for(const v of family){const o=el('option','',(v.variantLabel||v.name)+' — '+(v.priceMinor>0?M.money(v.priceMinor):'Request quote'));o.value=v.id;o.selected=v.id===p.id;select.append(o);}
+    select.onchange=()=>show(products.find(x=>x.id===select.value));label.append(select);
+    info.append(label,el('p','choice-note','Listed options are subject to confirmation.'));
   }
+
   let preference;
   if(p.optionLabel){const label=el('label','variant-label',p.optionLabel);preference=el('input');preference.type='text';preference.maxLength=100;preference.placeholder='Tell us your preference';preference.value=read(SIZE)[p.id]||'';const values=(p.options||[]).flatMap(o=>o.values);if(values.length){const list=el('datalist');list.id='product-preferences';for(const v of [...new Set(values)]){const option=el('option');option.value=v;list.append(option);}preference.setAttribute('list',list.id);label.append(list);}label.append(preference);info.append(label);}
   const row=el('div','detail-purchase');const label=el('label','','Quantity');const qty=el('input');qty.type='number';qty.min='1';qty.max='99';qty.value='1';qty.setAttribute('aria-label','Quantity');label.append(qty);const add=el('button','button','Add to basket');add.type='button';const status=el('p','detail-status');status.setAttribute('role','status');
