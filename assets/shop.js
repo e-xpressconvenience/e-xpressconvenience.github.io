@@ -17,9 +17,11 @@
     const photographed=group.filter(retailReady),priced=photographed.filter(hasPrice),pictured=photographed;
     const chosenPool=priced.length?priced:pictured.length?pictured:group;
     const chosen=[...chosenPool].sort((a,b)=>{
+      // Never compare ZAR retailer references as if they were quoted Xpress prices.
+      const tier=x=>x.priceMinor>0?0:x.referencePriceMinor>0?1:2;
       const ap=a.priceMinor>0?a.priceMinor:a.referencePriceMinor>0?a.referencePriceMinor:Infinity;
       const bp=b.priceMinor>0?b.priceMinor:b.referencePriceMinor>0?b.referencePriceMinor:Infinity;
-      return ap-bp || Number(/\bblack\b/i.test(b.name))-Number(/\bblack\b/i.test(a.name));
+      return tier(a)-tier(b)||ap-bp || Number(/\bblack\b/i.test(b.name))-Number(/\bblack\b/i.test(a.name));
     })[0];
     const listing={...chosen,displayName:M.displayTitle(chosen),variantCount:group.length,
       search:[...new Set(group.map(p=>p.name+' '+(p.search||'')+' '+(p.variantLabel||'')))].join(' ')};
@@ -117,7 +119,7 @@
           const link=document.createElement('a');link.href='product.html?id='+encodeURIComponent(p.id);link.className='shop-floor-item';
           const photo=document.createElement('div');photo.className='shop-floor-photo';const img=document.createElement('img');img.src=p.image;img.alt=p.name;img.loading='lazy';img.onerror=()=>link.remove();photo.append(img);
           const name=document.createElement('strong');name.textContent=p.displayName||p.name;
-          const cost=document.createElement('span');cost.textContent=p.priceMinor>0?'Indicative M '+Math.round(p.priceMinor/100).toLocaleString('en-ZA'):p.referencePriceMinor>0?'Retailer R '+(p.referencePriceMinor/100).toFixed(2):'Request price';
+          const cost=document.createElement('span');cost.textContent=p.priceMinor>0?(p.variantCount>1?'From M ':'Indicative M ')+Math.round(p.priceMinor/100).toLocaleString('en-ZA'):p.referencePriceMinor>0?'Retailer R '+(p.referencePriceMinor/100).toFixed(2):'Request price';
           link.append(photo,name,cost);rail.append(link);
         }
         if(picked.length){section.append(heading,rail);shopFloor.append(section);}
@@ -131,8 +133,8 @@
       const pic=document.createElement('a');pic.href='product.html?id='+encodeURIComponent(p.id);pic.className='item-image';pic.setAttribute('aria-label','View '+p.name);const image=document.createElement('img');image.src=p.images?.[0]||p.image;image.alt=p.photoStatus==='reference'?'Category illustration; exact product photo pending':p.displayName||p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>card.remove();pic.append(image);
       const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');const titleLink=document.createElement('a');titleLink.href=pic.href;titleLink.textContent=p.displayName||p.name;title.append(titleLink);
       const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.priceStatus==='quote_required'?'Sourced on request · stock and delivery to confirm':p.coldChain?'Fresh · handling to confirm':p.bulky?'Large item · delivery quoted':'Sourced to order';
-      const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'Indicative M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):p.referencePriceMinor>0?'Retailer R '+(p.referencePriceMinor/100).toFixed(2):'Request price';const add=document.createElement('a');add.className='button';add.href=pic.href;add.textContent='View product';
-      bottom.append(price,add);copy.append(tag,title);if(p.unitLabel){const unit=document.createElement('small');unit.className='product-unit';unit.textContent=p.unitLabel;copy.append(unit);}const family=window.XpressProductModel.variants(p,PRODUCTS);if(family.length>1){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent=family.length+' options · choose colour, capacity and price';copy.append(options);}else if(p.optionLabel){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent='Choose size / shade preferences';copy.append(options);}copy.append(note,bottom);card.append(pic,copy);card.addEventListener('click',e=>{if(!e.target.closest('a,button,input,select'))location.href=pic.href;});return card;
+      const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?(p.variantCount>1?'From M ':'Indicative M ')+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):p.referencePriceMinor>0?'Retailer R '+(p.referencePriceMinor/100).toFixed(2):'Request price';const add=document.createElement('a');add.className='button';add.href=pic.href;add.textContent='View product';
+      bottom.append(price,add);copy.append(tag,title);if(p.unitLabel){const unit=document.createElement('small');unit.className='product-unit';unit.textContent=p.unitLabel;copy.append(unit);}const family=window.XpressProductModel.variants(p,PRODUCTS);if(family.length>1){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent=(M.iphoneModel(p)?family.filter(x=>M.variantParts(x).color).length:family.length)+' options · choose colour, capacity and price';copy.append(options);}else if(p.optionLabel){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent='Choose size / shade preferences';copy.append(options);}copy.append(note,bottom);card.append(pic,copy);card.addEventListener('click',e=>{if(!e.target.closest('a,button,input,select'))location.href=pic.href;});return card;
     }
     
     const filters=[...document.querySelectorAll('[data-filter]')];
