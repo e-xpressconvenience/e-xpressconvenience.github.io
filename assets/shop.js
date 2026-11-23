@@ -125,6 +125,44 @@
     let category=params.get('category')||'all';let visibleLimit=isShop?24:12;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
     if(category!=='gadgets'&&category!=='all'&&!D.departments.some(d=>d.id===category))category='all';
     if(document.body.dataset.page==='products')search.value=params.get('q')||'';
+    let sourcingLimit=8;
+    function sourcingLink(p){
+      const url=new URL('source.html',location.href);
+      url.searchParams.set('q',p.name);
+      url.searchParams.set('category',p.category);
+      if(p.sourceUrl&&/^https:\/\//i.test(p.sourceUrl))url.searchParams.set('ref',p.sourceUrl);
+      if(p.sourceName)url.searchParams.set('seller',p.sourceName);
+      return url.href;
+    }
+    function renderSourcingResults(query){
+      const section=document.getElementById('sourcing-shortlist');
+      if(!section)return 0;
+      const candidates=SOURCING.filter(p=>
+        D.matches(p,category)&&
+        (!aisle||everyday.matches(p,aisle))&&
+        (!maxPrice)&&
+        window.XpressSearch.score(p,query)>0
+      ).sort((a,b)=>{
+        const ab=!!a.sourceUrl,bb=!!b.sourceUrl;
+        return Number(bb)-Number(ab)||a.name.localeCompare(b.name);
+      });
+      const n=candidates.length,rail=document.getElementById('sourcing-requests');
+      if(!rail)return n;
+      rail.replaceChildren();
+      for(const p of candidates.slice(0,sourcingLimit)){
+        const a=document.createElement('a');a.href=sourcingLink(p);a.className='sourcing-request';
+        const name=document.createElement('strong');name.textContent=p.name;
+        const info=document.createElement('span');info.textContent='Photo or price not verified · request sourcing ↗';
+        a.append(name,info);rail.append(a);
+      }
+      section.hidden=!n;
+      const c=document.getElementById('sourcing-count');
+      if(c)c.textContent=n+' matching item'+(n===1?'':'s')+' available for sourcing review. Photos, prices and delivery are checked before you approve an order.';
+      const more=document.getElementById('sourcing-more');
+      if(more)more.hidden=n<=sourcingLimit;
+      return n;
+    }
+    document.getElementById('sourcing-more')?.addEventListener('click',()=>{sourcingLimit+=16;renderSourcingResults(search.value.trim());});
     function filterCards(){
       const query=search.value.trim().toLowerCase(),sortMode=document.getElementById('product-sort')?.value||'featured';
       const ranked=display.map(p=>({p,score:window.XpressSearch.score(p,query)})).filter(({p,score})=>
@@ -145,12 +183,13 @@
         while(left>0){for(const key of order){const next=groups.get(key).shift();if(next){arranged.push(next);left--;}}}
         ranked.splice(0,ranked.length,...arranged);
       }
+      const sourcingCount=renderSourcingResults(query);
       const visible=ranked.length,frag=document.createDocumentFragment();
       for(const {p}of ranked.slice(0,visibleLimit))frag.append(createCard(p));
       grid.replaceChildren(frag);
       more.hidden=visible<=visibleLimit;
       if(empty){
-        empty.hidden=visible!==0;
+        empty.hidden=visible!==0||sourcingCount>0;
         const department=category==='all'?null:D.label(category);
         empty.querySelector('h2').textContent=department?department+' — source on request':'Not listed? Let’s look for it.';
         empty.querySelector('p').textContent=query?'Tell us the exact product, size or model. We’ll check sourcing options and send a quote.':'Describe what you need. We confirm stock, price and delivery before you commit.';
@@ -158,7 +197,7 @@
         if(request){const url=new URL('source.html',location.href);if(query)url.searchParams.set('q',search.value.trim());if(category!=='all')url.searchParams.set('category',category);request.href=url.href;request.textContent=department?'Request '+department.toLowerCase()+' →':'Request this product →';}
         document.getElementById('clear-filters').textContent='Browse all listings';
       }
-      const result=document.getElementById('result-count');if(result)result.textContent=visible+' listing'+(visible===1?'':'s')+' · item prices and delivery confirmed before payment';
+      const result=document.getElementById('result-count');if(result)result.textContent=visible+' photographed, price-guided item'+(visible===1?'':'s')+(sourcingCount?' · '+sourcingCount+' available for sourcing review':'')+' · final quote before payment';
       const selector=document.getElementById('department-select');if(selector)selector.value=category;
       filters.forEach(button=>{const active=button.dataset.filter===category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       if(isShop){const url=new URL(location.href);category==='all'?url.searchParams.delete('category'):url.searchParams.set('category',category);query?url.searchParams.set('q',search.value.trim()):url.searchParams.delete('q');maxPrice?url.searchParams.set('max',maxPrice):url.searchParams.delete('max');aisle?url.searchParams.set('aisle',aisle):url.searchParams.delete('aisle');history.replaceState(null,'',url);}
