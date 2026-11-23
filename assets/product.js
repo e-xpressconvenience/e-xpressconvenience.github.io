@@ -4,7 +4,7 @@
  const products=window.XpressDelivery.products.map(p=>({...p,...window.XpressProductDetails?.[p.id],category:D.classify(p)}));
 
  const fullImage=p=>p.images?.[0]||p.image||'';
- const ready=p=>/^https:\/\//i.test(fullImage(p))&&p.photoStatus!=='reference'&&(p.priceMinor>0||(p.referencePriceMinor>0&&p.referenceCurrency==='ZAR'));
+ const ready=p=>/^https:\/\//i.test(fullImage(p))&&p.photoStatus!=='reference';
  function sourceUrl(p){
   const url=new URL('source.html',location.href);url.searchParams.set('q',p.name);url.searchParams.set('category',p.category);
   if(p.sourceUrl&&/^https:\/\//i.test(p.sourceUrl))url.searchParams.set('ref',p.sourceUrl);
@@ -25,6 +25,7 @@
   big.onclick=()=>{const dialog=el('dialog','image-dialog');const close=el('button','button','Close image');const full=el('img');full.src=image.src;full.alt=p.name;close.onclick=()=>dialog.close();dialog.append(close,full);dialog.addEventListener('close',()=>{dialog.remove();big.focus();});document.body.append(dialog);dialog.showModal();};
   info.append(el('span','kicker',D.label(p.category)),el('h1','',p.name));
   if(p.description)info.append(el('p','product-summary',p.description));
+  if(p.picturedVariant)info.append(el('p','choice-note','Product photo shows '+p.picturedVariant+'. Specify your preferred colour and configuration before ordering.'));
   const price=el('div','detail-price',p.priceMinor>0?M.money(p.priceMinor):p.referencePriceMinor>0&&p.referenceCurrency==='ZAR'?'Retailer guide: R '+(p.referencePriceMinor/100).toFixed(2):'Price being sourced');info.append(price);
   const promo=M.promotion(p);if(promo)info.append(el('p','discount-label','Was '+M.money(promo.wasMinor)+' · Save '+M.money(promo.wasMinor-p.priceMinor)));
   info.append(el('p','price-context',p.priceMinor>0?'Indicative Xpress product price · delivery quoted separately':p.referencePriceMinor>0?'Public retailer reference checked '+(p.referencePriceCheckedAt||'recently')+'; not an Xpress price. We verify actual stock, sourcing charges and the final delivered total before payment.':'The current product price, sourcing charges and delivery are verified and quoted before payment.'));
