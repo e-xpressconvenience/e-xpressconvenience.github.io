@@ -7,6 +7,7 @@
  const params=new URLSearchParams(location.search),category=params.get('category');if(categories.includes(category))$('source-category').value=category;
  $('source-item').value=(params.get('q')||'').slice(0,1200);
  if($('source-url')&&/^https?:\/\//i.test(params.get('ref')||''))$('source-url').value=(params.get('ref')||'').slice(0,600);
+ if($('source-store')&&params.get('seller'))$('source-store').value=params.get('seller').slice(0,150);
  function hint(){$('source-hint').textContent=hints[$('source-category').value]||hints.general;}
  $('source-category').onchange=hint;hint();
  function cart(){try{return window.XpressDelivery.cleanCart(JSON.parse(localStorage.getItem('express-convenience-basket-v1')||'{}'));}catch{return {};}}
