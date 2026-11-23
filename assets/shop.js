@@ -125,7 +125,7 @@
     let category=params.get('category')||'all';let visibleLimit=isShop?24:12;const more=document.createElement('button');more.type='button';more.className='button outline';more.textContent='Show more products';more.style.marginTop='24px';if(document.body.dataset.page==='products')grid.after(more);more.onclick=()=>{visibleLimit+=24;filterCards();};
     if(category!=='gadgets'&&category!=='all'&&!D.departments.some(d=>d.id===category))category='all';
     if(document.body.dataset.page==='products')search.value=params.get('q')||'';
-    let sourcingLimit=8;
+    let sourcingLimit=18;
     function sourcingLink(p){
       const url=new URL('source.html',location.href);
       url.searchParams.set('q',p.name);
@@ -143,21 +143,29 @@
         (!maxPrice)&&
         window.XpressSearch.score(p,query)>0
       ).sort((a,b)=>{
-        const ab=!!a.sourceUrl,bb=!!b.sourceUrl;
-        return Number(bb)-Number(ab)||a.name.localeCompare(b.name);
+        const ab=/^https?:\/\//i.test(a.image||''),bb=/^https?:\/\//i.test(b.image||'');
+        return Number(bb)-Number(ab)||Number(!!b.sourceUrl)-Number(!!a.sourceUrl)||a.name.localeCompare(b.name);
       });
       const n=candidates.length,rail=document.getElementById('sourcing-requests');
       if(!rail)return n;
       rail.replaceChildren();
       for(const p of candidates.slice(0,sourcingLimit)){
-        const a=document.createElement('a');a.href=sourcingLink(p);a.className='sourcing-request';
+        const hasPhoto=/^https?:\/\//i.test(p.images?.[0]||p.image||'');
+        const a=document.createElement('a');
+        a.href=hasPhoto?'product.html?id='+encodeURIComponent(p.id):sourcingLink(p);
+        a.className='sourcing-request'+(hasPhoto?' sourcing-request-photo':'');
+        if(hasPhoto){const frame=document.createElement('div');frame.className='sourcing-request-image';
+          const img=document.createElement('img');img.src=p.images?.[0]||p.image;img.alt=p.name;img.loading='lazy';
+          img.onerror=()=>{frame.remove();a.classList.remove('sourcing-request-photo');};
+          frame.append(img);a.append(frame);}
         const name=document.createElement('strong');name.textContent=p.name;
-        const info=document.createElement('span');info.textContent='Photo or price not verified · request sourcing ↗';
+        const info=document.createElement('span');
+        info.textContent=hasPhoto?'Product photo found · request final sourcing quote ↗':'Reference listing · request exact product photo and quote ↗';
         a.append(name,info);rail.append(a);
       }
       section.hidden=!n;
       const c=document.getElementById('sourcing-count');
-      if(c)c.textContent=n+' matching item'+(n===1?'':'s')+' available for sourcing review. Photos, prices and delivery are checked before you approve an order.';
+      if(c)c.textContent=n+' additional sourcing option'+(n===1?'':'s')+'. Verified photo links are shown where available; final prices, supplier stock and delivery are confirmed before payment.';
       const more=document.getElementById('sourcing-more');
       if(more)more.hidden=n<=sourcingLimit;
       return n;
