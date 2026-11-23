@@ -39,7 +39,8 @@
     // Non-configured retailer references open the closest documented, priced variant.
     if(!state.storage||!state.color){const first=[...structured].sort((a,b)=>(a.priceMinor||Infinity)-(b.priceMinor||Infinity))[0];if(first&&first.id!==p.id){show(first);return;}}
     const currentOption=M.variantParts(p);
-    const sorts=(a,b)=>parseFloat(a)-parseFloat(b);
+    const capacityInGb=value=>(parseFloat(value)||0)*(/TB$/i.test(value)?1024:1);
+    const sorts=(a,b)=>capacityInGb(a)-capacityInGb(b);
     const capacities=[...new Set(structured.map(v=>M.variantParts(v).storage))].sort(sorts);
     const colors=[...new Set(structured.map(v=>M.variantParts(v).color))];
     const choices=el('div','phone-options');
