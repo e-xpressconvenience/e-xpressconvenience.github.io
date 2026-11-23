@@ -7,7 +7,24 @@
   const displayedImage=p=>p.images?.[0]||p.image||'';
   const hasPrice=p=>(Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0)||(Number.isSafeInteger(p.referencePriceMinor)&&p.referencePriceMinor>0&&p.referenceCurrency==='ZAR');
   const retailReady=p=>/^https:\/\//i.test(displayedImage(p))&&p.photoStatus!=='reference'&&hasPrice(p);
-  const READY=PRODUCTS.filter(retailReady), SOURCING=PRODUCTS.filter(p=>!retailReady(p));
+  // One shopping card per actual model; colours, capacities and shop variants live inside it.
+  // Grouping is conservative: explicit family IDs or an exact Apple iPhone model.
+  const M=window.XpressProductModel;
+  const groups=new Map();
+  for(const p of PRODUCTS){const key=M.groupKey(p);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);}
+  const READY=[],SOURCING=[];
+  for(const group of groups.values()){
+    const priced=group.filter(retailReady),pictured=group.filter(p=>/^https:\/\//i.test(displayedImage(p))&&p.photoStatus!=='reference');
+    const chosenPool=priced.length?priced:pictured.length?pictured:group;
+    const chosen=[...chosenPool].sort((a,b)=>{
+      const ap=a.priceMinor>0?a.priceMinor:a.referencePriceMinor>0?a.referencePriceMinor:Infinity;
+      const bp=b.priceMinor>0?b.priceMinor:b.referencePriceMinor>0?b.referencePriceMinor:Infinity;
+      return ap-bp || Number(/\bblack\b/i.test(b.name))-Number(/\bblack\b/i.test(a.name));
+    })[0];
+    const listing={...chosen,displayName:M.displayTitle(chosen),variantCount:group.length,
+      search:[...new Set(group.map(p=>p.name+' '+(p.search||'')+' '+(p.variantLabel||'')))].join(' ')};
+    if(priced.length)READY.push(listing);else SOURCING.push(listing);
+  }
   const everyday=window.XpressEveryday;
   const aisleNav=document.getElementById('everyday-aisles');if(aisleNav&&everyday){for(const a of everyday.aisles){const link=document.createElement('a');link.href='products.html?aisle='+a.id;link.textContent=a.name;aisleNav.append(link);}}
   const byId = new Map(PRODUCTS.map(p => [p.id,p]));
@@ -48,7 +65,7 @@
         const collage=document.createElement('div');collage.className='department-preview';
         const candidates=READY.filter(p=>D.matches(p,department.id));
         const selected=[],usedBrands=new Set();
-        for(const p of candidates){const brand=p.name.split(/\s+/)[0].toLowerCase();if(usedBrands.has(brand))continue;selected.push(p);usedBrands.add(brand);if(selected.length===4)break;}
+        for(const p of candidates){const brand=(p.displayName||p.name).split(/\s+/)[0].toLowerCase();if(usedBrands.has(brand))continue;selected.push(p);usedBrands.add(brand);if(selected.length===4)break;}
         for(const p of candidates){if(selected.length===4)break;if(!selected.some(s=>s.id===p.id))selected.push(p);}
         for(const p of selected){const img=document.createElement('img');img.src=p.image;img.alt='';img.loading='lazy';img.onerror=()=>img.remove();collage.append(img);}
         const label=document.createElement('strong');label.textContent=department.name;
@@ -99,7 +116,7 @@
         for(const p of picked.slice(0,6)){
           const link=document.createElement('a');link.href='product.html?id='+encodeURIComponent(p.id);link.className='shop-floor-item';
           const photo=document.createElement('div');photo.className='shop-floor-photo';const img=document.createElement('img');img.src=p.image;img.alt=p.name;img.loading='lazy';img.onerror=()=>link.remove();photo.append(img);
-          const name=document.createElement('strong');name.textContent=p.name;
+          const name=document.createElement('strong');name.textContent=p.displayName||p.name;
           const cost=document.createElement('span');cost.textContent=p.priceMinor>0?'Indicative M '+Math.round(p.priceMinor/100).toLocaleString('en-ZA'):'Retailer R '+(p.referencePriceMinor/100).toFixed(2);
           link.append(photo,name,cost);rail.append(link);
         }
@@ -110,12 +127,12 @@
     const hero=document.getElementById('hero-product');
     if(hero){for(const test of [p=>/Sunfoil.*2L/i.test(p.name),p=>p.category==='fruit'&&/banana/i.test(p.name),p=>p.category==='dairy'&&/eggs/i.test(p.name),p=>p.category==='bakery'&&/brown/i.test(p.name)]){const product=READY.find(test);if(!product)continue;const box=document.createElement('div');const img=document.createElement('img');img.src=product.image;img.alt=product.name;const label=document.createElement('span');label.textContent=product.name;box.append(img,label);hero.append(box);}}
     function createCard(p){
-      const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.productId=p.id;card.dataset.price=p.priceMinor;card.dataset.search=(p.name+' '+p.search).toLowerCase();
-      const pic=document.createElement('a');pic.href='product.html?id='+encodeURIComponent(p.id);pic.className='item-image';pic.setAttribute('aria-label','View '+p.name);const image=document.createElement('img');image.src=p.images?.[0]||p.image;image.alt=p.photoStatus==='reference'?'Category illustration; exact product photo pending':p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>card.remove();pic.append(image);
-      const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');const titleLink=document.createElement('a');titleLink.href=pic.href;titleLink.textContent=p.name;title.append(titleLink);
+      const card=document.createElement('article');card.className='item';card.dataset.category=p.category;card.dataset.productId=p.id;card.dataset.price=p.priceMinor;card.dataset.search=((p.displayName||p.name)+' '+p.search).toLowerCase();
+      const pic=document.createElement('a');pic.href='product.html?id='+encodeURIComponent(p.id);pic.className='item-image';pic.setAttribute('aria-label','View '+p.name);const image=document.createElement('img');image.src=p.images?.[0]||p.image;image.alt=p.photoStatus==='reference'?'Category illustration; exact product photo pending':p.displayName||p.name;image.loading='lazy';image.width=image.height=300;image.onerror=()=>card.remove();pic.append(image);
+      const copy=document.createElement('div');copy.className='item-copy';const tag=document.createElement('span');tag.className='item-tag';tag.textContent=D.label(p.category);const title=document.createElement('h3');const titleLink=document.createElement('a');titleLink.href=pic.href;titleLink.textContent=p.displayName||p.name;title.append(titleLink);
       const note=document.createElement('p');const fresh=Number.isSafeInteger(p.priceMinor)&&p.priceMinor>0;note.textContent=p.priceStatus==='quote_required'?'Sourced on request · stock and delivery to confirm':p.coldChain?'Fresh · handling to confirm':p.bulky?'Large item · delivery quoted':'Sourced to order';
       const bottom=document.createElement('div');bottom.className='item-bottom';const price=document.createElement('span');price.className='price-label';price.textContent=fresh?'Indicative M '+(p.priceMinor/100).toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0}):'Retailer R '+(p.referencePriceMinor/100).toFixed(2);const add=document.createElement('a');add.className='button';add.href=pic.href;add.textContent='View product';
-      bottom.append(price,add);copy.append(tag,title);if(p.unitLabel){const unit=document.createElement('small');unit.className='product-unit';unit.textContent=p.unitLabel;copy.append(unit);}const family=window.XpressProductModel.variants(p,PRODUCTS);if(family.length>1){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent=family.length+' listed options · view colours / configurations';copy.append(options);}else if(p.optionLabel){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent='Choose size / shade preferences';copy.append(options);}copy.append(note,bottom);card.append(pic,copy);card.addEventListener('click',e=>{if(!e.target.closest('a,button,input,select'))location.href=pic.href;});return card;
+      bottom.append(price,add);copy.append(tag,title);if(p.unitLabel){const unit=document.createElement('small');unit.className='product-unit';unit.textContent=p.unitLabel;copy.append(unit);}const family=window.XpressProductModel.variants(p,PRODUCTS);if(family.length>1){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent=family.length+' options · choose colour, capacity and price';copy.append(options);}else if(p.optionLabel){const options=document.createElement('a');options.href=pic.href;options.className='product-options';options.textContent='Choose size / shade preferences';copy.append(options);}copy.append(note,bottom);card.append(pic,copy);card.addEventListener('click',e=>{if(!e.target.closest('a,button,input,select'))location.href=pic.href;});return card;
     }
     
     const filters=[...document.querySelectorAll('[data-filter]')];
@@ -128,7 +145,7 @@
     let sourcingLimit=18;
     function sourcingLink(p){
       const url=new URL('source.html',location.href);
-      url.searchParams.set('q',p.name);
+      url.searchParams.set('q',p.displayName||p.name);
       url.searchParams.set('category',p.category);
       if(p.sourceUrl&&/^https:\/\//i.test(p.sourceUrl))url.searchParams.set('ref',p.sourceUrl);
       if(p.sourceName)url.searchParams.set('seller',p.sourceName);
@@ -158,7 +175,7 @@
           const img=document.createElement('img');img.src=p.images?.[0]||p.image;img.alt=p.name;img.loading='lazy';
           img.onerror=()=>{frame.remove();a.classList.remove('sourcing-request-photo');};
           frame.append(img);a.append(frame);}
-        const name=document.createElement('strong');name.textContent=p.name;
+        const name=document.createElement('strong');name.textContent=p.displayName||p.name;
         const info=document.createElement('span');
         info.textContent=hasPhoto?'Product photo found · request final sourcing quote ↗':'Reference listing · request exact product photo and quote ↗';
         a.append(name,info);rail.append(a);
