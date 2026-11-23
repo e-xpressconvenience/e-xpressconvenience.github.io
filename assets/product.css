@@ -49,3 +49,18 @@ footer.xpress-footer{background:#102b4d!important;color:#fff!important;margin-to
 @media(max-width:1000px){.shop-floor-rail{grid-template-columns:repeat(3,minmax(0,1fr))}.shop-floor-item{min-height:216px}.shop-floor-photo{height:142px}}
 @media(max-width:700px){.xpress-shop-floor{padding-top:28px}.shop-floor-shelves{gap:23px}.shop-floor-shelf{padding-bottom:18px}.shop-floor-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:9px;padding-bottom:10px;overscroll-behavior-inline:contain;scrollbar-width:thin}.shop-floor-item{flex:0 0 145px;scroll-snap-align:start;min-height:215px}.shop-floor-photo{height:125px}.department-section .department-preview{aspect-ratio:1.2}.department-section .department-preview img{max-height:80px}.department-section .department-tile{padding:8px!important;gap:6px!important}.department-section .department-tile strong{font-size:12px;min-height:31px}.shop-floor-shelf-head h3{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.shop-floor-item{transition:none}.shop-floor-item:hover{transform:none}}
+
+/* Retail catalogue quality gate: genuine photo + price guide in shopping tiles.
+   Unverified items live in a separate, text-only sourcing queue. */
+.sourcing-shortlist{margin:32px 0 12px;padding:24px 22px;background:#f4f9ff;border:1px solid #d8e7f8;border-radius:16px;max-width:100%}
+.sourcing-shortlist-head{display:flex;justify-content:space-between;gap:20px;align-items:start;margin-bottom:18px}
+.sourcing-shortlist-head h2{font-size:24px;letter-spacing:-.035em;color:#123a61;margin:0 0 8px}
+.sourcing-shortlist-head p{color:#5a728a;font-size:13px;line-height:1.6;margin:0;max-width:640px}
+.sourcing-shortlist-head .button{flex:0 0 auto}
+.sourcing-requests{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.sourcing-request{display:flex;flex-direction:column;gap:7px;padding:15px;border:1px solid #d5e5f3;border-radius:10px;background:white;text-decoration:none;color:#183d5c;transition:border-color .15s,background .15s}
+.sourcing-request:hover{background:#eaf5ff;border-color:#7eb9e8}
+.sourcing-request strong{font-size:13px;line-height:1.5;font-weight:700}
+.sourcing-request span{font-size:11px;line-height:1.4;color:#396f9a}
+#sourcing-more{margin-top:16px}
+@media(max-width:650px){.sourcing-shortlist{padding:17px 13px;margin-top:24px}.sourcing-shortlist-head{display:block}.sourcing-shortlist-head h2{font-size:21px}.sourcing-shortlist-head .button{margin:14px 0 0}.sourcing-requests{grid-template-columns:1fr}.sourcing-request{padding:12px 13px}}
