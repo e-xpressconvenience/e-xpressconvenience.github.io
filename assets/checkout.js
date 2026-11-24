@@ -101,6 +101,12 @@
      return item;
    });
    const message=['Hi Xpress Convenience, please quote for this sourcing order request:',...lines,'','Recipient: '+d.name,'Contact: '+d.phone,'Delivery address / landmark: '+d.address,coords?'Confirmed destination: https://www.google.com/maps?q='+coords.lat+','+coords.lng:'Location: address only',coords?.accuracy!=null?'GPS accuracy: approximately '+coords.accuracy+' m':'','Instructions: '+(d.notes||'None'),'Delivery guidance: '+r.title,'Please verify pack sizes, routes and a suitable vehicle.','Sourcing preference: '+(document.getElementById('sourcing-preference')?.value==='flexible'?'Compare a lower-cost option; I can wait. Quote savings and arrival range separately; keep fresh food on a suitable local route.':'Prioritise local sourcing and earlier arrival.'),'Payment preference: '+(document.querySelector('[name="payment"]:checked')?.value||'Not selected'),'Please confirm supplier stock, final prices, sourcing charges, delivery fee, total and a feasible arrival window before I approve payment.'].filter(Boolean).join('\n');
+   // Record the handoff only, not a confirmed or sent order. No contact or address data is stored here.
+   try{
+     const k='xpress-quote-history-v1';let history=JSON.parse(localStorage.getItem(k)||'[]');if(!Array.isArray(history))history=[];
+     history.unshift({at:new Date().toISOString(),items:Object.entries(cart).map(([id,quantity])=>({id,quantity}))});
+     localStorage.setItem(k,JSON.stringify(history.slice(0,20)));
+   }catch{}
    window.location.href='https://wa.me/26663540048?text='+encodeURIComponent(message);
  };
  // No silent migration of previously persisted precise coordinates.
