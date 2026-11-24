@@ -13,4 +13,5 @@
  install?.addEventListener('click',async()=>{if(!installPrompt)return;await installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;install.hidden=true;});
  window.addEventListener('appinstalled',()=>{if(install)install.hidden=true;});
  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+ const appScript=document.createElement('script');appScript.src='assets/app-mode.js';document.head.append(appScript);
 })();
