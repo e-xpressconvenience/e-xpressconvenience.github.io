@@ -3,11 +3,11 @@
   "short_name": "Xpress Convenience",
   "description": "Everyday shopping and delivery in Maseru",
   "id": "./",
-  "start_url": "./index.html",
+  "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#E6F2FF",
-  "theme_color": "#0052B5",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
   "icons": [
     {
       "src": "assets/app-icon.svg",
